@@ -5,12 +5,14 @@
 
 import { useState, useEffect } from 'react';
 import { LimsRole } from './types/lims';
+import { LandingPage } from './components/LandingPage';
 import { LoginModule } from './components/LoginModule';
 import { DashboardModule } from './components/DashboardModule';
 import { getStoredThemeForUser, applyThemeToDocument } from './utils/themeUtils';
 
 export default function App() {
   const [darkMode, setDarkMode] = useState(false);
+  const [currentView, setCurrentView] = useState<'landing' | 'login'>('landing');
   const [session, setSession] = useState<{
     isLoggedIn: boolean;
     username: string;
@@ -80,7 +82,26 @@ export default function App() {
       fullName: ''
     });
     localStorage.removeItem('lims_session');
+    setCurrentView('landing');
   };
+
+  const handleEnterPortal = (demoRole?: string) => {
+    if (demoRole) {
+      // Direct persona launch
+      const roleMap: Record<string, { username: string; fullName: string; role: LimsRole }> = {
+        Administrator: { username: 'admin', fullName: 'Dr. Sarah Jenkins MD', role: 'Administrator' },
+        Receptionist: { username: 'reception', fullName: 'Alex Rivera', role: 'Receptionist' },
+        Phlebotomist: { username: 'phlebo', fullName: 'Maria Chen', role: 'Phlebotomist' }
+      };
+
+      const user = roleMap[demoRole] || roleMap.Administrator;
+      handleLoginSuccess(user.username, user.role, user.fullName);
+    } else {
+      setCurrentView('login');
+    }
+  };
+
+  const activeTheme = getStoredThemeForUser(session.username);
 
   return (
     <div className={darkMode ? 'dark' : ''}>
@@ -93,11 +114,19 @@ export default function App() {
           darkMode={darkMode}
           onToggleDarkMode={() => setDarkMode(!darkMode)}
         />
+      ) : currentView === 'landing' ? (
+        <LandingPage
+          onEnterPortal={handleEnterPortal}
+          darkMode={darkMode}
+          onToggleDarkMode={() => setDarkMode(!darkMode)}
+          currentTheme={activeTheme}
+        />
       ) : (
         <LoginModule
           onLoginSuccess={handleLoginSuccess}
           darkMode={darkMode}
           onToggleDarkMode={() => setDarkMode(!darkMode)}
+          onBackToLanding={() => setCurrentView('landing')}
         />
       )}
     </div>

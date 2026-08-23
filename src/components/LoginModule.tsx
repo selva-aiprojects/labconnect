@@ -19,9 +19,10 @@ interface LoginModuleProps {
   onLoginSuccess: (username: string, role: LimsRole, fullName: string) => void;
   darkMode: boolean;
   onToggleDarkMode: () => void;
+  onBackToLanding?: () => void;
 }
 
-export function LoginModule({ onLoginSuccess, darkMode, onToggleDarkMode }: LoginModuleProps) {
+export function LoginModule({ onLoginSuccess, darkMode, onToggleDarkMode, onBackToLanding }: LoginModuleProps) {
   const savedTheme = getStoredThemeForUser();
   const [lang, setLang] = useState<SupportedLanguage>('en');
   const t = TRANSLATIONS[lang];
@@ -505,12 +506,23 @@ export function LoginModule({ onLoginSuccess, darkMode, onToggleDarkMode }: Logi
               </div>
             </div>
 
-            {/* Support info with progressive disclosure modal */}
-            <div className="text-center">
+            {/* Support info and Back to Landing link */}
+            <div className="flex items-center justify-center gap-4 text-xs font-bold text-zinc-500 dark:text-zinc-400">
+              {onBackToLanding && (
+                <button
+                  onClick={onBackToLanding}
+                  className="hover:text-indigo-600 dark:hover:text-indigo-400 hover:underline cursor-pointer"
+                >
+                  &larr; Back to Home
+                </button>
+              )}
+
+              {onBackToLanding && <span>•</span>}
+
               <button
                 id="btn-trigger-support"
                 onClick={() => setIsSupportOpen(true)}
-                className="text-xs text-zinc-500 dark:text-zinc-400 hover:text-indigo-600 dark:hover:text-indigo-400 font-bold inline-flex items-center gap-1 hover:underline cursor-pointer"
+                className="hover:text-indigo-600 dark:hover:text-indigo-400 inline-flex items-center gap-1 hover:underline cursor-pointer"
               >
                 <HelpCircle className="h-4 w-4" />
                 <span>{t.supportHelp}</span>
