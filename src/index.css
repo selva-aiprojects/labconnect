@@ -1,0 +1,149 @@
+@import "tailwindcss";
+
+@variant dark (.dark &);
+
+:root {
+  --custom-sidebar-bg: #1e1b4b;
+  --custom-sidebar-text: #c7d2fe;
+  --custom-sidebar-active-bg: #3c3bb6;
+  --custom-sidebar-active-text: #ffffff;
+  --custom-sidebar-hover-bg: #2e2a72;
+  --custom-top-header-bg: #ffffff;
+  --custom-top-header-text: #0f172a;
+  --custom-site-bg: #f8fafc;
+  --custom-card-bg: #ffffff;
+  --custom-text-color: #0f172a;
+  --custom-text-muted: #64748b;
+  --custom-primary: #3c3bb6;
+  --custom-border: #e2e8f0;
+  --custom-font-size-base: 15px;
+}
+
+/* Global Custom Theme Rules */
+[data-custom-theme="enabled"] {
+  font-size: var(--custom-font-size-base);
+  color: var(--custom-text-color);
+  background-color: var(--custom-site-bg);
+}
+
+[data-custom-theme="enabled"] body {
+  background-color: var(--custom-site-bg);
+  color: var(--custom-text-color);
+}
+
+/* Screen background overrides */
+[data-custom-theme="enabled"] .bg-white,
+[data-custom-theme="enabled"] .dark\:bg-zinc-900,
+[data-custom-theme="enabled"] [class*="bg-white"],
+[data-custom-theme="enabled"] [class*="dark:bg-zinc-900"] {
+  background-color: var(--custom-card-bg) !important;
+}
+
+[data-custom-theme="enabled"] .bg-zinc-50,
+[data-custom-theme="enabled"] .bg-zinc-50\/50,
+[data-custom-theme="enabled"] .dark\:bg-zinc-950,
+[data-custom-theme="enabled"] .dark\:bg-zinc-950\/50,
+[data-custom-theme="enabled"] [class*="bg-zinc-50"],
+[data-custom-theme="enabled"] [class*="dark:bg-zinc-950"] {
+  background-color: var(--custom-site-bg) !important;
+}
+
+/* Text color overrides across all selected pages/screens */
+[data-custom-theme="enabled"] .text-zinc-900,
+[data-custom-theme="enabled"] .text-zinc-800,
+[data-custom-theme="enabled"] .text-zinc-700,
+[data-custom-theme="enabled"] .dark\:text-zinc-100,
+[data-custom-theme="enabled"] .dark\:text-zinc-200,
+[data-custom-theme="enabled"] .dark\:text-zinc-50,
+[data-custom-theme="enabled"] .dark\:text-zinc-300 {
+  color: var(--custom-text-color) !important;
+}
+
+[data-custom-theme="enabled"] .text-zinc-500,
+[data-custom-theme="enabled"] .text-zinc-400,
+[data-custom-theme="enabled"] .dark\:text-zinc-400,
+[data-custom-theme="enabled"] .dark\:text-zinc-500 {
+  color: var(--custom-text-muted) !important;
+}
+
+/* Primary accent text overrides */
+[data-custom-theme="enabled"] .text-\[\#3c3bb6\],
+[data-custom-theme="enabled"] .text-indigo-600,
+[data-custom-theme="enabled"] .text-indigo-700,
+[data-custom-theme="enabled"] .dark\:text-indigo-400 {
+  color: var(--custom-primary) !important;
+}
+
+/* Border overrides */
+[data-custom-theme="enabled"] .border-zinc-200,
+[data-custom-theme="enabled"] .border-zinc-200\/60,
+[data-custom-theme="enabled"] .border-zinc-100,
+[data-custom-theme="enabled"] .border-zinc-150,
+[data-custom-theme="enabled"] .dark\:border-zinc-800,
+[data-custom-theme="enabled"] .dark\:border-zinc-700 {
+  border-color: var(--custom-border) !important;
+}
+
+/* Sidebar Navigation Buttons */
+.sidebar-nav-btn {
+  transition: background-color 0.15s ease-in-out, color 0.15s ease-in-out;
+}
+
+.sidebar-nav-btn:hover {
+  background-color: var(--custom-sidebar-hover-bg, rgba(255, 255, 255, 0.12)) !important;
+}
+
+/* Data Grid & Table Customization Overrides */
+[data-custom-theme="enabled"] table {
+  border-collapse: separate !important;
+  border-spacing: 0 !important;
+}
+
+[data-custom-theme="enabled"] table th,
+[data-custom-theme="enabled"] table thead,
+[data-custom-theme="enabled"] table thead tr,
+[data-custom-theme="enabled"] .grid-header {
+  background-color: var(--custom-grid-header-bg) !important;
+  color: var(--custom-grid-header-text) !important;
+}
+
+/* Curved Left & Right Edges for Grid Headers */
+[data-custom-theme="enabled"] table thead tr th:first-child,
+[data-custom-theme="enabled"] table thead tr td:first-child,
+[data-custom-theme="enabled"] .grid-header-first {
+  border-top-left-radius: var(--custom-grid-header-radius, 12px) !important;
+  border-bottom-left-radius: var(--custom-grid-header-radius, 12px) !important;
+}
+
+[data-custom-theme="enabled"] table thead tr th:last-child,
+[data-custom-theme="enabled"] table thead tr td:last-child,
+[data-custom-theme="enabled"] .grid-header-last {
+  border-top-right-radius: var(--custom-grid-header-radius, 12px) !important;
+  border-bottom-right-radius: var(--custom-grid-header-radius, 12px) !important;
+}
+
+/* Grid Lines & Table Borders */
+[data-custom-theme="enabled"] table td,
+[data-custom-theme="enabled"] table th,
+[data-custom-theme="enabled"] .grid-border,
+[data-custom-theme="enabled"] .divide-y > * {
+  border-color: var(--custom-grid-border-color) !important;
+}
+
+/* Alternate Rows Color (Zebra Striping) */
+[data-custom-theme="enabled"] table tbody tr:nth-child(even),
+[data-custom-theme="enabled"] .grid-row-even {
+  background-color: var(--custom-grid-alt-row-bg) !important;
+}
+
+[data-custom-theme="enabled"] table tbody tr:nth-child(odd),
+[data-custom-theme="enabled"] .grid-row-odd {
+  background-color: var(--custom-card-bg) !important;
+}
+
+/* Row Hover Effect */
+[data-custom-theme="enabled"] table tbody tr:hover,
+[data-custom-theme="enabled"] .grid-row-hover:hover {
+  background-color: var(--custom-grid-row-hover-bg) !important;
+}
+
