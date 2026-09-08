@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { Truck, Mail, Smartphone, Printer, Check, RefreshCw, Send, Share2, ClipboardCheck, Eye } from 'lucide-react';
 import { Patient } from '../types/lims_app';
 import { LabReport } from './LabReport';
@@ -17,6 +17,7 @@ export function DispatchView({ patients }: DispatchViewProps) {
   const [dispatchStatus, setDispatchStatus] = useState<Record<string, { email: boolean, sms: boolean, print: boolean }>>({});
   const [sendingChannel, setSendingChannel] = useState<'email' | 'sms' | 'print' | null>(null);
   const [previewOpen, setPreviewOpen] = useState(false);
+  const printableReportRef = useRef<HTMLDivElement>(null);
 
   // Completed or Reported patients are ready for dispatch
   const readyPatients = patients.filter(p => p.status === 'Completed');
@@ -54,9 +55,9 @@ export function DispatchView({ patients }: DispatchViewProps) {
       alert('Please allow pop-ups to print the report.');
       return;
     }
-    const reportEl = document.getElementById('lab-report-printable');
+    const reportEl = printableReportRef.current;
     if (!reportEl) return;
-    printWindow.document.write(`
+    const printMarkup = `
       <html><head><title>Lab Report - ${activePatient?.name}</title>
       <style>
         body { font-family: Arial, Helvetica, sans-serif; margin: 24px; color: #18181b; }
@@ -66,12 +67,14 @@ export function DispatchView({ patients }: DispatchViewProps) {
         .report-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px; }
         h1 { color: #3c3bb6; margin: 0; font-size: 22px; }
       </style></head><body>
-    `);
-    printWindow.document.write(reportEl.innerHTML);
-    printWindow.document.write('</body></html>');
+    ${reportEl.innerHTML}</body></html>`;
+    printWindow.onload = () => {
+      printWindow.focus();
+      printWindow.print();
+    };
+    printWindow.document.open();
+    printWindow.document.write(printMarkup);
     printWindow.document.close();
-    printWindow.focus();
-    setTimeout(() => printWindow.print(), 300);
   };
 
   // A blank, white-styled report for print (no Tailwind dependency)
@@ -393,7 +396,7 @@ export function DispatchView({ patients }: DispatchViewProps) {
             <div className="flex-1 overflow-y-auto p-6">
               <LabReport patient={activePatient} />
               <div className="hidden">
-                {renderPrintable(activePatient)}
+                <div ref={printableReportRef}>{renderPrintable(activePatient)}</div>
               </div>
             </div>
           </div>

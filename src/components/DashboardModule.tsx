@@ -42,6 +42,22 @@ interface DashboardModuleProps {
   onToggleDarkMode: () => void;
 }
 
+function createBarcodeSvg(value: string) {
+  let x = 12;
+  const bars: string[] = [];
+
+  for (const character of value) {
+    const bits = character.charCodeAt(0).toString(2).padStart(8, '0');
+    for (const bit of bits) {
+      const width = bit === '1' ? 3 : 1;
+      bars.push(`<rect x="${x}" y="8" width="${width}" height="58" fill="#111827"/>`);
+      x += width + 1;
+    }
+  }
+
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${x + 12} 82" width="100%" height="82" role="img" aria-label="Barcode ${value}">${bars.join('')}<text x="${(x + 12) / 2}" y="79" text-anchor="middle" font-family="Arial, sans-serif" font-size="10">${value}</text></svg>`;
+}
+
 const INITIAL_PATIENTS: Patient[] = [
   {
     id: '01',
@@ -194,6 +210,12 @@ const INITIAL_PATIENTS: Patient[] = [
         barcodeNo: 'BAR-33212',
         remarks: 'Sample processed'
       }
+    ],
+    collectionDttm: '05 May 2025, 10:42 AM',
+    testResults: [
+      { name: 'Fasting Plasma Glucose', value: '92', unit: 'mg/dL', reference: '70 - 100', flag: 'N' },
+      { name: 'Post Prandial Glucose', value: '128', unit: 'mg/dL', reference: '80 - 140', flag: 'N' },
+      { name: 'HbA1c', value: '5.6', unit: '%', reference: '< 5.7', flag: 'N' }
     ]
   },
   {
@@ -347,6 +369,12 @@ const INITIAL_PATIENTS: Patient[] = [
         barcodeNo: 'BAR-44919',
         remarks: 'All parameters normal'
       }
+    ],
+    collectionDttm: '05 May 2025, 09:27 AM',
+    testResults: [
+      { name: 'TSH', value: '2.1', unit: 'mIU/L', reference: '0.4 - 4.0', flag: 'N' },
+      { name: 'Free T4', value: '1.2', unit: 'ng/dL', reference: '0.8 - 1.8', flag: 'N' },
+      { name: 'Free T3', value: '3.1', unit: 'pg/mL', reference: '2.3 - 4.2', flag: 'N' }
     ]
   },
   {
@@ -449,6 +477,15 @@ const INITIAL_PATIENTS: Patient[] = [
         barcodeNo: 'BAR-66712',
         remarks: 'BUN high'
       }
+    ],
+    collectionDttm: '05 May 2025, 08:44 AM',
+    testResults: [
+      { name: 'Urea', value: '52', unit: 'mg/dL', reference: '15 - 45', flag: 'H' },
+      { name: 'Creatinine', value: '1.0', unit: 'mg/dL', reference: '0.7 - 1.3', flag: 'N' },
+      { name: 'Uric Acid', value: '5.2', unit: 'mg/dL', reference: '3.4 - 7.0', flag: 'N' },
+      { name: 'Sodium', value: '139', unit: 'mmol/L', reference: '135 - 145', flag: 'N' },
+      { name: 'Potassium', value: '4.2', unit: 'mmol/L', reference: '3.5 - 5.1', flag: 'N' },
+      { name: 'Chloride', value: '102', unit: 'mmol/L', reference: '98 - 107', flag: 'N' }
     ]
   },
   {
@@ -807,8 +844,56 @@ export function DashboardModule({
     setTimeout(() => setToastMessage(null), 3000);
   };
 
-  // Print Barcode simulated pipeline
+  // Print a browser-generated specimen label that can be saved as PDF.
   const handlePrintBarcode = (id: string, bookingNo: string) => {
+    const patient = patients.find(p => p.id === id);
+    const printWindow = window.open('', '_blank', 'width=520,height=420');
+    if (!printWindow) {
+      setToastMessage('Please allow pop-ups to print the specimen label.');
+      return;
+    }
+
+    const barcodeSvg = createBarcodeSvg(bookingNo);
+    printWindow.onload = () => {
+      printWindow.focus();
+      printWindow.print();
+    };
+    printWindow.document.open();
+    printWindow.document.write(`
+      <html>
+        <head>
+          <title>Specimen Label - ${bookingNo}</title>
+          <style>
+            @page { size: 100mm 60mm; margin: 0; }
+            * { box-sizing: border-box; }
+            body { margin: 0; padding: 8mm; width: 100mm; min-height: 60mm; font-family: Arial, Helvetica, sans-serif; color: #111827; }
+            .label { border: 1px solid #111827; padding: 10px; }
+            .brand { font-size: 11px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
+            .patient { margin-top: 8px; font-size: 16px; font-weight: 700; }
+            .meta { display: grid; grid-template-columns: 1fr 1fr; gap: 4px 12px; margin-top: 6px; font-size: 10px; }
+            .meta strong { display: block; font-size: 8px; color: #6b7280; text-transform: uppercase; }
+            svg { display: block; margin-top: 10px; }
+            .footer { margin-top: 4px; font-size: 8px; color: #6b7280; text-align: center; }
+          </style>
+        </head>
+        <body>
+          <div class="label">
+            <div class="brand">Cybe LabConnect | Specimen Label</div>
+            <div class="patient">${patient?.name || 'Registered Patient'}</div>
+            <div class="meta">
+              <div><strong>Patient ID</strong>${patient?.patientId || 'Not recorded'}</div>
+              <div><strong>Booking</strong>${bookingNo}</div>
+              <div><strong>Panel</strong>${patient?.testPanel || 'Laboratory testing'}</div>
+              <div><strong>Sample</strong>${patient?.servicesList?.[0]?.sample || 'Specimen'}</div>
+            </div>
+            ${barcodeSvg}
+            <div class="footer">Scan barcode to retrieve this specimen in LIMS</div>
+          </div>
+        </body>
+      </html>
+    `);
+    printWindow.document.close();
+
     setIsPrinting(id);
     setToastMessage(`Spooling barcode thermal label for MRN: ${bookingNo}...`);
     setTimeout(() => {
