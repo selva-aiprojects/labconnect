@@ -9,7 +9,7 @@ import {
   Printer, Plus, Users, BarChart3, Search, Bell, AlertTriangle, 
   Layers, Clock, Filter, Sparkles, Check, RefreshCw, Smartphone,
   Sun, Moon, MapPin, ChevronDown, ChevronLeft, ChevronRight, UserPlus,
-  Building2, ClipboardList, ExternalLink, Home, Calendar, DollarSign,
+  Building2, ClipboardList, ExternalLink, Home, Calendar,
   ShieldCheck, Truck, Menu, X, ShieldAlert, Cpu, Palette, Scale, Dna, Terminal
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';

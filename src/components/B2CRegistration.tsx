@@ -6,7 +6,7 @@
 import * as React from 'react';
 import { useState, useMemo } from 'react';
 import { 
-  UserPlus, Plus, Sparkles, DollarSign, HeartPulse, Receipt, UserCheck, 
+  UserPlus, Plus, Sparkles, IndianRupee, HeartPulse, Receipt, UserCheck,
   Search, Trash2, ChevronRight, ChevronLeft, Calendar, Clock, Check, 
   CheckCircle2, X, Printer, Info, ShieldCheck, Building2, ClipboardList,
   ExternalLink, User, Layers, ArrowRight, Save
@@ -71,7 +71,7 @@ const DEFAULT_COMPANIES = [
     vatNo: 'VAT-NX-554',
     terms: 'Net 30',
     creditLimit: '50000',
-    currency: 'AED',
+    currency: 'INR',
     isActive: true,
     contactPerson: 'James Wilson',
     designation: 'Relationship Manager',
@@ -105,7 +105,7 @@ const DEFAULT_COMPANIES = [
     vatNo: 'VAT-AP-221',
     terms: 'Net 15',
     creditLimit: '30000',
-    currency: 'AED',
+    currency: 'INR',
     isActive: true,
     contactPerson: 'Dr. Amit Patel',
     designation: 'Clinical Director',
@@ -139,7 +139,7 @@ const DEFAULT_COMPANIES = [
     vatNo: 'VAT-MAX-331',
     terms: 'Net 45',
     creditLimit: '100000',
-    currency: 'AED',
+    currency: 'INR',
     isActive: true,
     contactPerson: 'Sarah Jenkins',
     designation: 'Operations Lead',
@@ -1523,7 +1523,7 @@ export function B2CRegistration({ patients, onRegister, onCancel }: B2CRegistrat
                         <div key={service.code} className="p-2.5 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800/80 rounded-xl flex items-center justify-between text-xs hover:border-indigo-300 dark:hover:border-indigo-700 transition-colors">
                           <div className="min-w-0 pr-2 text-left">
                             <span className="font-bold text-zinc-800 dark:text-zinc-150 block truncate" title={service.name}>{service.name}</span>
-                            <span className="text-[9px] text-zinc-400 font-mono block mt-0.5">{service.code} &bull; CPT {service.cptCode} &bull; AED {service.unitPrice}</span>
+                            <span className="text-[9px] text-zinc-400 font-mono block mt-0.5">{service.code} &bull; CPT {service.cptCode} &bull; ₹{service.unitPrice}</span>
                           </div>
                           <button
                             type="button"
@@ -1564,8 +1564,8 @@ export function B2CRegistration({ patients, onRegister, onCancel }: B2CRegistrat
                       <th className="px-4 py-3">Service Name</th>
                       <th className="px-4 py-3">Category</th>
                       <th className="px-4 py-3 text-center">Quantity</th>
-                      <th className="px-4 py-3 text-right">Unit Price (AED)</th>
-                      <th className="px-4 py-3 text-right">Gross Amount (AED)</th>
+                      <th className="px-4 py-3 text-right">Unit Price (INR)</th>
+                      <th className="px-4 py-3 text-right">Gross Amount (INR)</th>
                       <th className="px-4 py-3 text-center">Action</th>
                     </tr>
                   </thead>
@@ -1629,7 +1629,7 @@ export function B2CRegistration({ patients, onRegister, onCancel }: B2CRegistrat
                   </select>
                 </div>
                 <div className="space-y-1">
-                  <label className="text-[10px] font-bold text-zinc-400 uppercase">Discount ({discountType === 'Percentage' ? '%' : 'AED'})</label>
+                  <label className="text-[10px] font-bold text-zinc-400 uppercase">Discount ({discountType === 'Percentage' ? '%' : 'INR'})</label>
                   <input 
                     type="text" 
                     value={discountPercent}
@@ -1677,7 +1677,7 @@ export function B2CRegistration({ patients, onRegister, onCancel }: B2CRegistrat
                 <div className="grid grid-cols-2 sm:grid-cols-5 gap-4 flex-1 text-center sm:text-left">
                   <div>
                     <span className="block text-[9px] uppercase font-bold text-zinc-400">Gross Amount</span>
-                    <span className="text-sm font-black font-mono">AED {grossAmount.toFixed(2)}</span>
+                    <span className="text-sm font-black font-mono">₹{grossAmount.toFixed(2)}</span>
                   </div>
                   <div>
                     <span className="block text-[9px] uppercase font-bold text-zinc-400">Discount ({discountPercent}%)</span>
@@ -1685,15 +1685,15 @@ export function B2CRegistration({ patients, onRegister, onCancel }: B2CRegistrat
                   </div>
                   <div>
                     <span className="block text-[9px] uppercase font-bold text-zinc-400">Insured Amount</span>
-                    <span className="text-sm font-black font-mono">AED 0.00</span>
+                    <span className="text-sm font-black font-mono">₹0.00</span>
                   </div>
                   <div>
                     <span className="block text-[9px] uppercase font-bold text-zinc-400">Patient Payable</span>
-                    <span className="text-sm font-black font-mono text-indigo-400">AED {netAmount.toFixed(2)}</span>
+                    <span className="text-sm font-black font-mono text-indigo-400">₹{netAmount.toFixed(2)}</span>
                   </div>
                   <div>
                     <span className="block text-[9px] uppercase font-bold text-zinc-400">Net Amount</span>
-                    <span className="text-base font-black font-mono text-white">AED {netAmount.toFixed(2)}</span>
+                    <span className="text-base font-black font-mono text-white">₹{netAmount.toFixed(2)}</span>
                   </div>
                 </div>
 
@@ -1789,7 +1789,7 @@ export function B2CRegistration({ patients, onRegister, onCancel }: B2CRegistrat
                     />
                   </div>
                   <div className="space-y-1">
-                    <label className="text-[10px] font-bold text-zinc-400 uppercase">Co-Pay (AED)</label>
+                    <label className="text-[10px] font-bold text-zinc-400 uppercase">Co-Pay (INR)</label>
                     <input 
                       type="text" 
                       value={insuranceCoPay}
@@ -1803,7 +1803,7 @@ export function B2CRegistration({ patients, onRegister, onCancel }: B2CRegistrat
               {/* 2. Payment Mode Tabs */}
               <div className="bg-zinc-50/50 dark:bg-zinc-950/20 p-5 rounded-2xl border border-zinc-150 dark:border-zinc-800/60 space-y-4">
                 <h4 className="text-[11px] font-black uppercase tracking-wider text-indigo-600 dark:text-indigo-400 flex items-center gap-1.5 border-b pb-2">
-                  <DollarSign className="h-4 w-4" /> 2. Payment Mode
+                  <IndianRupee className="h-4 w-4" /> 2. Payment Mode
                 </h4>
 
                 <div className="grid grid-cols-1 sm:grid-cols-12 gap-5 items-start">
@@ -1829,7 +1829,7 @@ export function B2CRegistration({ patients, onRegister, onCancel }: B2CRegistrat
                   {/* Tab panel contents */}
                   <div className="sm:col-span-9 grid grid-cols-1 sm:grid-cols-3 gap-4 animate-fade-in">
                     <div className="space-y-1">
-                      <label className="text-[10px] font-bold text-zinc-400 uppercase">Tendered (AED)</label>
+                      <label className="text-[10px] font-bold text-zinc-400 uppercase">Tendered (INR)</label>
                       <input 
                         type="text" 
                         value={cashTendered}
@@ -1838,7 +1838,7 @@ export function B2CRegistration({ patients, onRegister, onCancel }: B2CRegistrat
                       />
                     </div>
                     <div className="space-y-1">
-                      <label className="text-[10px] font-bold text-zinc-400 uppercase">Collected (AED)</label>
+                      <label className="text-[10px] font-bold text-zinc-400 uppercase">Collected (INR)</label>
                       <input 
                         type="text" 
                         readOnly 
@@ -1847,7 +1847,7 @@ export function B2CRegistration({ patients, onRegister, onCancel }: B2CRegistrat
                       />
                     </div>
                     <div className="space-y-1">
-                      <label className="text-[10px] font-bold text-zinc-400 uppercase">Change (AED)</label>
+                      <label className="text-[10px] font-bold text-zinc-400 uppercase">Change (INR)</label>
                       <div className="p-2.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/20 border border-emerald-100 dark:border-emerald-900/30 text-emerald-700 dark:text-emerald-400 font-bold font-mono text-center text-xs">
                         {cashChange.toFixed(2)}
                       </div>
@@ -1898,7 +1898,7 @@ export function B2CRegistration({ patients, onRegister, onCancel }: B2CRegistrat
                   </div>
 
                   <div className="space-y-1">
-                    <label className="text-[10px] font-bold text-zinc-400 uppercase">Discount Amt (AED)</label>
+                    <label className="text-[10px] font-bold text-zinc-400 uppercase">Discount Amt (INR)</label>
                     <input 
                       type="text" 
                       readOnly 
@@ -1927,7 +1927,7 @@ export function B2CRegistration({ patients, onRegister, onCancel }: B2CRegistrat
               {/* Billing details block */}
               <div className="bg-zinc-50/50 dark:bg-zinc-950/20 p-5 rounded-2xl border border-zinc-150 dark:border-zinc-800/60 space-y-4">
                 <h4 className="text-[11px] font-black uppercase tracking-wider text-indigo-600 dark:text-indigo-400 flex items-center gap-1.5 border-b pb-2">
-                  <Receipt className="h-4 w-4" /> 4. Billing Summary (AED)
+                  <Receipt className="h-4 w-4" /> 4. Billing Summary (INR)
                 </h4>
 
                 <div className="space-y-3.5 text-xs text-zinc-600 dark:text-zinc-400 font-medium">
@@ -2144,7 +2144,7 @@ export function B2CRegistration({ patients, onRegister, onCancel }: B2CRegistrat
                 </table>
 
                 <div className="text-[11px] font-bold text-zinc-500 border-t pt-3 text-right">
-                  Gross Amount: <span className="font-mono text-zinc-900 dark:text-zinc-100">AED {grossAmount.toFixed(2)}</span> &bull; Discount: <span className="font-mono text-rose-500">AED {discountValue.toFixed(2)}</span> &bull; Net Amount: <span className="font-mono text-indigo-600 dark:text-indigo-400 text-sm font-black">AED {netAmount.toFixed(2)}</span>
+                  Gross Amount: <span className="font-mono text-zinc-900 dark:text-zinc-100">₹{grossAmount.toFixed(2)}</span> &bull; Discount: <span className="font-mono text-rose-500">₹{discountValue.toFixed(2)}</span> &bull; Net Amount: <span className="font-mono text-indigo-600 dark:text-indigo-400 text-sm font-black">₹{netAmount.toFixed(2)}</span>
                 </div>
               </div>
 
@@ -2155,7 +2155,7 @@ export function B2CRegistration({ patients, onRegister, onCancel }: B2CRegistrat
               
               <div className="bg-zinc-50/50 dark:bg-zinc-950/20 p-5 rounded-2xl border border-zinc-150 dark:border-zinc-800/60 space-y-4">
                 <h4 className="text-[11px] font-black uppercase tracking-wider text-indigo-600 dark:text-indigo-400 flex items-center gap-1.5 border-b pb-2">
-                  <Receipt className="h-4 w-4" /> Billing Summary (AED)
+                  <Receipt className="h-4 w-4" /> Billing Summary (INR)
                 </h4>
 
                 <div className="space-y-2.5 text-xs text-zinc-600 dark:text-zinc-400 font-medium">
@@ -2193,9 +2193,9 @@ export function B2CRegistration({ patients, onRegister, onCancel }: B2CRegistrat
 
                 <div className="space-y-2 text-xs text-zinc-600 dark:text-zinc-400 font-semibold text-left">
                   <p>Payment Mode: <span className="text-zinc-950 dark:text-zinc-100 font-bold">{paymentMode}</span></p>
-                  <p>Cash Tendered: <span className="text-zinc-950 dark:text-zinc-100 font-mono font-bold">AED {cashTendered}</span></p>
-                  <p>Cash Collected: <span className="text-zinc-950 dark:text-zinc-100 font-mono font-bold">AED {netAmount.toFixed(2)}</span></p>
-                  <p>Change: <span className="text-emerald-600 dark:text-emerald-400 font-mono font-bold">AED {cashChange.toFixed(2)}</span></p>
+                  <p>Cash Tendered: <span className="text-zinc-950 dark:text-zinc-100 font-mono font-bold">₹{cashTendered}</span></p>
+                  <p>Cash Collected: <span className="text-zinc-950 dark:text-zinc-100 font-mono font-bold">₹{netAmount.toFixed(2)}</span></p>
+                  <p>Change: <span className="text-emerald-600 dark:text-emerald-400 font-mono font-bold">₹{cashChange.toFixed(2)}</span></p>
                   <p>Receipt No: <span className="text-indigo-600 dark:text-indigo-400 font-bold font-mono">{generatedReceiptNo}</span></p>
                 </div>
               </div>
@@ -2413,7 +2413,7 @@ export function B2CRegistration({ patients, onRegister, onCancel }: B2CRegistrat
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1">
-                  <label className="text-[10px] font-bold text-zinc-400 uppercase">Unit Price (AED) *</label>
+                  <label className="text-[10px] font-bold text-zinc-400 uppercase">Unit Price (INR) *</label>
                   <input 
                     type="number" 
                     step="0.01"

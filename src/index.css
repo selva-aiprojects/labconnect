@@ -2,6 +2,28 @@
 
 @variant dark (.dark &);
 
+.report-label {
+  display: block;
+  margin-bottom: 0.2rem;
+  color: #64748b;
+  font-size: 0.58rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.lab-report strong {
+  color: #193f55;
+  font-size: 0.76rem;
+}
+
+@media print {
+  .lab-report {
+    border: 0;
+    box-shadow: none;
+  }
+}
+
 :root {
   --custom-sidebar-bg: #1e1b4b;
   --custom-sidebar-text: #c7d2fe;

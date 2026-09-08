@@ -112,7 +112,7 @@ export function SchemaGenerator({
             id="schema-context-textarea"
             value={prompt}
             onChange={(e) => onPromptChange(e.target.value)}
-            placeholder="e.g., List of 3 high-performance electric mountain bikes under $8000"
+            placeholder="e.g., List of 3 high-performance electric mountain bikes under ₹8000"
             rows={2}
             className="w-full bg-zinc-950 text-zinc-100 placeholder-zinc-500 text-xs rounded-xl border border-zinc-800 p-3 focus:outline-none focus:ring-1 focus:ring-indigo-500 resize-none font-sans"
           />

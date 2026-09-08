@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { 
   X, MessageSquare, Printer, Edit, Edit2, Trash2, Check, FileText, 
-  Send, User, Phone, MapPin, Calendar, DollarSign, CheckCircle2, FileDown
+  Send, User, Phone, MapPin, Calendar, CheckCircle2, FileDown
 } from 'lucide-react';
 import { Patient } from '../types/lims_app';
 

@@ -8,7 +8,7 @@ import { useState } from 'react';
 import { 
   UserPlus, Users, FlaskConical, ShieldCheck, Truck, RotateCw, 
   Search, Calendar, Database, Clipboard, Printer, Check, RefreshCw, 
-  Home, FileText, DollarSign, ChevronRight, ExternalLink, X, CheckCircle,
+  Home, FileText, IndianRupee, ChevronRight, ExternalLink, X, CheckCircle,
   BarChart3
 } from 'lucide-react';
 import { Patient } from '../types/lims_app';
@@ -538,7 +538,7 @@ export function DashboardHome({
                 onClick={() => handleActionClick('patient-list')}
                 className="w-full text-left py-3 text-xs font-bold text-zinc-700 dark:text-zinc-300 hover:text-indigo-600 dark:hover:text-indigo-400 flex items-center gap-3 group transition-colors cursor-pointer"
               >
-                <DollarSign className="h-4 w-4 text-zinc-400 group-hover:text-indigo-600 dark:group-hover:text-indigo-400" />
+                <IndianRupee className="h-4 w-4 text-zinc-400 group-hover:text-indigo-600 dark:group-hover:text-indigo-400" />
                 <span>Due Clearance</span>
               </button>
 

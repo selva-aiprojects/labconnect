@@ -8,7 +8,7 @@ import {
   Dna, Scale, Cpu, ShieldCheck, Activity, ArrowRight, CheckCircle2, 
   Sparkles, Zap, Layers, BarChart3, Database, Lock, Globe, Terminal, 
   FileSpreadsheet, Check, ChevronRight, Play, Sun, Moon, ArrowUpRight, 
-  FlaskConical, Truck, Users, Clock, ShieldAlert, DollarSign, Calculator, 
+  FlaskConical, Truck, Users, Clock, ShieldAlert, Calculator,
   ChevronDown, ExternalLink, HeartPulse, Building2, Smartphone
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
@@ -78,7 +78,7 @@ export function LandingPage({
       metrics: [
         { label: 'Rejection Drop', val: '-95% Reduction' },
         { label: 'Fill Accuracy', val: '0.1mm Laser' },
-        { label: 'Reagent Savings', val: '$42k / year' }
+        { label: 'Reagent Savings', val: '₹42k / year' }
       ]
     },
     {

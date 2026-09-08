@@ -5,7 +5,7 @@
 
 import { useState } from 'react';
 import { 
-  DollarSign, TrendingUp, TrendingDown, ArrowUpRight, ArrowDownRight, 
+  IndianRupee, TrendingUp, TrendingDown, ArrowUpRight, ArrowDownRight,
   Building2, ShieldAlert, CheckCircle2, AlertTriangle, FileSpreadsheet, 
   Calendar, Layers, Clock, Filter, Sparkles, RefreshCw, BarChart3, 
   PieChart, CreditCard, ChevronRight, Lock, Unlock, HelpCircle, Download, 
@@ -236,19 +236,19 @@ export function RevenueDashboardView({ currentTheme, darkMode }: RevenueDashboar
               Gross Billed Revenue
             </span>
             <div className="h-7 w-7 rounded-lg bg-indigo-50 dark:bg-indigo-950/40 text-indigo-600 flex items-center justify-center">
-              <DollarSign className="h-4 w-4" />
+              <IndianRupee className="h-4 w-4" />
             </div>
           </div>
           <div className="flex items-baseline gap-2">
             <span className="text-2xl font-black font-mono tracking-tight" style={{ color: currentTheme.textColor }}>
-              $482,910
+              ₹482,910
             </span>
             <span className="text-[11px] font-bold text-emerald-600 flex items-center">
               <ArrowUpRight className="h-3 w-3" /> +14.2%
             </span>
           </div>
           <p className="text-[10px]" style={{ color: currentTheme.textMutedColor }}>
-            Net Realized: <strong className="font-mono text-zinc-900 dark:text-zinc-100">$451,200</strong> (Discounts: $31.7k)
+            Net Realized: <strong className="font-mono text-zinc-900 dark:text-zinc-100">₹451,200</strong> (Discounts: ₹31.7k)
           </p>
         </div>
 
@@ -267,14 +267,14 @@ export function RevenueDashboardView({ currentTheme, darkMode }: RevenueDashboar
           </div>
           <div className="flex items-baseline gap-2">
             <span className="text-2xl font-black font-mono tracking-tight text-amber-600 dark:text-amber-400">
-              $124,650
+              ₹124,650
             </span>
             <span className="text-[11px] font-bold text-emerald-600 flex items-center">
               DSO: 28.4 Days
             </span>
           </div>
           <p className="text-[10px]" style={{ color: currentTheme.textMutedColor }}>
-            Target &le; 32 Days • Past Due &gt; 60d: <span className="font-bold text-rose-600">$8,420</span>
+            Target &le; 32 Days • Past Due &gt; 60d: <span className="font-bold text-rose-600">₹8,420</span>
           </p>
         </div>
 
@@ -293,14 +293,14 @@ export function RevenueDashboardView({ currentTheme, darkMode }: RevenueDashboar
           </div>
           <div className="flex items-baseline gap-2">
             <span className="text-2xl font-black font-mono tracking-tight text-zinc-900 dark:text-zinc-100">
-              $78,240
+              ₹78,240
             </span>
             <span className="text-[11px] font-bold text-blue-600">
               DPO: 51.0 Days
             </span>
           </div>
           <p className="text-[10px]" style={{ color: currentTheme.textMutedColor }}>
-            Reagent Leases: <strong className="font-mono text-zinc-900 dark:text-zinc-100">$26.4k</strong> • Early Disc: <strong className="text-emerald-600">+$1.8k</strong>
+            Reagent Leases: <strong className="font-mono text-zinc-900 dark:text-zinc-100">₹26.4k</strong> • Early Disc: <strong className="text-emerald-600">+₹1.8k</strong>
           </p>
         </div>
 
@@ -412,25 +412,25 @@ export function RevenueDashboardView({ currentTheme, darkMode }: RevenueDashboar
                       <tr className="hover:bg-zinc-50 dark:hover:bg-zinc-850">
                         <td className="py-3 px-3 font-bold">Central Reference Lab Hub</td>
                         <td className="py-3 px-3 font-mono">24,850</td>
-                        <td className="py-3 px-3 font-mono font-bold text-zinc-900 dark:text-zinc-100">$278,400</td>
-                        <td className="py-3 px-3 font-mono text-rose-600">$138,200</td>
-                        <td className="py-3 px-3 font-mono font-black text-emerald-600">+$140,200</td>
+                        <td className="py-3 px-3 font-mono font-bold text-zinc-900 dark:text-zinc-100">₹278,400</td>
+                        <td className="py-3 px-3 font-mono text-rose-600">₹138,200</td>
+                        <td className="py-3 px-3 font-mono font-black text-emerald-600">+₹140,200</td>
                         <td className="py-3 px-3 text-right font-black text-emerald-600">50.4%</td>
                       </tr>
                       <tr className="hover:bg-zinc-50 dark:hover:bg-zinc-850">
                         <td className="py-3 px-3 font-bold">Satellite Hospital Lab Metro-A</td>
                         <td className="py-3 px-3 font-mono">11,200</td>
-                        <td className="py-3 px-3 font-mono font-bold text-zinc-900 dark:text-zinc-100">$124,100</td>
-                        <td className="py-3 px-3 font-mono text-rose-600">$74,800</td>
-                        <td className="py-3 px-3 font-mono font-black text-emerald-600">+$49,300</td>
+                        <td className="py-3 px-3 font-mono font-bold text-zinc-900 dark:text-zinc-100">₹124,100</td>
+                        <td className="py-3 px-3 font-mono text-rose-600">₹74,800</td>
+                        <td className="py-3 px-3 font-mono font-black text-emerald-600">+₹49,300</td>
                         <td className="py-3 px-3 text-right font-black text-emerald-600">39.7%</td>
                       </tr>
                       <tr className="hover:bg-zinc-50 dark:hover:bg-zinc-850">
                         <td className="py-3 px-3 font-bold">Satellite Hospital Lab Metro-B</td>
                         <td className="py-3 px-3 font-mono">7,400</td>
-                        <td className="py-3 px-3 font-mono font-bold text-zinc-900 dark:text-zinc-100">$80,410</td>
-                        <td className="py-3 px-3 font-mono text-rose-600">$51,200</td>
-                        <td className="py-3 px-3 font-mono font-black text-emerald-600">+$29,210</td>
+                        <td className="py-3 px-3 font-mono font-bold text-zinc-900 dark:text-zinc-100">₹80,410</td>
+                        <td className="py-3 px-3 font-mono text-rose-600">₹51,200</td>
+                        <td className="py-3 px-3 font-mono font-black text-emerald-600">+₹29,210</td>
                         <td className="py-3 px-3 text-right font-black text-emerald-600">36.3%</td>
                       </tr>
                     </tbody>
@@ -454,7 +454,7 @@ export function RevenueDashboardView({ currentTheme, darkMode }: RevenueDashboar
                   <div className="p-3.5 rounded-2xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 flex items-center justify-between">
                     <div>
                       <span className="text-[10px] font-extrabold uppercase text-zinc-400 block">30-Day Net Cash Flow</span>
-                      <span className="text-base font-black text-emerald-600 font-mono">+$84,200</span>
+                      <span className="text-base font-black text-emerald-600 font-mono">+₹84,200</span>
                     </div>
                     <span className="text-[10px] font-bold bg-emerald-100 text-emerald-800 px-2 py-1 rounded-md">Healthy</span>
                   </div>
@@ -462,7 +462,7 @@ export function RevenueDashboardView({ currentTheme, darkMode }: RevenueDashboar
                   <div className="p-3.5 rounded-2xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 flex items-center justify-between">
                     <div>
                       <span className="text-[10px] font-extrabold uppercase text-zinc-400 block">60-Day Net Cash Flow</span>
-                      <span className="text-base font-black text-emerald-600 font-mono">+$162,800</span>
+                      <span className="text-base font-black text-emerald-600 font-mono">+₹162,800</span>
                     </div>
                     <span className="text-[10px] font-bold bg-emerald-100 text-emerald-800 px-2 py-1 rounded-md">Optimal</span>
                   </div>
@@ -506,27 +506,27 @@ export function RevenueDashboardView({ currentTheme, darkMode }: RevenueDashboar
             <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 text-center font-mono">
               <div className="p-3.5 rounded-2xl bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800">
                 <span className="text-[10px] font-extrabold uppercase text-emerald-700 dark:text-emerald-400 block">Current (0-30d)</span>
-                <span className="text-lg font-black text-emerald-800 dark:text-emerald-200 mt-1 block">$82,410</span>
+                <span className="text-lg font-black text-emerald-800 dark:text-emerald-200 mt-1 block">₹82,410</span>
                 <span className="text-[9px] text-emerald-600">66.1% of AR</span>
               </div>
               <div className="p-3.5 rounded-2xl bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800">
                 <span className="text-[10px] font-extrabold uppercase text-blue-700 dark:text-blue-400 block">31-60 Days</span>
-                <span className="text-lg font-black text-blue-800 dark:text-blue-200 mt-1 block">$24,300</span>
+                <span className="text-lg font-black text-blue-800 dark:text-blue-200 mt-1 block">₹24,300</span>
                 <span className="text-[9px] text-blue-600">19.5% of AR</span>
               </div>
               <div className="p-3.5 rounded-2xl bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800">
                 <span className="text-[10px] font-extrabold uppercase text-amber-700 dark:text-amber-400 block">61-90 Days</span>
-                <span className="text-lg font-black text-amber-800 dark:text-amber-200 mt-1 block">$9,520</span>
+                <span className="text-lg font-black text-amber-800 dark:text-amber-200 mt-1 block">₹9,520</span>
                 <span className="text-[9px] text-amber-600">7.6% of AR</span>
               </div>
               <div className="p-3.5 rounded-2xl bg-orange-50 dark:bg-orange-950/30 border border-orange-200 dark:border-orange-800">
                 <span className="text-[10px] font-extrabold uppercase text-orange-700 dark:text-orange-400 block">91-120 Days</span>
-                <span className="text-lg font-black text-orange-800 dark:text-orange-200 mt-1 block">$5,100</span>
+                <span className="text-lg font-black text-orange-800 dark:text-orange-200 mt-1 block">₹5,100</span>
                 <span className="text-[9px] text-orange-600">4.1% of AR</span>
               </div>
               <div className="p-3.5 rounded-2xl bg-rose-50 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-800">
                 <span className="text-[10px] font-extrabold uppercase text-rose-700 dark:text-rose-400 block">&gt; 120 Days (Delinquent)</span>
-                <span className="text-lg font-black text-rose-800 dark:text-rose-200 mt-1 block">$3,320</span>
+                <span className="text-lg font-black text-rose-800 dark:text-rose-200 mt-1 block">₹3,320</span>
                 <span className="text-[9px] text-rose-600">Auto-Locked</span>
               </div>
             </div>
@@ -551,24 +551,24 @@ export function RevenueDashboardView({ currentTheme, darkMode }: RevenueDashboar
                   <tr className="hover:bg-zinc-50 dark:hover:bg-zinc-850">
                     <td className="py-3 px-3 font-bold">Apollo Hospitals Enterprise</td>
                     <td className="py-3 px-3"><span className="px-2 py-0.5 rounded-md bg-indigo-50 text-indigo-700 font-bold text-[10px]">Corporate B2B</span></td>
-                    <td className="py-3 px-3 font-mono">$50,000</td>
-                    <td className="py-3 px-3 font-mono font-bold text-zinc-900 dark:text-zinc-100">$28,400</td>
+                    <td className="py-3 px-3 font-mono">₹50,000</td>
+                    <td className="py-3 px-3 font-mono font-bold text-zinc-900 dark:text-zinc-100">₹28,400</td>
                     <td className="py-3 px-3"><span className="text-emerald-600 font-bold">● Current (18 Days DSO)</span></td>
                     <td className="py-3 px-3 text-right"><span className="text-emerald-600 font-bold text-[11px] flex items-center justify-end gap-1"><Unlock className="h-3 w-3" /> Active</span></td>
                   </tr>
                   <tr className="hover:bg-zinc-50 dark:hover:bg-zinc-850">
                     <td className="py-3 px-3 font-bold">Max Healthcare Diagnostic Network</td>
                     <td className="py-3 px-3"><span className="px-2 py-0.5 rounded-md bg-indigo-50 text-indigo-700 font-bold text-[10px]">Corporate B2B</span></td>
-                    <td className="py-3 px-3 font-mono">$35,000</td>
-                    <td className="py-3 px-3 font-mono font-bold text-amber-600">$32,800</td>
+                    <td className="py-3 px-3 font-mono">₹35,000</td>
+                    <td className="py-3 px-3 font-mono font-bold text-amber-600">₹32,800</td>
                     <td className="py-3 px-3"><span className="text-amber-600 font-bold">● Warning: 93% Limit Used</span></td>
                     <td className="py-3 px-3 text-right"><span className="text-amber-600 font-bold text-[11px] flex items-center justify-end gap-1"><AlertTriangle className="h-3 w-3" /> Alert Triggered</span></td>
                   </tr>
                   <tr className="hover:bg-zinc-50 dark:hover:bg-zinc-850">
                     <td className="py-3 px-3 font-bold">Metro Health Clinics Group</td>
                     <td className="py-3 px-3"><span className="px-2 py-0.5 rounded-md bg-purple-50 text-purple-700 font-bold text-[10px]">Clinic Network</span></td>
-                    <td className="py-3 px-3 font-mono">$10,000</td>
-                    <td className="py-3 px-3 font-mono font-bold text-rose-600">$11,400</td>
+                    <td className="py-3 px-3 font-mono">₹10,000</td>
+                    <td className="py-3 px-3 font-mono font-bold text-rose-600">₹11,400</td>
                     <td className="py-3 px-3"><span className="text-rose-600 font-bold">● Exceeded Limit &gt; 60 Days</span></td>
                     <td className="py-3 px-3 text-right"><span className="text-rose-600 font-black text-[11px] flex items-center justify-end gap-1"><Lock className="h-3 w-3" /> Auto-Locked (CIA Only)</span></td>
                   </tr>
@@ -642,12 +642,12 @@ export function RevenueDashboardView({ currentTheme, darkMode }: RevenueDashboar
                     <div className="pt-2 border-t border-zinc-200 dark:border-zinc-800 grid grid-cols-2 gap-2 text-xs font-mono">
                       <div>
                         <span className="text-[9px] uppercase text-zinc-400 block">CPRR Rate</span>
-                        <span className="font-black text-zinc-800 dark:text-zinc-200">${contract.cprrRate.toFixed(2)} / test</span>
+                        <span className="font-black text-zinc-800 dark:text-zinc-200">₹{contract.cprrRate.toFixed(2)} / test</span>
                       </div>
                       <div>
                         <span className="text-[9px] uppercase text-zinc-400 block">Downtime Credit</span>
                         <span className={`font-black ${contract.downtimeCreditDue > 0 ? 'text-rose-600' : 'text-zinc-400'}`}>
-                          -${contract.downtimeCreditDue.toFixed(2)}
+                          -₹{contract.downtimeCreditDue.toFixed(2)}
                         </span>
                       </div>
                     </div>
@@ -703,9 +703,9 @@ export function RevenueDashboardView({ currentTheme, darkMode }: RevenueDashboar
                         <span className="text-[10px] font-mono text-zinc-400">{item.bookingNo}</span>
                       </td>
                       <td className="py-3 px-3 text-zinc-700 dark:text-zinc-300 font-medium">{item.testPanel}</td>
-                      <td className="py-3 px-3 font-mono">${item.grossAmount.toFixed(2)}</td>
+                      <td className="py-3 px-3 font-mono">₹{item.grossAmount.toFixed(2)}</td>
                       <td className="py-3 px-3 font-mono font-bold text-rose-600">
-                        -${item.discountAmount.toFixed(2)} ({item.discountPercent}%)
+                        -₹{item.discountAmount.toFixed(2)} ({item.discountPercent}%)
                       </td>
                       <td className="py-3 px-3">
                         <span className="px-2 py-0.5 rounded-md bg-zinc-100 dark:bg-zinc-800 text-[10px] font-bold text-zinc-700 dark:text-zinc-300">
