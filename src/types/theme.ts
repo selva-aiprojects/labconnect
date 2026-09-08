@@ -12,7 +12,7 @@ export interface CustomTheme {
   sidebarHoverBg: string;         // Sidebar item hover background color
   logoVariant?: 'full' | 'horizontal' | 'icon'; // Logo style variant
   logoPlacement?: 'left' | 'center' | 'right';  // Logo alignment placement
-  logoAccentColor?: string;       // Custom Erba Teal/Accent color
+  logoAccentColor?: string;       // Custom Brand Accent color
   topHeaderBg: string;            // Top navigation bar background
   topHeaderTextColor: string;     // Top navigation text/icon color
   siteBg: string;                 // Main workspace site background

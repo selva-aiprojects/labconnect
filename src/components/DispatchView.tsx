@@ -4,8 +4,9 @@
  */
 
 import { useState } from 'react';
-import { Truck, Mail, Smartphone, Printer, Check, RefreshCw, Send, Share2, ClipboardCheck } from 'lucide-react';
+import { Truck, Mail, Smartphone, Printer, Check, RefreshCw, Send, Share2, ClipboardCheck, Eye } from 'lucide-react';
 import { Patient } from '../types/lims_app';
+import { LabReport } from './LabReport';
 
 interface DispatchViewProps {
   patients: Patient[];
@@ -15,6 +16,7 @@ export function DispatchView({ patients }: DispatchViewProps) {
   const [selectedId, setSelectedId] = useState<string>('');
   const [dispatchStatus, setDispatchStatus] = useState<Record<string, { email: boolean, sms: boolean, print: boolean }>>({});
   const [sendingChannel, setSendingChannel] = useState<'email' | 'sms' | 'print' | null>(null);
+  const [previewOpen, setPreviewOpen] = useState(false);
 
   // Completed or Reported patients are ready for dispatch
   const readyPatients = patients.filter(p => p.status === 'Completed');
@@ -45,6 +47,105 @@ export function DispatchView({ patients }: DispatchViewProps) {
       alert(message);
     }, 800);
   };
+
+  const handlePrintReport = () => {
+    const printWindow = window.open('', '_blank', 'width=900,height=1100');
+    if (!printWindow) {
+      alert('Please allow pop-ups to print the report.');
+      return;
+    }
+    const reportEl = document.getElementById('lab-report-printable');
+    if (!reportEl) return;
+    printWindow.document.write(`
+      <html><head><title>Lab Report - ${activePatient?.name}</title>
+      <style>
+        body { font-family: Arial, Helvetica, sans-serif; margin: 24px; color: #18181b; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { border: 1px solid #e4e4e7; padding: 6px 8px; text-align: left; font-size: 12px; }
+        thead th { background: #f4f4f5; text-transform: uppercase; font-size: 10px; letter-spacing: 0.05em; }
+        .report-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px; }
+        h1 { color: #3c3bb6; margin: 0; font-size: 22px; }
+      </style></head><body>
+    `);
+    printWindow.document.write(reportEl.innerHTML);
+    printWindow.document.write('</body></html>');
+    printWindow.document.close();
+    printWindow.focus();
+    setTimeout(() => printWindow.print(), 300);
+  };
+
+  // A blank, white-styled report for print (no Tailwind dependency)
+  const renderPrintable = (p: Patient) => (
+    <div id="lab-report-printable" style={{ fontFamily: 'Arial, Helvetica, sans-serif', color: '#18181b' }}>
+      <div className="report-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 16, borderBottom: '3px solid #3c3bb6', paddingBottom: 12 }}>
+        <div>
+          <h1 style={{ color: '#3c3bb6', margin: 0, fontSize: 22 }}>Cybe: LabConnect</h1>
+          <p style={{ margin: '2px 0', fontSize: 11, color: '#71717a' }}>Clinical Pathology Laboratory Report</p>
+        </div>
+        <div style={{ fontSize: 11, color: '#52525b', textAlign: 'right' }}>
+          <p style={{ margin: 0 }}>Sector A-1, Pathology Hub Lab, Dubai UAE</p>
+          <p style={{ margin: 0 }}>Tel: +971 4 000 0000</p>
+        </div>
+      </div>
+
+      <div style={{ display: 'flex', justifyContent: 'space-between', gap: 8, fontSize: 11, marginBottom: 16, padding: '10px 12px', background: '#fafafa', border: '1px solid #e4e4e7', borderRadius: 6 }}>
+        <div>
+          <div><strong>Patient:</strong> {p.name}</div>
+          <div><strong>Age/Sex:</strong> {p.ageUnitStr || `${p.age} Y / ${p.gender}`}</div>
+          <div><strong>Patient ID:</strong> {p.patientId || p.bookingNo}</div>
+        </div>
+        <div style={{ textAlign: 'right' }}>
+          <div><strong>Booking:</strong> {p.bookingNo}</div>
+          <div><strong>Referred By:</strong> {p.billDetails?.doctorName || '—'}</div>
+          <div><strong>Collection:</strong> {p.collectionDttm || p.apptDttm || '—'}</div>
+        </div>
+      </div>
+
+      <h2 style={{ fontSize: 14, margin: '8px 0 8px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{p.testPanel}</h2>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Investigation</th>
+            <th style={{ textAlign: 'right' }}>Result</th>
+            <th style={{ textAlign: 'center' }}>Flag</th>
+            <th style={{ textAlign: 'center' }}>Unit</th>
+            <th style={{ textAlign: 'right' }}>Reference Range</th>
+          </tr>
+        </thead>
+        <tbody>
+          {(p.testResults || []).map((r, i) => (
+            <tr key={i} style={r.flag === 'H' || r.flag === 'L' || r.flag === 'A' ? { background: '#fef2f2' } : undefined}>
+              <td><strong>{r.name}</strong></td>
+              <td style={{ textAlign: 'right', fontWeight: 'bold', color: r.flag === 'H' || r.flag === 'L' || r.flag === 'A' ? '#e11d48' : 'inherit' }}>{r.value}</td>
+              <td style={{ textAlign: 'center', fontWeight: 'bold', color: r.flag === 'H' || r.flag === 'L' || r.flag === 'A' ? '#e11d48' : '#059669' }}>
+                {r.flag === 'H' ? 'HIGH' : r.flag === 'L' ? 'LOW' : r.flag === 'A' ? 'ABN' : 'N'}
+              </td>
+              <td style={{ textAlign: 'center' }}>{r.unit || '—'}</td>
+              <td style={{ textAlign: 'right' }}>{r.reference || '—'}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+
+      <p style={{ fontSize: 10, fontStyle: 'italic', color: '#a1a1aa', marginTop: 12 }}>
+        * Reference ranges are laboratory-specific and may vary by age, gender and methodology. This report is generated electronically and is valid without signature.
+      </p>
+
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginTop: 32 }}>
+        <div>
+          <div style={{ borderBottom: '1px solid #a1a1aa', paddingBottom: 2, minWidth: 180 }}>
+            <strong>Dr. Alistair Sterling, MD</strong>
+          </div>
+          <div style={{ fontSize: 10, color: '#71717a', marginTop: 2 }}>Consultant Pathologist</div>
+        </div>
+        <div style={{ fontSize: 10, color: '#71717a', textAlign: 'right' }}>
+          <div>Report Generated: {new Date().toLocaleString()}</div>
+          <div>Approved by Laboratory Quality Control</div>
+        </div>
+      </div>
+    </div>
+  );
 
   return (
     <div className="space-y-6">
@@ -124,7 +225,13 @@ export function DispatchView({ patients }: DispatchViewProps) {
                   <p className="text-[10px] text-zinc-400">Gender/Age: {activePatient.gender}/{activePatient.age} &bull; Contact: {activePatient.contactNo} &bull; Bill: ₹{activePatient.billingAmount}.00</p>
                 </div>
 
-                <div className="text-right">
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => setPreviewOpen(true)}
+                    className="text-[10px] uppercase font-bold text-white bg-[#3c3bb6] hover:bg-[#31309c] px-3 py-2 rounded-xl flex items-center gap-1.5 cursor-pointer shadow-md shadow-indigo-600/10"
+                  >
+                    <Eye className="h-3.5 w-3.5" /> Preview Report
+                  </button>
                   <span className="inline-flex items-center gap-1.5 text-xs text-zinc-500 font-bold bg-zinc-50 dark:bg-zinc-950 px-2.5 py-1.5 rounded-xl border border-zinc-200/50 dark:border-zinc-800/80">
                     <Check className="h-3.5 w-3.5 text-emerald-500" /> Results Sealed
                   </span>
@@ -255,6 +362,41 @@ export function DispatchView({ patients }: DispatchViewProps) {
             </div>
           )}
 
+        </div>
+      )}
+
+      {/* Report Preview Modal */}
+      {previewOpen && activePatient && (
+        <div className="fixed inset-0 bg-zinc-950/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 overflow-y-auto animate-fade-in">
+          <div className="bg-slate-50 rounded-[24px] max-w-3xl w-full max-h-[92vh] flex flex-col shadow-2xl">
+            <div className="px-6 py-4 border-b border-zinc-200 bg-white rounded-t-[24px] flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <ClipboardCheck className="h-5 w-5 text-indigo-600" />
+                <span className="text-sm font-black uppercase tracking-wider text-zinc-800">Final Report - {activePatient.name}</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={handlePrintReport}
+                  className="px-4 py-2 bg-[#3c3bb6] hover:bg-[#31309c] text-white font-extrabold text-xs rounded-xl flex items-center gap-1.5 cursor-pointer"
+                >
+                  <Printer className="h-3.5 w-3.5" /> Print PDF
+                </button>
+                <button
+                  onClick={() => setPreviewOpen(false)}
+                  className="p-2 rounded-xl bg-zinc-100 hover:bg-zinc-200 text-zinc-500 cursor-pointer"
+                >
+                  <span className="sr-only">Close</span>
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+                </button>
+              </div>
+            </div>
+            <div className="flex-1 overflow-y-auto p-6">
+              <LabReport patient={activePatient} />
+              <div className="hidden">
+                {renderPrintable(activePatient)}
+              </div>
+            </div>
+          </div>
         </div>
       )}
 

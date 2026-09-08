@@ -5,16 +5,16 @@
 
 import { useState, useEffect } from 'react';
 import { Cpu, RefreshCw, Play, CheckCircle2, AlertTriangle, Layers, Database, Sparkles } from 'lucide-react';
-import { Patient, Analyzer } from '../types/lims_app';
+import { Patient, Analyzer, TestResult } from '../types/lims_app';
 
 interface TechnicianViewProps {
   patients: Patient[];
-  onCompleteTesting: (id: string, testResults: string) => void;
+  onCompleteTesting: (id: string, testResults: TestResult[]) => void;
 }
 
 export function TechnicianView({ patients, onCompleteTesting }: TechnicianViewProps) {
   const [selectedId, setSelectedId] = useState<string>('');
-  const [activeAnalyzer, setActiveAnalyzer] = useState<string>('Erba H-560');
+  const [activeAnalyzer, setActiveAnalyzer] = useState<string>('Cybe H-560');
   const [isProcessing, setIsProcessing] = useState(false);
   const [logFeed, setLogFeed] = useState<string[]>([]);
   const [progress, setProgress] = useState(0);
@@ -22,12 +22,12 @@ export function TechnicianView({ patients, onCompleteTesting }: TechnicianViewPr
   const processingPatients = patients.filter(p => p.status === 'In Progress');
   const activePatient = patients.find(p => p.id === selectedId) || processingPatients[0];
 
-  // Erba Analyzers list
+  // Connected Analyzers list
   const analyzers: Analyzer[] = [
-    { name: 'Erba XL-200', type: 'Clinical Chemistry Suite', status: 'online', load: 68, reagentLevel: 91 },
-    { name: 'Erba XL-640', type: 'High-Throughput Biochemistry', status: 'online', load: 84, reagentLevel: 72 },
-    { name: 'Erba H-560', type: '5-Part Hematology System', status: 'online', load: 42, reagentLevel: 88 },
-    { name: 'Erba ECL-760', type: 'Automated Coagulation Analyzer', status: 'maintenance', load: 0, reagentLevel: 45 }
+    { name: 'Cybe XL-200', type: 'Clinical Chemistry Suite', status: 'online', load: 68, reagentLevel: 91 },
+    { name: 'Cybe XL-640', type: 'High-Throughput Biochemistry', status: 'online', load: 84, reagentLevel: 72 },
+    { name: 'Cybe H-560', type: '5-Part Hematology System', status: 'online', load: 42, reagentLevel: 88 },
+    { name: 'Cybe ECL-760', type: 'Automated Coagulation Analyzer', status: 'maintenance', load: 0, reagentLevel: 45 }
   ];
 
   // Simulated log steps
@@ -35,7 +35,7 @@ export function TechnicianView({ patients, onCompleteTesting }: TechnicianViewPr
     'Preparing centrifuge at 3,500 RPM...',
     'Interfacing with LIMS DB... Scanning specimen barcode ID...',
     'Aspirating specimen into reaction cup...',
-    'Adding specific Erba reagents for assay panel...',
+    'Adding specific clinical reagents for assay panel...',
     'Incubating assay at 37°C controlled temperature...',
     'Performing multi-wavelength photometric sensor sweep...',
     'Compiling clinical analyte measurements against reference controls...',
@@ -46,7 +46,7 @@ export function TechnicianView({ patients, onCompleteTesting }: TechnicianViewPr
     if (isProcessing) return;
     setIsProcessing(true);
     setProgress(0);
-    setLogFeed(['Initializing Erba Analyzer pipeline...', `Assigning specimen to ${activeAnalyzer}...`]);
+    setLogFeed(['Initializing Analyzer pipeline...', `Assigning specimen to ${activeAnalyzer}...`]);
 
     let step = 0;
     const interval = setInterval(() => {
@@ -58,15 +58,61 @@ export function TechnicianView({ patients, onCompleteTesting }: TechnicianViewPr
         clearInterval(interval);
         
         // Formulate clinical results depending on the test panel
-        let results = '';
-        if (patient.testPanel.includes('CBC')) {
-          results = 'Hemoglobin: 14.2 g/dL (Normal: 12.0-16.0) | WBC Count: 6.8 x10^3/uL (Normal: 4.0-11.0) | Platelets: 245 x10^3/uL (Normal: 150-450)';
-        } else if (patient.testPanel.includes('Glucose') || patient.testPanel.includes('HbA1c')) {
-          results = 'HbA1c: 5.6% (Normal: < 5.7%) | Fasting Plasma Glucose: 92 mg/dL (Normal: 70-100)';
-        } else if (patient.testPanel.includes('Lipid') || patient.testPanel.includes('Liver')) {
-          results = 'Total Cholesterol: 185 mg/dL (Normal: < 200) | Triglycerides: 142 mg/dL (Normal: < 150) | ALT (SGPT): 24 U/L (Normal: 7-56) | AST (SGOT): 28 U/L (Normal: 10-40)';
+        const panel = patient.testPanel;
+        let results: TestResult[] = [];
+        if (panel.includes('CBC') || panel.includes('Hemogram')) {
+          results = [
+            { name: 'Hemoglobin', value: '14.2', unit: 'g/dL', reference: '12.0 - 16.0', flag: 'N' },
+            { name: 'WBC Count', value: '6.8', unit: 'x10^3/uL', reference: '4.0 - 11.0', flag: 'N' },
+            { name: 'RBC Count', value: '4.92', unit: 'x10^6/uL', reference: '4.5 - 5.5', flag: 'N' },
+            { name: 'Platelets', value: '245', unit: 'x10^3/uL', reference: '150 - 450', flag: 'N' },
+            { name: 'MCV', value: '88.2', unit: 'fL', reference: '80 - 100', flag: 'N' },
+            { name: 'MCH', value: '28.9', unit: 'pg', reference: '27 - 33', flag: 'N' },
+            { name: 'MCHC', value: '32.8', unit: 'g/dL', reference: '31.5 - 36.5', flag: 'N' },
+            { name: 'Neutrophils', value: '58', unit: '%', reference: '40 - 70', flag: 'N' },
+            { name: 'Lymphocytes', value: '32', unit: '%', reference: '20 - 40', flag: 'N' },
+            { name: 'Eosinophils', value: '3', unit: '%', reference: '1 - 4', flag: 'N' },
+            { name: 'Monocytes', value: '6', unit: '%', reference: '2 - 8', flag: 'N' },
+            { name: 'Basophils', value: '1', unit: '%', reference: '0 - 2', flag: 'N' }
+          ];
+        } else if (panel.includes('Glucose') || panel.includes('HbA1c') || panel.includes('G.U.J')) {
+          results = [
+            { name: 'Fasting Plasma Glucose', value: '92', unit: 'mg/dL', reference: '70 - 100', flag: 'N' },
+            { name: 'Post Prandial Glucose', value: '128', unit: 'mg/dL', reference: '80 - 140', flag: 'N' },
+            { name: 'HbA1c', value: '5.6', unit: '%', reference: '< 5.7', flag: 'N' }
+          ];
+        } else if (panel.includes('Lipid') || panel.includes('Lipid Profile')) {
+          results = [
+            { name: 'Total Cholesterol', value: '185', unit: 'mg/dL', reference: '< 200', flag: 'N' },
+            { name: 'Triglycerides', value: '142', unit: 'mg/dL', reference: '< 150', flag: 'N' },
+            { name: 'HDL Cholesterol', value: '48', unit: 'mg/dL', reference: '> 40', flag: 'N' },
+            { name: 'LDL Cholesterol', value: '105', unit: 'mg/dL', reference: '< 130', flag: 'N' },
+            { name: 'VLDL Cholesterol', value: '28', unit: 'mg/dL', reference: '5 - 40', flag: 'N' }
+          ];
+        } else if (panel.includes('Liver') || panel.includes('LFT')) {
+          results = [
+            { name: 'Total Bilirubin', value: '0.8', unit: 'mg/dL', reference: '0.2 - 1.2', flag: 'N' },
+            { name: 'Direct Bilirubin', value: '0.2', unit: 'mg/dL', reference: '0.0 - 0.3', flag: 'N' },
+            { name: 'ALT (SGPT)', value: '24', unit: 'U/L', reference: '7 - 56', flag: 'N' },
+            { name: 'AST (SGOT)', value: '28', unit: 'U/L', reference: '10 - 40', flag: 'N' },
+            { name: 'Alkaline Phosphatase', value: '78', unit: 'U/L', reference: '44 - 147', flag: 'N' },
+            { name: 'Total Protein', value: '7.2', unit: 'g/dL', reference: '6.4 - 8.3', flag: 'N' },
+            { name: 'Albumin', value: '4.5', unit: 'g/dL', reference: '3.4 - 5.0', flag: 'N' }
+          ];
+        } else if (panel.includes('Kidney') || panel.includes('Renal') || panel.includes('KFT')) {
+          results = [
+            { name: 'Urea', value: '28', unit: 'mg/dL', reference: '15 - 45', flag: 'N' },
+            { name: 'Creatinine', value: '1.0', unit: 'mg/dL', reference: '0.7 - 1.3', flag: 'N' },
+            { name: 'Uric Acid', value: '5.2', unit: 'mg/dL', reference: '3.4 - 7.0', flag: 'N' },
+            { name: 'Sodium', value: '139', unit: 'mmol/L', reference: '135 - 145', flag: 'N' },
+            { name: 'Potassium', value: '4.2', unit: 'mmol/L', reference: '3.5 - 5.1', flag: 'N' },
+            { name: 'Chloride', value: '102', unit: 'mmol/L', reference: '98 - 107', flag: 'N' }
+          ];
         } else {
-          results = 'TSH Assay: 2.1 mIU/L (Normal: 0.4-4.0) | Free T4: 1.2 ng/dL (Normal: 0.8-1.8)';
+          results = [
+            { name: 'TSH Assay', value: '2.1', unit: 'mIU/L', reference: '0.4 - 4.0', flag: 'N' },
+            { name: 'Free T4', value: '1.2', unit: 'ng/dL', reference: '0.8 - 1.8', flag: 'N' }
+          ];
         }
 
         onCompleteTesting(patient.id, results);
@@ -88,7 +134,7 @@ export function TechnicianView({ patients, onCompleteTesting }: TechnicianViewPr
           </div>
           <div>
             <h2 className="text-base font-bold text-zinc-900 dark:text-zinc-100">Analyzer & Testing Bench</h2>
-            <p className="text-[11px] text-zinc-400 font-medium font-sans">Manage connected Erba clinical diagnostics, feed specimens, run calibrations, and monitor processing logs.</p>
+            <p className="text-[11px] text-zinc-400 font-medium font-sans">Manage connected clinical diagnostics, feed specimens, run calibrations, and monitor processing logs.</p>
           </div>
         </div>
 
@@ -191,9 +237,9 @@ export function TechnicianView({ patients, onCompleteTesting }: TechnicianViewPr
                     disabled={isProcessing}
                     className="bg-zinc-50 dark:bg-zinc-950 text-xs font-bold text-zinc-800 dark:text-zinc-200 border border-zinc-200 dark:border-zinc-800 px-3 py-1.5 rounded-xl cursor-pointer"
                   >
-                    <option value="Erba H-560">Erba H-560 Hematology Suite</option>
-                    <option value="Erba XL-200">Erba XL-200 Chemistry Bench</option>
-                    <option value="Erba XL-640">Erba XL-640 Chemistry Suite</option>
+                    <option value="Cybe H-560">Cybe H-560 Hematology Suite</option>
+                    <option value="Cybe XL-200">Cybe XL-200 Chemistry Bench</option>
+                    <option value="Cybe XL-640">Cybe XL-640 Chemistry Suite</option>
                   </select>
                 </div>
               </div>

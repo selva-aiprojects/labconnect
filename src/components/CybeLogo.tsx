@@ -31,8 +31,8 @@ export const CybeLogo: React.FC<CybeLogoProps> = ({
     )
   );
 
-  // Dynamic branding color tokens for Cybe: LabConnect
-  const cyanAccent = accentColor || (isDarkBg ? '#00e5d8' : '#00a39e');
+  // Dynamic branding color tokens for Cybe: LabConnect (Standard Clinical Diagnostic Palette)
+  const cyanAccent = accentColor || (isDarkBg ? '#38bdf8' : '#0284c7');
   const electricBlue = isDarkBg ? '#818cf8' : '#4f46e5';
   const primaryText = textColor || (isDarkBg ? '#ffffff' : '#0f172a');
   const secondaryText = isDarkBg ? '#94a3b8' : '#64748b';

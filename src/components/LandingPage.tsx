@@ -134,7 +134,7 @@ export function LandingPage({
   ];
 
   return (
-    <div className={`min-h-screen font-sans selection:bg-cyan-500 selection:text-white transition-colors ${
+    <div className={`min-h-screen font-sans selection:bg-blue-600 selection:text-white transition-colors ${
       darkMode ? 'bg-[#090d16] text-slate-100' : 'bg-[#f8fafc] text-slate-900'
     }`}>
       
@@ -150,16 +150,16 @@ export function LandingPage({
               variant="full" 
               size="md" 
               textColor={darkMode ? '#ffffff' : '#0f172a'} 
-              accentColor="#00e5d8" 
+              accentColor={darkMode ? '#38bdf8' : '#0284c7'} 
             />
           </div>
 
           {/* Center Links */}
           <nav className="hidden lg:flex items-center gap-8 text-xs font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-            <a href="#flagship-modules" className="hover:text-cyan-500 transition-colors">Flagship Modules</a>
-            <a href="#compliance" className="hover:text-cyan-500 transition-colors">Global Standards</a>
-            <a href="#roi-calculator" className="hover:text-cyan-500 transition-colors">ROI Calculator</a>
-            <a href="#comparison" className="hover:text-cyan-500 transition-colors">Benchmark Matrix</a>
+            <a href="#flagship-modules" className="hover:text-blue-600 dark:hover:text-sky-400 transition-colors">Flagship Modules</a>
+            <a href="#compliance" className="hover:text-blue-600 dark:hover:text-sky-400 transition-colors">Global Standards</a>
+            <a href="#roi-calculator" className="hover:text-blue-600 dark:hover:text-sky-400 transition-colors">ROI Calculator</a>
+            <a href="#comparison" className="hover:text-blue-600 dark:hover:text-sky-400 transition-colors">Benchmark Matrix</a>
           </nav>
 
           {/* Right Controls */}
@@ -176,7 +176,7 @@ export function LandingPage({
 
             <button
               onClick={() => onEnterPortal()}
-              className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-black text-white shadow-lg bg-gradient-to-r from-cyan-500 via-indigo-600 to-blue-600 hover:opacity-95 active:scale-95 transition-all cursor-pointer"
+              className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-black text-white shadow-lg bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-700 hover:opacity-95 active:scale-95 transition-all cursor-pointer"
             >
               <span>Launch Portal</span>
               <ArrowRight className="h-4 w-4" />
@@ -189,13 +189,13 @@ export function LandingPage({
       {/* 2. HERO SECTION */}
       <section className="relative pt-12 pb-24 overflow-hidden">
         {/* Background Glowing Mesh Gradients */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[550px] bg-gradient-to-b from-cyan-500/15 via-indigo-600/10 to-transparent rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[550px] bg-gradient-to-b from-blue-600/12 via-indigo-600/8 to-transparent rounded-full blur-3xl pointer-events-none" />
         <div className="absolute -top-24 -right-24 w-96 h-96 bg-blue-600/10 rounded-full blur-3xl pointer-events-none" />
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center space-y-8">
           
           {/* Release Badge */}
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-cyan-500/30 bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 text-xs font-extrabold uppercase tracking-widest animate-pulse">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-blue-500/30 bg-blue-500/10 text-blue-700 dark:text-sky-300 text-xs font-extrabold uppercase tracking-widest animate-pulse">
             <Sparkles className="h-3.5 w-3.5" />
             <span>Next-Gen Autonomous Laboratory Intelligence • v2.2 Active</span>
           </div>
@@ -204,7 +204,7 @@ export function LandingPage({
           <div className="max-w-4xl mx-auto space-y-4">
             <h1 className="text-4xl sm:text-6xl lg:text-7xl font-black tracking-tight leading-[1.08] text-slate-950 dark:text-white">
               Transforming Global Diagnostics with{' '}
-              <span className="bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 via-teal-400 to-indigo-500">
+              <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 via-sky-600 to-indigo-600 dark:from-sky-400 dark:via-blue-400 dark:to-indigo-400">
                 Autonomous Lab Intelligence.
               </span>
             </h1>
@@ -217,7 +217,7 @@ export function LandingPage({
           <div className="flex flex-wrap items-center justify-center gap-4 pt-4">
             <button
               onClick={() => onEnterPortal()}
-              className="px-8 py-4 rounded-2xl text-sm font-black text-white bg-gradient-to-r from-cyan-500 to-indigo-600 shadow-xl shadow-cyan-500/20 hover:shadow-cyan-500/35 hover:scale-[1.02] active:scale-98 transition-all flex items-center gap-3 cursor-pointer"
+              className="px-8 py-4 rounded-2xl text-sm font-black text-white bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-700 shadow-xl shadow-blue-600/25 hover:shadow-blue-600/40 hover:scale-[1.02] active:scale-98 transition-all flex items-center gap-3 cursor-pointer"
             >
               <span>Explore Live Enterprise Portal</span>
               <ArrowRight className="h-4 w-4" />
@@ -231,7 +231,7 @@ export function LandingPage({
                   : 'bg-white border-slate-200 hover:bg-slate-50 text-slate-900 shadow-sm'
               }`}
             >
-              <Activity className="h-4 w-4 text-cyan-500" />
+              <Activity className="h-4 w-4 text-blue-600 dark:text-sky-400" />
               <span>Explore 6 Flagship Pillars</span>
             </a>
           </div>
@@ -249,7 +249,7 @@ export function LandingPage({
                 key={item.label}
                 onClick={() => onEnterPortal(item.role)}
                 className={`px-3 py-1.5 rounded-lg border font-bold text-[11px] transition-all cursor-pointer ${
-                  darkMode ? 'bg-slate-900/80 border-slate-800 text-slate-300 hover:border-cyan-500' : 'bg-white border-slate-200 text-slate-700 hover:border-cyan-500'
+                  darkMode ? 'bg-slate-900/80 border-slate-800 text-slate-300 hover:border-blue-500' : 'bg-white border-slate-200 text-slate-700 hover:border-blue-500'
                 }`}
               >
                 {item.label}
@@ -260,7 +260,7 @@ export function LandingPage({
           {/* 3. FLOATING COCKPIT TELEMETRY PREVIEW */}
           <div className="pt-12 max-w-5xl mx-auto">
             <div className={`p-4 sm:p-6 rounded-3xl border shadow-2xl backdrop-blur-2xl text-left relative overflow-hidden ${
-              darkMode ? 'bg-slate-900/70 border-slate-800 shadow-cyan-500/5' : 'bg-white/90 border-slate-200 shadow-xl'
+              darkMode ? 'bg-slate-900/70 border-slate-800 shadow-blue-900/10' : 'bg-white/90 border-slate-200 shadow-xl'
             }`}>
               
               {/* Window Header */}
@@ -283,7 +283,7 @@ export function LandingPage({
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 font-mono">
                 <div className={`p-4 rounded-2xl border ${darkMode ? 'bg-slate-950/60 border-slate-800' : 'bg-slate-50 border-slate-200'}`}>
                   <span className="text-[10px] uppercase text-slate-400 font-extrabold block">Daily Throughput</span>
-                  <span className="text-2xl font-black text-cyan-400 mt-1 block">48,290</span>
+                  <span className="text-2xl font-black text-blue-600 dark:text-sky-400 mt-1 block">48,290</span>
                   <span className="text-[10px] text-emerald-500 font-sans font-bold">↑ 14% vs Target</span>
                 </div>
 
@@ -319,7 +319,7 @@ export function LandingPage({
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-16">
           
           <div className="text-center max-w-3xl mx-auto space-y-3">
-            <span className="text-xs font-black uppercase tracking-widest text-cyan-500">Core Architecture</span>
+            <span className="text-xs font-black uppercase tracking-widest text-blue-600 dark:text-sky-400">Core Architecture</span>
             <h2 className="text-3xl sm:text-5xl font-black tracking-tight text-slate-950 dark:text-white">
               6 Flagship Pillars of Autonomous Excellence
             </h2>
@@ -340,13 +340,13 @@ export function LandingPage({
                   onClick={() => setActiveModuleTab(idx)}
                   className={`p-3.5 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between gap-3 ${
                     isActive 
-                      ? 'bg-cyan-500/10 border-cyan-500 text-cyan-400 shadow-md ring-1 ring-cyan-500' 
+                      ? 'bg-blue-50 dark:bg-blue-950/50 border-blue-600 text-blue-700 dark:text-sky-300 shadow-md ring-1 ring-blue-600' 
                       : darkMode ? 'bg-slate-900/60 border-slate-800 text-slate-400 hover:border-slate-700' : 'bg-white border-slate-200 text-slate-600 hover:border-slate-300'
                   }`}
                 >
                   <div className="flex items-center justify-between">
                     <Icon className="h-5 w-5" />
-                    {isActive && <span className="h-2 w-2 rounded-full bg-cyan-400 animate-pulse" />}
+                    {isActive && <span className="h-2 w-2 rounded-full bg-blue-600 dark:bg-sky-400 animate-pulse" />}
                   </div>
                   <span className="text-xs font-bold leading-tight block text-slate-900 dark:text-white">
                     {pillar.title}
@@ -376,7 +376,7 @@ export function LandingPage({
                   <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
                     
                     <div className="lg:col-span-7 space-y-6">
-                      <div className="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-cyan-500/10 border border-cyan-500/30 text-cyan-500 font-mono text-[11px] font-bold uppercase">
+                      <div className="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-blue-50 dark:bg-blue-950/50 border border-blue-200 dark:border-blue-800 text-blue-700 dark:text-sky-400 font-mono text-[11px] font-bold uppercase">
                         {current.tag}
                       </div>
 
@@ -392,7 +392,7 @@ export function LandingPage({
                         {current.metrics.map((m, i) => (
                           <div key={i}>
                             <span className="text-[10px] font-extrabold uppercase text-slate-400 block font-mono">{m.label}</span>
-                            <span className="text-lg sm:text-xl font-black text-cyan-500 font-mono mt-0.5 block">{m.val}</span>
+                            <span className="text-lg sm:text-xl font-black text-blue-600 dark:text-sky-400 font-mono mt-0.5 block">{m.val}</span>
                           </div>
                         ))}
                       </div>
@@ -400,7 +400,7 @@ export function LandingPage({
                       <div className="pt-2">
                         <button
                           onClick={() => onEnterPortal()}
-                          className="px-6 py-3 rounded-xl text-xs font-black text-white bg-cyan-500 hover:bg-cyan-600 transition-all flex items-center gap-2 cursor-pointer"
+                          className="px-6 py-3 rounded-xl text-xs font-black text-white bg-blue-600 hover:bg-blue-700 transition-all flex items-center gap-2 cursor-pointer shadow-md shadow-blue-600/20"
                         >
                           <span>Test This Module in Live Demo</span>
                           <ArrowRight className="h-4 w-4" />
@@ -413,10 +413,10 @@ export function LandingPage({
                         darkMode ? 'bg-slate-950 border-slate-800 text-slate-300' : 'bg-slate-100 border-slate-300 text-slate-800'
                       }`}>
                         <div className="flex items-center justify-between text-slate-500 border-b border-slate-800 pb-2">
-                          <span className="flex items-center gap-1.5"><Terminal className="h-4 w-4 text-cyan-400" /> Protocol Ingress</span>
+                          <span className="flex items-center gap-1.5"><Terminal className="h-4 w-4 text-sky-400" /> Protocol Ingress</span>
                           <span className="text-emerald-400">● ACTIVE</span>
                         </div>
-                        <p className="text-cyan-400">&gt; Initializing Cybe: LabConnect pipeline...</p>
+                        <p className="text-sky-400">&gt; Initializing Cybe: LabConnect pipeline...</p>
                         <p className="text-slate-400">&gt; Target: {current.title}</p>
                         <p className="text-slate-400">&gt; Security: 21 CFR Part 11 &amp; ISO 15189 Verified</p>
                         <p className="text-emerald-400">&gt; Checksum validation: PASSED (CRC32: 0x8F4A)</p>
@@ -438,7 +438,7 @@ export function LandingPage({
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
           
           <div className="text-center space-y-3">
-            <span className="text-xs font-black uppercase tracking-widest text-cyan-500">Economic Value</span>
+            <span className="text-xs font-black uppercase tracking-widest text-blue-600 dark:text-sky-400">Economic Value</span>
             <h2 className="text-3xl sm:text-5xl font-black tracking-tight text-slate-950 dark:text-white">
               Calculate Your Laboratory ROI
             </h2>
@@ -457,7 +457,7 @@ export function LandingPage({
                 <div className="space-y-2">
                   <div className="flex justify-between text-xs font-mono font-bold">
                     <span>Monthly Test Volume</span>
-                    <span className="text-cyan-500">{sampleVolume.toLocaleString()} samples</span>
+                    <span className="text-blue-600 dark:text-sky-400">{sampleVolume.toLocaleString()} samples</span>
                   </div>
                   <input
                     type="range"
@@ -466,7 +466,7 @@ export function LandingPage({
                     step="5000"
                     value={sampleVolume}
                     onChange={(e) => setSampleVolume(Number(e.target.value))}
-                    className="w-full h-2 bg-slate-200 dark:bg-slate-800 rounded-lg appearance-none cursor-pointer accent-cyan-500"
+                    className="w-full h-2 bg-slate-200 dark:bg-slate-800 rounded-lg appearance-none cursor-pointer accent-blue-600"
                   />
                 </div>
 
@@ -523,7 +523,7 @@ export function LandingPage({
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
           
           <div className="text-center space-y-3">
-            <span className="text-xs font-black uppercase tracking-widest text-cyan-500">Statutory & Clinical Governance</span>
+            <span className="text-xs font-black uppercase tracking-widest text-blue-600 dark:text-sky-400">Statutory & Clinical Governance</span>
             <h2 className="text-3xl sm:text-4xl font-black tracking-tight text-slate-950 dark:text-white">
               Built for International Compliance
             </h2>
@@ -538,7 +538,7 @@ export function LandingPage({
                 }`}
               >
                 <div className="flex items-center gap-2">
-                  <CheckCircle2 className="h-4 w-4 text-cyan-500 shrink-0" />
+                  <CheckCircle2 className="h-4 w-4 text-blue-600 dark:text-sky-400 shrink-0" />
                   <h4 className="text-xs font-black text-slate-900 dark:text-white">{std.name}</h4>
                 </div>
                 <p className="text-[11px] text-slate-500 dark:text-slate-400 pl-6">{std.desc}</p>
@@ -565,7 +565,7 @@ export function LandingPage({
           <div className="flex items-center gap-4">
             <button
               onClick={() => onEnterPortal()}
-              className="text-xs font-bold text-cyan-500 hover:underline cursor-pointer"
+              className="text-xs font-bold text-blue-600 dark:text-sky-400 hover:underline cursor-pointer"
             >
               Sign In to Portal &rarr;
             </button>

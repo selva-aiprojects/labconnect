@@ -50,7 +50,7 @@ export function PortParityView({ currentTheme, darkMode }: PortParityViewProps) 
   const ports: AnalyzerPort[] = [
     {
       id: 'PORT-01',
-      name: 'Erba XL-640 (Clinical Chemistry)',
+      name: 'Cybe XL-640 (Clinical Chemistry)',
       type: 'Automated Photometric Analyzer',
       portType: 'RS-232 Serial (COM1)',
       baudRate: '9600, 8, N, 1 (ASTM E1381)',
@@ -63,7 +63,7 @@ export function PortParityView({ currentTheme, darkMode }: PortParityViewProps) 
     },
     {
       id: 'PORT-02',
-      name: 'Erba H-560 (5-Part Hematology)',
+      name: 'Cybe H-560 (5-Part Hematology)',
       type: 'Automated Hematology Flow Cytometry',
       portType: 'TCP/IP Socket (Port 5100)',
       baudRate: '100 Mbps (HL7 v2.5.1)',
@@ -257,7 +257,7 @@ export function PortParityView({ currentTheme, darkMode }: PortParityViewProps) 
           <div className="p-5 rounded-2xl bg-amber-50/50 dark:bg-zinc-950 border border-amber-200/50 dark:border-zinc-800 font-mono text-xs space-y-3 text-zinc-800 dark:text-zinc-300 shadow-inner">
             <div className="text-center border-b border-dashed border-zinc-300 dark:border-zinc-700 pb-2.5">
               <span className="font-extrabold text-[11px] block">{activePort.name.toUpperCase()}</span>
-              <span className="text-[10px] text-zinc-500 block">SERIAL: ERBA-XL640-9921 • FIRMWARE v4.18</span>
+              <span className="text-[10px] text-zinc-500 block">SERIAL: CYBE-XL640-9921 • FIRMWARE v4.18</span>
               <span className="text-[10px] text-zinc-500 block">{new Date().toLocaleDateString('en-GB')} {new Date().toLocaleTimeString()}</span>
             </div>
 
@@ -351,7 +351,7 @@ export function PortParityView({ currentTheme, darkMode }: PortParityViewProps) 
                 <span className="flex items-center gap-1"><Terminal className="h-3 w-3" /> Raw ASTM E1381 Serial Buffer Stream (SHA-256 Hashed)</span>
                 <span className="text-emerald-400">STATUS: &lt;ACK&gt; RECEIVED</span>
               </div>
-              <p className="text-emerald-400">H|\^&amp;|||Erba_XL640^v4.1|||||||P|1|{new Date().toISOString()}</p>
+              <p className="text-emerald-400">H|\^&amp;|||Cybe_XL640^v4.1|||||||P|1|{new Date().toISOString()}</p>
               <p className="text-zinc-300">P|1||BAR-99014||TEST^DUMMY||19900101|M|||||Dr_John_Doe</p>
               <p className="text-zinc-300">O|1|BAR-99014||^^^GLU\^^^CHOL\^^^CREAT\^^^LIPASE||{new Date().toISOString()}|||||||||Serum</p>
               <p className="text-amber-400">R|1|^^^GLU|94.2|mg/dL|70.0-99.0|N||F||||{new Date().toISOString()}</p>

@@ -117,8 +117,8 @@ export function RevenueDashboardView({ currentTheme, darkMode }: RevenueDashboar
   const leasedAnalyzers: LeaseContract[] = [
     {
       id: 'LEASE-01',
-      analyzerName: 'Erba XL-640 (Automated Biochemistry)',
-      vendor: 'Erba Mannheim GmbH',
+      analyzerName: 'Cybe XL-640 (Automated Biochemistry)',
+      vendor: 'Cybe Diagnostic Systems GmbH',
       branch: 'Central Reference Hub',
       mmcCommitted: 12000,
       currentVolume: 10850,
@@ -765,7 +765,7 @@ export function RevenueDashboardView({ currentTheme, darkMode }: RevenueDashboar
                 Reagent-to-Revenue Forensic Reconciliation Bridge
               </h3>
               <p className="text-[11px]" style={{ color: currentTheme.textMutedColor }}>
-                Reconciles physical reagent volume aspirated ($\text{mL} / \mu\text{L}$) against billed patient tests to eliminate unaccounted reagent leakage.
+                Reconciles physical reagent volume aspirated (mL / µL) against billed patient tests to eliminate unaccounted reagent leakage.
               </p>
             </div>
 

@@ -12,7 +12,7 @@ import { motion } from 'motion/react';
 import { SupportedLanguage, TRANSLATIONS, LimsRole } from '../types/lims';
 import { LanguageSelector } from './LanguageSelector';
 import { SupportModal } from './SupportModal';
-import { ErbaLogo } from './ErbaLogo';
+import { CybeLogo } from './CybeLogo';
 import { getStoredThemeForUser } from '../utils/themeUtils';
 
 interface LoginModuleProps {
@@ -190,11 +190,11 @@ export function LoginModule({ onLoginSuccess, darkMode, onToggleDarkMode, onBack
             savedTheme.logoPlacement === 'center' ? 'justify-center' :
             savedTheme.logoPlacement === 'right' ? 'justify-end' : 'justify-start'
           }`}>
-            <ErbaLogo 
+            <CybeLogo 
               variant={savedTheme.logoVariant || 'full'} 
               size="xl" 
               textColor="#f8fafc" 
-              accentColor={savedTheme.logoAccentColor || "#00e5d8"} 
+              accentColor={savedTheme.logoAccentColor || "#0284c7"} 
             />
           </div>
 
@@ -250,10 +250,10 @@ export function LoginModule({ onLoginSuccess, darkMode, onToggleDarkMode, onBack
                 savedTheme.logoPlacement === 'center' ? 'justify-center' :
                 savedTheme.logoPlacement === 'right' ? 'justify-end' : 'justify-start'
               }`}>
-                <ErbaLogo 
+                <CybeLogo 
                   variant={savedTheme.logoVariant || 'full'} 
                   size="lg" 
-                  accentColor={savedTheme.logoAccentColor || "#00a39e"} 
+                  accentColor={savedTheme.logoAccentColor || "#0284c7"} 
                 />
               </div>
             </div>

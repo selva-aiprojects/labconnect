@@ -70,7 +70,7 @@ graph TD
 | :--- | :--- | :--- |
 | **CLSI LIS01-A2 & ASTM E1381/E1394** | Serial/Network bit transmission integrity from analyzers | Raw packet buffering with CRC-32 checksums, frame delimiter verification (`<STX>`, `<ETX>`, `<CR>`, `<LF>`), and automatic baud rate parity handshakes. |
 | **IFRS 15 / US GAAP** | Accurate revenue recognition, discount accounting, and embedded leases | Dual-ledger entry for every discount: Gross Billed vs Net Realized with mandatory Cost-Center liability allocation (e.g. *Marketing / Re-run / Clinical Courtesy*). |
-| **Equipment Placement / Reagent Rental (Leasing)** | Accounting for capital equipment lent by OEMs (Roche/Erba/Abbott) | Real-time Minimum Monthly Commitment (MMC) tracking, per-test amortization calculation, and automated vendor invoice debit notes for downtime. |
+| **Equipment Placement / Reagent Rental (Leasing)** | Accounting for capital equipment lent by OEMs (Roche/Sysmex/Abbott) | Real-time Minimum Monthly Commitment (MMC) tracking, per-test amortization calculation, and automated vendor invoice debit notes for downtime. |
 | **FDA 21 CFR Part 11 & ISO 15189:2022** | Non-repudiation of analytical raw data | Raw hexadecimal and ASCII analyzer serial streams are hashed (SHA-256) and permanently stored in write-once audit storage before parsing. |
 | **Statutory Tax & Audit Readiness** | Reconciling cash collections vs bills vs reagent consumption | 1-Click Auditor Pack proving zero unbilled sample runs, tracking every milliliter of reagent to a valid billing entry or authorized non-billable reason. |
 
@@ -332,7 +332,7 @@ graph TB
 ```
 
 * **7.1 Equipment Placement, Reagent-Rental & Analyzer Leasing Engine:**
-  * **Context:** Modern laboratories rarely purchase analyzers outright; OEMs (Erba, Roche, Abbott, Sysmex) place equipment on **Reagent-Rental / Cost-per-Reportable-Result (CPRR)** contracts tied to Minimum Monthly Commitments (MMC).
+  * **Context:** Modern laboratories rarely purchase analyzers outright; OEMs (Roche, Abbott, Sysmex) place equipment on **Reagent-Rental / Cost-per-Reportable-Result (CPRR)** contracts tied to Minimum Monthly Commitments (MMC).
   * **Minimum Monthly Commitment (MMC) Tracker:**
     * Continuously monitors contracted test minimums vs actual test runs across every leased analyzer in every facility.
     * Generates automated predictive alerts before month-end if a lab is falling behind on MMC, enabling workload re-routing from overloaded central labs to underutilized leased satellite analyzers.

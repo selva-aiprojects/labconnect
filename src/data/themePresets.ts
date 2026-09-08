@@ -12,7 +12,7 @@ export const DEFAULT_THEME: CustomTheme = {
   sidebarHoverBg: '#2e2a72',
   logoVariant: 'full',
   logoPlacement: 'left',
-  logoAccentColor: '#00a39e',
+  logoAccentColor: '#0284c7',
   topHeaderBg: '#ffffff',
   topHeaderTextColor: '#0f172a',
   siteBg: '#f8fafc',

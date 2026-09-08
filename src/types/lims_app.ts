@@ -131,6 +131,17 @@ export interface Patient {
     barcodeNo: string;
     remarks: string;
   }>;
+
+  // Structured clinical results populated when the analyzer completes testing.
+  testResults?: TestResult[];
+}
+
+export interface TestResult {
+  name: string;
+  value: string;
+  unit?: string;
+  reference?: string;
+  flag?: 'L' | 'H' | 'N' | 'A' | null;
 }
 
 export interface Analyzer {

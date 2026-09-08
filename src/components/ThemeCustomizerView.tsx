@@ -6,7 +6,7 @@ import {
 import { CustomTheme, FontSizeScale } from '../types/theme';
 import { THEME_PRESETS, DEFAULT_THEME } from '../data/themePresets';
 import { getFontSizePx, getFontSizeName, saveThemeForUser } from '../utils/themeUtils';
-import { ErbaLogo } from './ErbaLogo';
+import { CybeLogo } from './CybeLogo';
 
 interface ThemeCustomizerViewProps {
   currentTheme: CustomTheme;
@@ -48,7 +48,7 @@ export function ThemeCustomizerView({
     setTheme(DEFAULT_THEME);
     saveThemeForUser(DEFAULT_THEME, username);
     onThemeUpdate(DEFAULT_THEME);
-    showToast('Theme reset to Default Erba Light configuration.');
+    showToast('Theme reset to Default Cybe Light configuration.');
   };
 
   return (
@@ -254,19 +254,19 @@ export function ThemeCustomizerView({
                     </div>
                   </div>
 
-                  {/* Erba Vector Accent Color */}
+                  {/* Logo Vector Accent Color */}
                   <div className="p-3.5 rounded-2xl border space-y-2" style={{ backgroundColor: theme.siteBg, borderColor: theme.borderColor }}>
                     <label className="text-[11px] font-bold block">Logo Accent Teal / Vector</label>
                     <div className="flex items-center gap-2">
                       <input 
                         type="color" 
-                        value={theme.logoAccentColor || '#00a39e'}
+                        value={theme.logoAccentColor || '#0284c7'}
                         onChange={(e) => handleColorChange('logoAccentColor', e.target.value)}
                         className="h-8 w-10 rounded-lg cursor-pointer border-0 bg-transparent"
                       />
                       <input 
                         type="text"
-                        value={theme.logoAccentColor || '#00a39e'}
+                        value={theme.logoAccentColor || '#0284c7'}
                         onChange={(e) => handleColorChange('logoAccentColor', e.target.value)}
                         className="w-full text-xs font-mono font-bold p-1.5 rounded-lg border uppercase"
                         style={{ backgroundColor: theme.cardBg, borderColor: theme.borderColor, color: theme.textColor }}
@@ -963,7 +963,7 @@ export function ThemeCustomizerView({
               }}
             >
               <div className="flex items-center gap-2">
-                <ErbaLogo variant="horizontal" size="sm" textColor={theme.topHeaderTextColor} accentColor={theme.primaryColor} />
+                <CybeLogo variant="horizontal" size="sm" textColor={theme.topHeaderTextColor} accentColor={theme.primaryColor} />
               </div>
               <div className="flex items-center gap-2 text-[10px]">
                 <span className="px-2 py-0.5 rounded-md font-mono" style={{ backgroundColor: theme.siteBg, color: theme.textColor }}>
@@ -998,11 +998,11 @@ export function ThemeCustomizerView({
                       theme.logoPlacement === 'center' ? 'justify-center' :
                       theme.logoPlacement === 'right' ? 'justify-end' : 'justify-start'
                     }`}>
-                      <ErbaLogo 
+                      <CybeLogo 
                         variant={theme.logoVariant || "horizontal"} 
                         size="sm" 
                         textColor={theme.sidebarHeaderTextColor || theme.sidebarTextColor} 
-                        accentColor={theme.logoAccentColor || theme.primaryColor || '#00a39e'} 
+                        accentColor={theme.logoAccentColor || theme.primaryColor || '#0284c7'} 
                       />
                     </div>
                   </div>

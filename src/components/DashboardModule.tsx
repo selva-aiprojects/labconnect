@@ -14,7 +14,7 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { LimsRole } from '../types/lims';
-import { Patient } from '../types/lims_app';
+import { Patient, TestResult } from '../types/lims_app';
 import { CustomTheme } from '../types/theme';
 import { getStoredThemeForUser, applyThemeToDocument, getFontSizePx } from '../utils/themeUtils';
 
@@ -31,7 +31,7 @@ import { ThemeCustomizerView } from './ThemeCustomizerView';
 import { RevenueDashboardView } from './RevenueDashboardView';
 import { PortParityView } from './PortParityView';
 import { MolecularPlateView } from './MolecularPlateView';
-import { ErbaLogo } from './ErbaLogo';
+import { CybeLogo } from './CybeLogo';
 
 interface DashboardModuleProps {
   username: string;
@@ -774,13 +774,13 @@ export function DashboardModule({
   };
 
   // Clinical testing completion
-  const handleCompleteTesting = (id: string, testResults: string) => {
+  const handleCompleteTesting = (id: string, testResults: TestResult[]) => {
     setPatients(prev => prev.map(p => {
       if (p.id === id) {
         return {
           ...p,
           status: 'Completed',
-          testPanel: `${p.testPanel} (${testResults})`
+          testResults
         };
       }
       return p;
@@ -869,11 +869,11 @@ export function DashboardModule({
                     currentTheme.logoPlacement === 'center' ? 'justify-center' :
                     currentTheme.logoPlacement === 'right' ? 'justify-end' : 'justify-start'
                   }`}>
-                    <ErbaLogo 
+                    <CybeLogo 
                       variant={currentTheme.logoVariant || "full"} 
                       size="md" 
                       textColor={currentTheme.sidebarHeaderTextColor || currentTheme.sidebarTextColor}
-                      accentColor={currentTheme.logoAccentColor || currentTheme.primaryColor || '#00a39e'}
+                      accentColor={currentTheme.logoAccentColor || currentTheme.primaryColor || '#0284c7'}
                     />
                   </div>
                   <button
@@ -1094,11 +1094,11 @@ export function DashboardModule({
                 title="Expand sidebar"
                 aria-label="Expand sidebar"
               >
-                <ErbaLogo 
+                <CybeLogo 
                   variant="icon" 
                   size="md" 
                   textColor={currentTheme.sidebarHeaderTextColor || currentTheme.sidebarTextColor} 
-                  accentColor={currentTheme.logoAccentColor || currentTheme.primaryColor || '#00a39e'}
+                  accentColor={currentTheme.logoAccentColor || currentTheme.primaryColor || '#0284c7'}
                 />
               </button>
             ) : (
@@ -1107,11 +1107,11 @@ export function DashboardModule({
                   currentTheme.logoPlacement === 'center' ? 'justify-center' :
                   currentTheme.logoPlacement === 'right' ? 'justify-end' : 'justify-start'
                 }`}>
-                  <ErbaLogo 
+                  <CybeLogo 
                     variant={currentTheme.logoVariant || "full"} 
                     size="md" 
                     textColor={currentTheme.sidebarHeaderTextColor || currentTheme.sidebarTextColor} 
-                    accentColor={currentTheme.logoAccentColor || currentTheme.primaryColor || '#00a39e'}
+                    accentColor={currentTheme.logoAccentColor || currentTheme.primaryColor || '#0284c7'}
                   />
                 </div>
               </div>
@@ -1361,11 +1361,11 @@ export function DashboardModule({
               <Menu className="h-5 w-5" />
             </button>
             <div className="md:hidden flex items-center">
-              <ErbaLogo 
+              <CybeLogo 
                 variant="horizontal" 
                 size="sm" 
                 textColor={currentTheme.topHeaderTextColor} 
-                accentColor={currentTheme.logoAccentColor || currentTheme.primaryColor || '#00a39e'}
+                accentColor={currentTheme.logoAccentColor || currentTheme.primaryColor || '#0284c7'}
               />
             </div>
           </div>
@@ -1408,7 +1408,7 @@ export function DashboardModule({
 
             {/* Notification bell */}
             <button 
-              onClick={() => alert('New alerts:\n- Calibration completed on Erba H-560.\n- Critical sample authorization pending.\n- Specimen 02 updated.')}
+              onClick={() => alert('New alerts:\n- Calibration completed on Cybe H-560.\n- Critical sample authorization pending.\n- Specimen 02 updated.')}
               className="relative p-2 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 rounded-xl hover:bg-zinc-50 dark:hover:bg-zinc-850 cursor-pointer shrink-0"
             >
               <Bell className="h-4.5 w-4.5" />

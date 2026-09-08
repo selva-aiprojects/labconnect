@@ -562,7 +562,7 @@ export function DashboardHome({
               Check system status or contact admin.
             </p>
             <button 
-              onClick={() => alert('Diagnostic Handshake: All Erba Mannheim analyzer pipelines are stable (latencies < 40ms).')}
+              onClick={() => alert('Diagnostic Handshake: All connected clinical analyzer pipelines are stable (latencies < 40ms).')}
               className="w-full py-2.5 bg-white dark:bg-zinc-900 border border-indigo-100 dark:border-indigo-900 hover:bg-zinc-50 dark:hover:bg-zinc-800 text-[#3c3bb6] dark:text-indigo-400 font-extrabold text-xs rounded-xl flex items-center justify-center gap-2 shadow-sm transition-all cursor-pointer border-indigo-100/30"
             >
               <span>System Status</span>
