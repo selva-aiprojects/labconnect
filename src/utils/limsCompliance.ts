@@ -47,6 +47,16 @@ export type ApprovalRecord = {
   approvedAt: string;
 };
 
+export type TraceabilityRecord = {
+  id: string;
+  instrumentId: string;
+  reagentLot: string;
+  status: 'accepted' | 'quarantined' | 'rejected';
+  reviewer: string;
+  note: string;
+  checkedAt: string;
+};
+
 export function advanceDeviationStatus(
   deviation: DeviationRecord
 ): DeviationRecord {
@@ -82,6 +92,24 @@ export function createApprovalRecord(
     rationale,
     riskLevel,
     approvedAt: new Date().toISOString()
+  };
+}
+
+export function createTraceabilityRecord(
+  instrumentId: string,
+  reagentLot: string,
+  status: 'accepted' | 'quarantined' | 'rejected',
+  reviewer: string,
+  note: string
+): TraceabilityRecord {
+  return {
+    id: `TR-${Math.random().toString(36).slice(2, 8).toUpperCase()}`,
+    instrumentId,
+    reagentLot,
+    status,
+    reviewer,
+    note,
+    checkedAt: new Date().toISOString()
   };
 }
 

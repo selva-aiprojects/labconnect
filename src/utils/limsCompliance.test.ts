@@ -1,6 +1,6 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
-import { advanceDeviationStatus, closeCapaAction, createApprovalRecord, createAuditEntry, createCapaAction, createDeviationRecord, createQualityIssuesFromResults } from './limsCompliance';
+import { advanceDeviationStatus, closeCapaAction, createApprovalRecord, createAuditEntry, createCapaAction, createDeviationRecord, createQualityIssuesFromResults, createTraceabilityRecord } from './limsCompliance';
 
 describe('lims compliance utilities', () => {
   it('creates a signed audit entry with actor, reason, and timestamp', () => {
@@ -79,5 +79,20 @@ describe('lims compliance utilities', () => {
     assert.equal(approval.patientName, 'Jane Doe');
     assert.equal(approval.riskLevel, 'low');
     assert.ok(approval.id.startsWith('APR-'));
+  });
+
+  it('creates a traceability record for instruments and reagent lots', () => {
+    const trace = createTraceabilityRecord(
+      'Analyzer A-12',
+      'LOT-2048-B',
+      'accepted',
+      'QA Technician',
+      'Reagent lot accepted after successful control checks.'
+    );
+
+    assert.equal(trace.instrumentId, 'Analyzer A-12');
+    assert.equal(trace.reagentLot, 'LOT-2048-B');
+    assert.equal(trace.status, 'accepted');
+    assert.ok(trace.id.startsWith('TR-'));
   });
 });
