@@ -1,5 +1,6 @@
+import { useState } from 'react';
 import { Activity, AlertTriangle, CheckCircle2, ClipboardCheck, ShieldAlert, TrendingUp } from 'lucide-react';
-import { createCapaAction, createDeviationRecord, createQualityIssuesFromResults } from '../utils/limsCompliance';
+import { advanceDeviationStatus, closeCapaAction, createCapaAction, createDeviationRecord, createQualityIssuesFromResults } from '../utils/limsCompliance';
 
 const qcResults = [
   { name: 'Hemoglobin', value: '9.5', unit: 'g/dL', flag: 'L' as const, reference: '12-16' },
@@ -7,20 +8,30 @@ const qcResults = [
   { name: 'Sodium', value: '140', unit: 'mmol/L', flag: 'N' as const, reference: '135-145' }
 ];
 
-const deviations = [
+const initialDeviations = [
   createDeviationRecord('QC drift observed on analyzer A-12', 'Lab Analyst', 'high', 'West control drifted beyond 2 SD for three consecutive cycles.', 'investigating'),
   createDeviationRecord('B12 result repeats outside control limits', 'QA Reviewer', 'medium', 'Repeat sample confirmation is pending for final interpretation.', 'open'),
   createDeviationRecord('Sample recollection required for serum bilirubin', 'Phlebotomy Lead', 'low', 'Specimen integrity check failed before transit.', 'resolved')
 ];
 
-const capa = [
-  createCapaAction('Recalibrate chemistry analyzer A-12', 'Biomedical Lead', 'Due in 2 days', 'in progress', deviations[0].id),
-  createCapaAction('Review specimen rejection protocol', 'Compliance Officer', 'Due in 5 days', 'planned', deviations[1].id),
-  createCapaAction('Validate reagent lot variance logs', 'QA Manager', 'Due today', 'escalated', deviations[2].id)
+const initialCapa = [
+  createCapaAction('Recalibrate chemistry analyzer A-12', 'Biomedical Lead', 'Due in 2 days', 'in progress', initialDeviations[0].id),
+  createCapaAction('Review specimen rejection protocol', 'Compliance Officer', 'Due in 5 days', 'planned', initialDeviations[1].id),
+  createCapaAction('Validate reagent lot variance logs', 'QA Manager', 'Due today', 'escalated', initialDeviations[2].id)
 ];
 
 export function QualityView() {
+  const [deviations, setDeviations] = useState(initialDeviations);
+  const [capa, setCapa] = useState(initialCapa);
   const qualityIssues = createQualityIssuesFromResults(qcResults);
+
+  const handleAdvanceDeviation = (id: string) => {
+    setDeviations(current => current.map(item => item.id === id ? advanceDeviationStatus(item) : item));
+  };
+
+  const handleCloseCapa = (id: string) => {
+    setCapa(current => current.map(item => item.id === id ? closeCapaAction(item) : item));
+  };
 
   return (
     <div className="space-y-6">
@@ -118,6 +129,13 @@ export function QualityView() {
                   <span>Owner: {item.owner}</span>
                   <span>{item.severity}</span>
                 </div>
+                <button
+                  onClick={() => handleAdvanceDeviation(item.id)}
+                  disabled={item.status === 'resolved'}
+                  className="mt-3 w-full rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 px-2.5 py-1.5 text-[9px] font-bold text-zinc-700 dark:text-zinc-200 disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  {item.status === 'open' ? 'Advance to investigation' : item.status === 'investigating' ? 'Mark as resolved' : 'Resolved'}
+                </button>
               </div>
             ))}
           </div>
@@ -147,9 +165,18 @@ export function QualityView() {
                   <td className="py-3 px-3">{item.owner}</td>
                   <td className="py-3 px-3">{item.due}</td>
                   <td className="py-3 px-3">
-                    <span className={`inline-flex rounded-full px-2 py-0.5 font-bold ${item.status === 'escalated' ? 'bg-rose-50 text-rose-600 dark:bg-rose-950/40 dark:text-rose-400' : item.status === 'in progress' ? 'bg-indigo-50 text-indigo-600 dark:bg-indigo-950/40 dark:text-indigo-400' : 'bg-amber-50 text-amber-600 dark:bg-amber-950/40 dark:text-amber-400'}`}>
-                      {item.status}
-                    </span>
+                    <div className="flex items-center gap-2">
+                      <span className={`inline-flex rounded-full px-2 py-0.5 font-bold ${item.status === 'escalated' ? 'bg-rose-50 text-rose-600 dark:bg-rose-950/40 dark:text-rose-400' : item.status === 'in progress' ? 'bg-indigo-50 text-indigo-600 dark:bg-indigo-950/40 dark:text-indigo-400' : item.status === 'closed' ? 'bg-emerald-50 text-emerald-600 dark:bg-emerald-950/40 dark:text-emerald-400' : 'bg-amber-50 text-amber-600 dark:bg-amber-950/40 dark:text-amber-400'}`}>
+                        {item.status}
+                      </span>
+                      <button
+                        onClick={() => handleCloseCapa(item.id)}
+                        disabled={item.status === 'closed'}
+                        className="rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 px-2 py-0.5 text-[9px] font-bold text-zinc-700 dark:text-zinc-200 disabled:cursor-not-allowed disabled:opacity-50"
+                      >
+                        {item.status === 'closed' ? 'Closed' : 'Close CAPA'}
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}
