@@ -55,6 +55,21 @@ export function DispatchView({ patients }: DispatchViewProps) {
     const reportEl = printableReportRef.current;
     if (!reportEl) return;
     const reportRoot = reportEl.querySelector<HTMLElement>('.lab-report') || reportEl;
+    const captureSurface = document.createElement('div');
+    const captureReport = reportRoot.cloneNode(true) as HTMLElement;
+    captureSurface.style.position = 'fixed';
+    captureSurface.style.left = '0';
+    captureSurface.style.top = '0';
+    captureSurface.style.width = '794px';
+    captureSurface.style.backgroundColor = '#ffffff';
+    captureSurface.style.zIndex = '-1';
+    captureSurface.style.pointerEvents = 'none';
+    captureReport.style.width = '794px';
+    captureReport.style.minWidth = '794px';
+    captureReport.style.maxWidth = '794px';
+    captureReport.style.margin = '0';
+    captureSurface.appendChild(captureReport);
+    document.body.appendChild(captureSurface);
     try {
       const fallbackUnsupportedColors = (value: string, fallback: string) => /oklch|oklab/i.test(value) ? fallback : value;
       const captureWidth = 794;
@@ -63,6 +78,8 @@ export function DispatchView({ patients }: DispatchViewProps) {
         scale: 2,
         width: captureWidth,
         windowWidth: captureWidth,
+        scrollX: 0,
+        scrollY: 0,
         useCORS: true,
         logging: false,
         onclone: (clonedDocument: Document) => {
@@ -90,10 +107,10 @@ export function DispatchView({ patients }: DispatchViewProps) {
       };
       let canvas;
       try {
-        canvas = await html2canvas(reportRoot, canvasOptions);
+        canvas = await html2canvas(captureReport, canvasOptions);
       } catch (renderError) {
         console.warn('Standard lab report canvas rendering failed; retrying with browser SVG rendering.', renderError);
-        canvas = await html2canvas(reportRoot, { ...canvasOptions, foreignObjectRendering: true });
+        canvas = await html2canvas(captureReport, { ...canvasOptions, foreignObjectRendering: true });
       }
       const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
       const pageWidth = 210;
@@ -129,6 +146,8 @@ export function DispatchView({ patients }: DispatchViewProps) {
     } catch (error) {
       console.error('Unable to generate the lab report PDF', error);
       alert('The PDF could not be generated. Please try again.');
+    } finally {
+      captureSurface.remove();
     }
   };
 
