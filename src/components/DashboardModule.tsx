@@ -1246,9 +1246,9 @@ export function DashboardModule({
       >
         
         {/* Sidebar Logo Header */}
-        <div>
+        <div className="flex min-h-0 flex-1 flex-col">
           <div 
-            className="px-4 py-3.5 border-b flex items-center justify-between min-h-[64px] transition-colors"
+            className="shrink-0 px-4 py-3.5 border-b flex items-center justify-between min-h-[64px] transition-colors"
             style={{ 
               backgroundColor: currentTheme.sidebarHeaderBg || currentTheme.sidebarBg,
               color: currentTheme.sidebarHeaderTextColor || currentTheme.sidebarTextColor,
