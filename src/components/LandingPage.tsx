@@ -187,57 +187,82 @@ export function LandingPage({
       </header>
 
       {/* 2. HERO SECTION */}
-      <section className="relative pt-12 pb-24 overflow-hidden">
+      <section className="relative pt-10 pb-20 overflow-hidden">
         {/* Background Glowing Mesh Gradients */}
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[550px] bg-gradient-to-b from-blue-600/12 via-indigo-600/8 to-transparent rounded-full blur-3xl pointer-events-none" />
         <div className="absolute -top-24 -right-24 w-96 h-96 bg-blue-600/10 rounded-full blur-3xl pointer-events-none" />
 
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center space-y-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           
           {/* Release Badge */}
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-blue-500/30 bg-blue-500/10 text-blue-700 dark:text-sky-300 text-xs font-extrabold uppercase tracking-widest animate-pulse">
-            <Sparkles className="h-3.5 w-3.5" />
-            <span>Next-Gen Autonomous Laboratory Intelligence • v2.2 Active</span>
-          </div>
+          <div className="grid lg:grid-cols-[1.08fr_0.92fr] gap-12 xl:gap-20 items-center">
+            <div className="text-left space-y-7">
+              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-blue-500/30 bg-blue-500/10 text-blue-700 dark:text-sky-300 text-[10px] font-extrabold uppercase tracking-[0.18em]">
+                <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+                <span>Autonomous lab intelligence / v2.2</span>
+              </div>
 
-          {/* Grand Headline */}
-          <div className="max-w-4xl mx-auto space-y-4">
-            <h1 className="text-4xl sm:text-6xl lg:text-7xl font-black tracking-tight leading-[1.08] text-slate-950 dark:text-white">
-              Transforming Global Diagnostics with{' '}
-              <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 via-sky-600 to-indigo-600 dark:from-sky-400 dark:via-blue-400 dark:to-indigo-400">
-                Autonomous Lab Intelligence.
-              </span>
-            </h1>
-            <p className="text-base sm:text-xl text-slate-600 dark:text-slate-300 max-w-3xl mx-auto leading-relaxed font-normal">
-              Zero-error pre-analytics, bit-level hardware port parity, 85% hands-off auto-validation, and real-time executive AR/AP financial reconciliation built for high-throughput diagnostic networks.
-            </p>
-          </div>
+              <div className="space-y-5">
+                <h1 className="text-4xl sm:text-6xl lg:text-[4.5rem] font-black tracking-tight leading-[0.98] text-slate-950 dark:text-white">
+                  The operating system for{' '}
+                  <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 via-sky-600 to-indigo-600 dark:from-sky-400 dark:via-blue-400 dark:to-indigo-400">
+                    trusted diagnostics.
+                  </span>
+                </h1>
+                <p className="text-base sm:text-lg text-slate-600 dark:text-slate-300 max-w-xl leading-relaxed">
+                  Connect every specimen, analyzer, approval, and financial decision in one clinical command layer built for high-throughput diagnostic networks.
+                </p>
+              </div>
 
-          {/* Hero CTAs */}
-          <div className="flex flex-wrap items-center justify-center gap-4 pt-4">
-            <button
-              onClick={() => onEnterPortal()}
-              className="px-8 py-4 rounded-2xl text-sm font-black text-white bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-700 shadow-xl shadow-blue-600/25 hover:shadow-blue-600/40 hover:scale-[1.02] active:scale-98 transition-all flex items-center gap-3 cursor-pointer"
-            >
-              <span>Explore Live Enterprise Portal</span>
-              <ArrowRight className="h-4 w-4" />
-            </button>
+              <div className="flex flex-wrap items-center gap-3">
+                <button
+                  onClick={() => onEnterPortal()}
+                  className="px-6 py-3.5 rounded-xl text-sm font-black text-white bg-blue-600 shadow-xl shadow-blue-600/25 hover:bg-blue-700 hover:shadow-blue-600/40 active:scale-98 transition-all flex items-center gap-3 cursor-pointer"
+                >
+                  <span>Enter live portal</span>
+                  <ArrowRight className="h-4 w-4" />
+                </button>
 
-            <a
-              href="#flagship-modules"
-              className={`px-8 py-4 rounded-2xl text-sm font-black border transition-all flex items-center gap-2 ${
-                darkMode 
-                  ? 'bg-slate-900/60 border-slate-800 hover:bg-slate-800 text-white' 
-                  : 'bg-white border-slate-200 hover:bg-slate-50 text-slate-900 shadow-sm'
-              }`}
-            >
-              <Activity className="h-4 w-4 text-blue-600 dark:text-sky-400" />
-              <span>Explore 6 Flagship Pillars</span>
-            </a>
+                <a
+                  href="#flagship-modules"
+                  className={`px-5 py-3.5 rounded-xl text-sm font-black border transition-all flex items-center gap-2 ${
+                    darkMode ? 'bg-slate-900/60 border-slate-800 hover:bg-slate-800 text-white' : 'bg-white border-slate-200 hover:bg-slate-50 text-slate-900 shadow-sm'
+                  }`}
+                >
+                  <Activity className="h-4 w-4 text-blue-600 dark:text-sky-400" />
+                  <span>See the system</span>
+                </a>
+              </div>
+
+              <div className="flex flex-wrap gap-x-6 gap-y-2 pt-1 text-[10px] font-extrabold uppercase tracking-wider text-slate-400">
+                <span className="flex items-center gap-1.5"><CheckCircle2 className="h-3.5 w-3.5 text-emerald-500" /> ISO 15189 ready</span>
+                <span className="flex items-center gap-1.5"><CheckCircle2 className="h-3.5 w-3.5 text-emerald-500" /> 21 CFR Part 11</span>
+                <span className="flex items-center gap-1.5"><CheckCircle2 className="h-3.5 w-3.5 text-emerald-500" /> FHIR connected</span>
+              </div>
+            </div>
+
+            <div className={`relative rounded-[2rem] border p-4 shadow-2xl rotate-1 hover:rotate-0 transition-transform duration-500 ${darkMode ? 'bg-slate-900/90 border-slate-700 shadow-blue-950/30' : 'bg-white/90 border-slate-200 shadow-slate-300/50'}`}>
+              <div className="absolute -top-3 -right-3 rounded-full bg-emerald-500 px-3 py-1 text-[9px] font-black uppercase tracking-widest text-white shadow-lg">Live system</div>
+              <div className={`rounded-[1.4rem] border p-5 ${darkMode ? 'bg-slate-950 border-slate-800' : 'bg-slate-50 border-slate-200'}`}>
+                <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-4">
+                  <div><span className="block text-[10px] font-black uppercase tracking-widest text-slate-400">Central diagnostic hub</span><span className="mt-1 block text-sm font-black text-slate-900 dark:text-white">Operations at a glance</span></div>
+                  <div className="h-9 w-9 rounded-xl bg-blue-600/10 flex items-center justify-center"><Activity className="h-4 w-4 text-blue-600 dark:text-sky-400" /></div>
+                </div>
+                <div className="grid grid-cols-2 gap-3 py-4">
+                  <div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-3"><span className="text-[9px] uppercase font-black text-slate-400">Samples today</span><strong className="mt-1 block text-2xl font-black text-slate-900 dark:text-white">48,290</strong><span className="text-[9px] font-bold text-emerald-500">+14% vs target</span></div>
+                  <div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-3"><span className="text-[9px] uppercase font-black text-slate-400">Routine TAT</span><strong className="mt-1 block text-2xl font-black text-slate-900 dark:text-white">38m</strong><span className="text-[9px] font-bold text-blue-500">-75% turnaround</span></div>
+                </div>
+                <div className="space-y-2.5 text-[10px] font-bold">
+                  <div className="flex items-center justify-between"><span className="flex items-center gap-2 text-slate-600 dark:text-slate-300"><span className="h-2 w-2 rounded-full bg-emerald-500" /> Analyzer ingress</span><span className="text-emerald-500">18 / 18 synced</span></div>
+                  <div className="flex items-center justify-between"><span className="flex items-center gap-2 text-slate-600 dark:text-slate-300"><span className="h-2 w-2 rounded-full bg-sky-500" /> Auto-validation queue</span><span className="text-sky-500">12 pending</span></div>
+                  <div className="flex items-center justify-between"><span className="flex items-center gap-2 text-slate-600 dark:text-slate-300"><span className="h-2 w-2 rounded-full bg-amber-500" /> Quality review</span><span className="text-amber-500">3 flagged</span></div>
+                </div>
+              </div>
+            </div>
           </div>
 
           {/* Quick Persona Launch Buttons */}
-          <div className="pt-6 flex flex-wrap items-center justify-center gap-2.5 text-xs">
+          <div className="pt-14 flex flex-wrap items-center justify-center gap-2.5 text-xs">
             <span className="text-slate-400 font-bold uppercase tracking-wider text-[10px]">Instant Role Demos:</span>
             {[
               { label: 'CFO Cockpit', role: 'Administrator' },
