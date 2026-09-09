@@ -53,6 +53,20 @@ export function PatientDetailsModal({
     setTimeout(() => setLocalToast(null), 3000);
   };
 
+  const openPrintableWindow = (title: string, html: string) => {
+    const printWindow = window.open('', '_blank', 'width=900,height=1100');
+    if (!printWindow) {
+      triggerToast('Please allow pop-ups to print this document.');
+      return;
+    }
+
+    printWindow.document.open();
+    printWindow.document.write(`<!DOCTYPE html><html><head><title>${title}</title><style>body{font-family:Arial,Helvetica,sans-serif;margin:28px;color:#18181b;}table{width:100%;border-collapse:collapse;}th,td{border:1px solid #e4e4e7;padding:8px 10px;text-align:left;font-size:12px;}th{background:#f4f4f5;text-transform:uppercase;letter-spacing:.05em;font-size:10px;}h1{margin:0 0 8px;font-size:24px;color:#3c3bb6;}small{color:#71717a;} .header{border-bottom:3px solid #3c3bb6;padding-bottom:12px;margin-bottom:18px;} .meta{display:grid;grid-template-columns:1fr 1fr;gap:8px 20px;font-size:12px;margin-bottom:16px;} .totals{margin-top:20px;width:260px;margin-left:auto;font-size:12px;} .totals div{display:flex;justify-content:space-between;padding:4px 0;} .grand{font-size:16px;font-weight:700;color:#3c3bb6;border-top:1px solid #d4d4d8;padding-top:8px;} .box{background:#fafafa;border:1px solid #e4e4e7;padding:12px;border-radius:8px;margin:10px 0;}</style></head><body>${html}</body></html>`);
+    printWindow.document.close();
+    printWindow.focus();
+    setTimeout(() => printWindow.print(), 250);
+  };
+
   const handleSaveBill = () => {
     if (!patient.billDetails) return;
     const net = billGross - billDiscount + billVat;
@@ -116,6 +130,34 @@ export function PatientDetailsModal({
 
   const handleBarcodeReprint = (serviceId: string, name: string) => {
     const qty = barcodeQty[serviceId] || 1;
+    const service = services.find(item => item.id === serviceId);
+
+    const printWindow = window.open('', '_blank', 'width=520,height=420');
+    if (!printWindow) {
+      triggerToast('Please allow pop-ups to reprint the barcode label.');
+      return;
+    }
+
+    const content = `
+      <div class="header">
+        <h1>Cybe LabConnect</h1>
+        <small>Specimen Label Reprint</small>
+      </div>
+      <div class="box">
+        <div><strong>Patient:</strong> ${patient.name}</div>
+        <div><strong>Service:</strong> ${service?.serviceName || name}</div>
+        <div><strong>Barcode:</strong> ${service?.barcodeNo || 'N/A'}</div>
+        <div><strong>Copies:</strong> ${qty}</div>
+      </div>
+      <div style="font-size:18px; font-weight:700; letter-spacing:2px; text-align:center; margin-top:18px;">${service?.barcodeNo || 'BARCODE'}</div>
+    `;
+
+    printWindow.document.open();
+    printWindow.document.write(`<!DOCTYPE html><html><head><title>Barcode Label - ${name}</title><style>body{font-family:Arial,Helvetica,sans-serif;margin:20px;color:#111827;} .header{border-bottom:2px solid #111827;padding-bottom:8px;margin-bottom:12px;} h1{margin:0;font-size:20px;} small{color:#6b7280;} .box{border:1px solid #111827;padding:10px;font-size:12px;line-height:1.7;} .code{font-size:18px;font-weight:700;letter-spacing:2px;text-align:center;margin-top:18px;}</style></head><body>${content}</body></html>`);
+    printWindow.document.close();
+    printWindow.focus();
+    setTimeout(() => printWindow.print(), 250);
+
     triggerToast(`Success: Barcode label regenerated with quantity ${qty} for "${name}".`);
   };
 
@@ -714,7 +756,37 @@ export function PatientDetailsModal({
               <div className="flex items-center justify-between font-sans pt-2">
                 <button 
                   onClick={() => {
-                    triggerToast(`Spooling receipt PDF to local hardware printer ...`);
+                    const receiptMarkup = `
+                      <div class="header">
+                        <h1>CYBE: LABCONNECT LIMS</h1>
+                        <small>Sector A-1, Pathology Hub Lab, Dubai UAE</small>
+                      </div>
+                      <div class="meta">
+                        <div><strong>Date:</strong> ${bill.visitDate}</div>
+                        <div><strong>Receipt:</strong> #${bill.visitId}</div>
+                        <div><strong>MRN:</strong> ${patient.mrn || 'MRN123456'}</div>
+                        <div><strong>UHID:</strong> ${patient.uhid || 'UHID123456'}</div>
+                        <div><strong>Patient:</strong> ${patient.name}</div>
+                        <div><strong>Doctor:</strong> ${bill.doctorName}</div>
+                      </div>
+                      <table>
+                        <thead>
+                          <tr><th>Particulars</th><th>Amount</th></tr>
+                        </thead>
+                        <tbody>
+                          ${services.map(service => `<tr><td>${service.serviceName}</td><td>₹${bill.gross.toFixed(2)}</td></tr>`).join('')}
+                        </tbody>
+                      </table>
+                      <div class="totals">
+                        <div><span>Gross Total</span><span>₹${bill.gross.toFixed(2)}</span></div>
+                        <div><span>Discount</span><span>-₹${bill.discount.toFixed(2)}</span></div>
+                        <div><span>VAT</span><span>₹${bill.vat.toFixed(2)}</span></div>
+                        <div class="grand"><span>Net Payable</span><span>₹${bill.netPayable.toFixed(2)}</span></div>
+                        <div><span>Collected</span><span>₹${bill.collected.toFixed(2)}</span></div>
+                        <div><span>Balance Due</span><span>₹${bill.due.toFixed(2)}</span></div>
+                      </div>
+                    `;
+                    openPrintableWindow(`Invoice Receipt - ${bill.visitId}`, receiptMarkup);
                     setPrintBillOpen(false);
                   }}
                   className="bg-[#3c3bb6] hover:bg-[#32319c] text-white px-4 py-2 rounded-xl text-[10px] font-bold uppercase flex items-center gap-1.5 cursor-pointer w-full justify-center shadow-md shadow-indigo-600/10"
@@ -762,7 +834,21 @@ export function PatientDetailsModal({
                 </button>
                 <button 
                   onClick={() => {
-                    triggerToast(`Success: Printed requisition voucher for "${printServiceOpen.serviceName}".`);
+                    const voucherMarkup = `
+                      <div class="header">
+                        <h1>Cybe LabConnect</h1>
+                        <small>Service Voucher Slip</small>
+                      </div>
+                      <div class="box">
+                        <div><strong>Service:</strong> ${printServiceOpen.serviceName}</div>
+                        <div><strong>Department:</strong> ${printServiceOpen.department}</div>
+                        <div><strong>Sample:</strong> ${printServiceOpen.sample}</div>
+                        <div><strong>Barcode:</strong> ${printServiceOpen.barcodeNo}</div>
+                        <div><strong>Status:</strong> ${printServiceOpen.status}</div>
+                      </div>
+                      <p style="font-size:11px; color:#71717a; margin-top:16px;">This voucher certifies the booking reference and directs the phlebotomy collection workflow.</p>
+                    `;
+                    openPrintableWindow(`Service Voucher - ${printServiceOpen.serviceName}`, voucherMarkup);
                     setPrintServiceOpen(null);
                   }}
                   className="bg-[#3c3bb6] hover:bg-[#32319c] text-white px-4 py-2 rounded-xl flex items-center gap-1.5 cursor-pointer"

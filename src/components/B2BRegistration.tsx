@@ -250,6 +250,87 @@ export function B2BRegistration({ patients, onRegister, onCancel }: B2BRegistrat
     return Math.max(0, tendered - netAmount);
   }, [cashTendered, netAmount]);
 
+  const handlePrintSummary = () => {
+    const printWindow = window.open('', '_blank', 'width=900,height=1100');
+    if (!printWindow) {
+      alert('Please allow pop-ups to print the invoice summary.');
+      return;
+    }
+
+    const printMarkup = `
+      <html>
+        <head>
+          <title>Invoice Summary - ${clientName}</title>
+          <style>
+            body { font-family: Arial, Helvetica, sans-serif; margin: 28px; color: #18181b; }
+            .header { border-bottom: 3px solid #3c3bb6; padding-bottom: 12px; margin-bottom: 16px; }
+            h1 { margin: 0; color: #3c3bb6; font-size: 24px; }
+            .meta { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 24px; font-size: 12px; margin: 18px 0; }
+            table { width: 100%; border-collapse: collapse; margin-top: 12px; }
+            th, td { border: 1px solid #e4e4e7; padding: 8px 10px; text-align: left; font-size: 12px; }
+            th { background: #f4f4f5; text-transform: uppercase; letter-spacing: 0.05em; font-size: 10px; }
+            .totals { margin-top: 18px; width: 260px; margin-left: auto; font-size: 12px; }
+            .totals div { display: flex; justify-content: space-between; padding: 4px 0; }
+            .grand { font-size: 16px; font-weight: 700; color: #3c3bb6; border-top: 1px solid #d4d4d8; padding-top: 8px; }
+          </style>
+        </head>
+        <body>
+          <div class="header">
+            <h1>Cybe: LabConnect</h1>
+            <div style="font-size:12px; color:#52525b; margin-top:6px;">Client Invoice Summary</div>
+          </div>
+
+          <div class="meta">
+            <div><strong>Client:</strong> ${clientName}</div>
+            <div><strong>Client Type:</strong> ${clientType}</div>
+            <div><strong>Receipt No:</strong> ${receiptNo}</div>
+            <div><strong>Transaction Date:</strong> ${transactionDttm}</div>
+            <div><strong>Payment Mode:</strong> ${paymentMode}</div>
+            <div><strong>Collection Date:</strong> ${collectionDttm}</div>
+          </div>
+
+          <table>
+            <thead>
+              <tr>
+                <th>Service</th>
+                <th>Category</th>
+                <th>Qty</th>
+                <th>Unit Price</th>
+                <th>Amount</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${selectedServices.map(service => `
+                <tr>
+                  <td>${service.name}</td>
+                  <td>${service.category}</td>
+                  <td>${service.quantity}</td>
+                  <td>₹${service.unitPrice.toFixed(2)}</td>
+                  <td>₹${(service.quantity * service.unitPrice).toFixed(2)}</td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+
+          <div class="totals">
+            <div><span>Gross Amount</span><span>₹${grossAmount.toFixed(2)}</span></div>
+            <div><span>Discount</span><span>-₹${discountValue.toFixed(2)}</span></div>
+            <div><span>Net Amount</span><span>₹${netAmount.toFixed(2)}</span></div>
+            <div><span>Cash Tendered</span><span>₹${parseFloat(cashTendered || '0').toFixed(2)}</span></div>
+            <div><span>Cash Collected</span><span>₹${parseFloat(cashCollected || '0').toFixed(2)}</span></div>
+            <div class="grand"><span>Change</span><span>₹${cashChange.toFixed(2)}</span></div>
+          </div>
+        </body>
+      </html>
+    `;
+
+    printWindow.document.open();
+    printWindow.document.write(printMarkup);
+    printWindow.document.close();
+    printWindow.focus();
+    setTimeout(() => printWindow.print(), 250);
+  };
+
   // Company Search Function
   const handleSearchCompany = () => {
     const term = searchQuery.toLowerCase().trim();
@@ -1746,7 +1827,7 @@ export function B2BRegistration({ patients, onRegister, onCancel }: B2BRegistrat
             <div className="flex gap-2">
               <button 
                 type="button" 
-                onClick={() => alert(`Invoice Summary printed:\nReceipt: ${receiptNo}\nClient: ${clientName}\nGross: ₹${grossAmount}\nNet: ₹${netAmount}`)}
+                onClick={handlePrintSummary}
                 className="px-4 py-2 bg-zinc-50 hover:bg-zinc-100 dark:bg-zinc-850 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-300 font-bold text-xs rounded-xl flex items-center gap-1"
               >
                 <Printer className="h-4 w-4" />
