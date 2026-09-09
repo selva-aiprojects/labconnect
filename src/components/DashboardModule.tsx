@@ -1287,7 +1287,10 @@ export function DashboardModule({
           </div>
 
           {/* Navigation group */}
-          <nav className={`sidebar-scrollbar flex-1 min-h-0 overflow-y-auto p-3 space-y-6 ${sidebarCollapsed ? 'px-2' : 'p-4'}`}>
+          <nav
+            className={`sidebar-scrollbar flex-1 min-h-0 overflow-y-scroll p-3 space-y-6 ${sidebarCollapsed ? 'px-2' : 'p-4'}`}
+            style={{ maxHeight: 'calc(100vh - 128px)' }}
+          >
             
             {/* General section */}
             <div className="space-y-1">

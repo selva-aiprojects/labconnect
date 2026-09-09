@@ -118,6 +118,7 @@
 .sidebar-scrollbar {
   scrollbar-width: thin;
   scrollbar-color: rgba(148, 163, 184, 0.45) transparent;
+  scrollbar-gutter: stable;
 }
 
 .sidebar-scrollbar::-webkit-scrollbar {
