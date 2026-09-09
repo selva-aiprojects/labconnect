@@ -1,6 +1,6 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
-import { advanceDeviationStatus, closeCapaAction, consumeInventoryLot, createApprovalRecord, createAuditEntry, createCapaAction, createDeviationRecord, createInventoryLot, createQualityIssuesFromResults, createTraceabilityRecord } from './limsCompliance';
+import { advanceDeviationStatus, closeCapaAction, completeCalibration, consumeInventoryLot, createApprovalRecord, createAuditEntry, createCalibrationRecord, createCapaAction, createDeviationRecord, createInventoryLot, createQualityIssuesFromResults, createTraceabilityRecord } from './limsCompliance';
 
 describe('lims compliance utilities', () => {
   it('creates a signed audit entry with actor, reason, and timestamp', () => {
@@ -114,5 +114,23 @@ describe('lims compliance utilities', () => {
     assert.equal(recovered.availableUnits, 12);
     assert.equal(lot.status, 'low-stock');
     assert.ok(new Date(lot.expiryDate || '').getTime() < Date.now());
+  });
+
+  it('records and completes instrument calibration', () => {
+    const calibration = createCalibrationRecord(
+      'ANL-A12',
+      'Cybe H-560 Chemistry Analyzer',
+      '2026-10-15T00:00:00.000Z',
+      'QA Technician',
+      'overdue',
+      '2026-04-15T00:00:00.000Z'
+    );
+    const completed = completeCalibration(calibration, '2027-04-15T00:00:00.000Z', 'QA Manager');
+
+    assert.equal(calibration.status, 'overdue');
+    assert.equal(completed.status, 'calibrated');
+    assert.equal(completed.instrumentId, 'ANL-A12');
+    assert.equal(completed.reviewer, 'QA Manager');
+    assert.ok(completed.id.startsWith('CAL-'));
   });
 });

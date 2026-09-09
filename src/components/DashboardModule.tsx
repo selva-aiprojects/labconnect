@@ -33,6 +33,7 @@ import { PortParityView } from './PortParityView';
 import { MolecularPlateView } from './MolecularPlateView';
 import { QualityView } from './QualityView';
 import { InventoryView } from './InventoryView';
+import { CalibrationView } from './CalibrationView';
 import { CybeLogo } from './CybeLogo';
 
 interface DashboardModuleProps {
@@ -1139,6 +1140,17 @@ export function DashboardModule({
                       <Database className="h-4 w-4 shrink-0" />
                       <span>Inventory & Lot Tracking</span>
                     </button>
+
+                    <button 
+                      onClick={() => { setActiveMenu('calibration'); setMobileMenuOpen(false); }}
+                      className={`w-full text-left flex items-center gap-3.5 px-4 py-2.5 rounded-xl text-xs sidebar-nav-btn cursor-pointer ${
+                        activeMenu === 'calibration' ? 'shadow-md font-black' : 'font-semibold'
+                      }`}
+                      style={getNavButtonStyle('calibration')}
+                    >
+                      <Cpu className="h-4 w-4 shrink-0" />
+                      <span>Equipment Calibration</span>
+                    </button>
                   </div>
 
                   {/* System Settings */}
@@ -1427,6 +1439,19 @@ export function DashboardModule({
                 <Database className="h-4 w-4 shrink-0" />
                 {!sidebarCollapsed && <span>Inventory & Lot Tracking</span>}
               </button>
+
+              <button 
+                id="menu-calibration"
+                onClick={() => setActiveMenu('calibration')}
+                title={sidebarCollapsed ? "Equipment Calibration" : undefined}
+                className={`w-full text-left flex items-center gap-3.5 py-2.5 rounded-xl text-xs sidebar-nav-btn cursor-pointer ${
+                  sidebarCollapsed ? 'justify-center px-2' : 'px-4'
+                } ${activeMenu === 'calibration' ? 'shadow-md font-black' : 'font-semibold'}`}
+                style={getNavButtonStyle('calibration')}
+              >
+                <Cpu className="h-4 w-4 shrink-0" />
+                {!sidebarCollapsed && <span>Equipment Calibration</span>}
+              </button>
             </div>
 
             {/* System Settings & Custom Theme */}
@@ -1679,6 +1704,10 @@ export function DashboardModule({
 
               {activeMenu === 'inventory' && (
                 <InventoryView />
+              )}
+
+              {activeMenu === 'calibration' && (
+                <CalibrationView />
               )}
 
               {activeMenu === 'patient-list' && (

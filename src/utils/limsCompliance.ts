@@ -67,6 +67,17 @@ export type InventoryLot = {
   updatedAt: string;
 };
 
+export type CalibrationRecord = {
+  id: string;
+  instrumentId: string;
+  instrumentName: string;
+  status: 'calibrated' | 'due-soon' | 'overdue' | 'out-of-service';
+  lastCalibratedAt: string;
+  nextDueAt: string;
+  reviewer: string;
+  updatedAt: string;
+};
+
 export function advanceDeviationStatus(
   deviation: DeviationRecord
 ): DeviationRecord {
@@ -169,6 +180,37 @@ export function restockInventoryLot(lot: InventoryLot, units: number): Inventory
     ...lot,
     availableUnits: nextUnits,
     status: expired ? 'expired' : nextUnits <= 5 ? 'low-stock' : 'available',
+    updatedAt: new Date().toISOString()
+  };
+}
+
+export function createCalibrationRecord(
+  instrumentId: string,
+  instrumentName: string,
+  nextDueAt: string,
+  reviewer: string,
+  status: CalibrationRecord['status'] = 'calibrated',
+  lastCalibratedAt: string = new Date().toISOString()
+): CalibrationRecord {
+  return {
+    id: `CAL-${Math.random().toString(36).slice(2, 8).toUpperCase()}`,
+    instrumentId,
+    instrumentName,
+    status,
+    lastCalibratedAt,
+    nextDueAt,
+    reviewer,
+    updatedAt: new Date().toISOString()
+  };
+}
+
+export function completeCalibration(record: CalibrationRecord, nextDueAt: string, reviewer: string): CalibrationRecord {
+  return {
+    ...record,
+    status: 'calibrated',
+    lastCalibratedAt: new Date().toISOString(),
+    nextDueAt,
+    reviewer,
     updatedAt: new Date().toISOString()
   };
 }
