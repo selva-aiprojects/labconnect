@@ -117,9 +117,16 @@ export function DispatchView({ patients }: DispatchViewProps) {
           setCaptureStyle('.report-explained-item > div:last-child', { display: 'grid', gridTemplateColumns: '180px minmax(0, 1fr) minmax(0, 1fr)' });
           const explainedSection = clonedReport.querySelector<HTMLElement>('.report-explained');
           if (explainedSection) {
-            const pageHeightCss = captureWidth * 281 / 194;
-            const remainder = pageHeightCss - (explainedSection.offsetTop % pageHeightCss);
-            if (remainder < pageHeightCss - 24) explainedSection.style.marginTop = `${remainder}px`;
+            explainedSection.style.breakBefore = 'page';
+            explainedSection.style.pageBreakBefore = 'always';
+            explainedSection.querySelectorAll<HTMLElement>('.report-explained-item').forEach((item, index) => {
+              item.style.breakInside = 'avoid';
+              item.style.pageBreakInside = 'avoid';
+              if (index > 0) {
+                item.style.breakBefore = 'page';
+                item.style.pageBreakBefore = 'always';
+              }
+            });
           }
           clonedDocument.querySelectorAll('style, link[rel="stylesheet"]').forEach(styleElement => styleElement.remove());
         }

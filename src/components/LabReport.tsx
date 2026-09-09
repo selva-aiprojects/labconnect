@@ -136,7 +136,7 @@ export function LabReport({ patient, signature, signedAt }: LabReportProps) {
       <header className="border-b-[3px] border-[#164b70] px-5 py-5 sm:px-8">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div>
-            <div className="flex items-center gap-3"><div className="flex h-10 w-10 items-center justify-center bg-[#164b70] text-white"><ShieldCheck size={22} /></div><div><p className="text-[10px] font-bold uppercase tracking-[0.22em] text-[#164b70]">Cybe LabConnect</p><h1 className="text-xl font-light tracking-tight text-[#193f55]">Your important parameters</h1></div></div>
+            <div className="flex items-center gap-3"><div className="flex h-10 w-10 shrink-0 items-center justify-center bg-[#164b70] text-white"><ShieldCheck size={22} /></div><div className="min-w-0"><p className="text-[10px] font-bold uppercase tracking-[0.22em] text-[#164b70]">Cybe LabConnect</p><h1 className="whitespace-nowrap text-xl font-light leading-tight tracking-tight text-[#193f55]">Your important parameters</h1></div></div>
             <p className="mt-2 text-xs text-slate-500">A clear summary of your laboratory results</p>
           </div>
           <div className="text-left text-[10px] leading-relaxed text-slate-500 sm:text-right"><p className="font-semibold text-slate-700">Clinical Pathology Laboratory</p><p>Sector A-1, Pathology Hub Lab, Dubai UAE</p><p>Tel: +971 4 000 0000 | lab@cybelabconnect.com</p></div>
