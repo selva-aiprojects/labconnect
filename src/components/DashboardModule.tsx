@@ -20,6 +20,7 @@ import { LabDevice, MASTER_DEVICE_REGISTRY, getEnabledDevices } from '../types/d
 import { ManagedUser, MASTER_USER_REGISTRY } from '../types/users';
 import { DoctorRecord, MASTER_DOCTOR_REGISTRY } from '../types/doctors';
 import { TechnicianRecord, MASTER_TECHNICIAN_REGISTRY } from '../types/technicians';
+import { TestMaster, MASTER_TEST_REGISTRY } from '../types/testMaster';
 import { getStoredThemeForUser, applyThemeToDocument, getFontSizePx } from '../utils/themeUtils';
 
 import { DashboardHome } from './DashboardHome';
@@ -41,6 +42,7 @@ import { CalibrationView } from './CalibrationView';
 import { DeviceMasterView } from './DeviceMasterView';
 import { UserManagementView } from './UserManagementView';
 import { MasterDataView } from './MasterDataView';
+import { TestMasterView } from './TestMasterView';
 import { CybeLogo } from './CybeLogo';
 
 interface DashboardModuleProps {
@@ -808,10 +810,12 @@ export function DashboardModule({
   const [users, setUsers] = useState<ManagedUser[]>(MASTER_USER_REGISTRY);
   const [doctors, setDoctors] = useState<DoctorRecord[]>(() => loadMasterRecords('lims.doctors', MASTER_DOCTOR_REGISTRY));
   const [technicians, setTechnicians] = useState<TechnicianRecord[]>(() => loadMasterRecords('lims.technicians', MASTER_TECHNICIAN_REGISTRY));
+  const [testMasters, setTestMasters] = useState<TestMaster[]>(() => loadMasterRecords('lims.testMasters', MASTER_TEST_REGISTRY));
 
   useEffect(() => { localStorage.setItem('lims.devices', JSON.stringify(devices)); }, [devices]);
   useEffect(() => { localStorage.setItem('lims.doctors', JSON.stringify(doctors)); }, [doctors]);
   useEffect(() => { localStorage.setItem('lims.technicians', JSON.stringify(technicians)); }, [technicians]);
+  useEffect(() => { localStorage.setItem('lims.testMasters', JSON.stringify(testMasters)); }, [testMasters]);
 
   const handleToggleDevice = (id: string) => {
     setDevices(current => current.map(device => device.id === id ? { ...device, enabled: !device.enabled } : device));
@@ -820,9 +824,11 @@ export function DashboardModule({
   const handleSaveDoctor = (record: DoctorRecord) => setDoctors(current => current.some(item => item.id === record.id) ? current.map(item => item.id === record.id ? record : item) : [...current, record]);
   const handleSaveTechnician = (record: TechnicianRecord) => setTechnicians(current => current.some(item => item.id === record.id) ? current.map(item => item.id === record.id ? record : item) : [...current, record]);
   const handleSaveDevice = (record: LabDevice) => setDevices(current => current.some(item => item.id === record.id) ? current.map(item => item.id === record.id ? record : item) : [...current, record]);
+  const handleSaveTestMaster = (record: TestMaster) => setTestMasters(current => current.some(item => item.id === record.id) ? current.map(item => item.id === record.id ? record : item) : [...current, record]);
   const handleDeleteDoctor = (id: string) => setDoctors(current => current.filter(item => item.id !== id));
   const handleDeleteTechnician = (id: string) => setTechnicians(current => current.filter(item => item.id !== id));
   const handleDeleteDevice = (id: string) => setDevices(current => current.filter(item => item.id !== id));
+  const handleDeleteTestMaster = (id: string) => setTestMasters(current => current.filter(item => item.id !== id));
 
   const handleToggleUser = (id: string) => {
     if (users.find(user => user.id === id)?.username === username) {
@@ -1257,14 +1263,23 @@ export function DashboardModule({
                       <span>Device Integration Master</span>
                     </button>
 
-                    <button
-                      onClick={() => { setActiveMenu('master-data'); setMobileMenuOpen(false); }}
-                      className={`w-full text-left flex items-center gap-3.5 px-4 py-2.5 rounded-xl text-xs sidebar-nav-btn cursor-pointer ${activeMenu === 'master-data' ? 'shadow-md font-black' : 'font-semibold'}`}
-                      style={getNavButtonStyle('master-data')}
-                    >
-                      <Users className="h-4 w-4 shrink-0" />
-                      <span>Doctor / Technician Master</span>
-                    </button>
+                     <button
+                       onClick={() => { setActiveMenu('master-data'); setMobileMenuOpen(false); }}
+                       className={`w-full text-left flex items-center gap-3.5 px-4 py-2.5 rounded-xl text-xs sidebar-nav-btn cursor-pointer ${activeMenu === 'master-data' ? 'shadow-md font-black' : 'font-semibold'}`}
+                       style={getNavButtonStyle('master-data')}
+                     >
+                       <Users className="h-4 w-4 shrink-0" />
+                       <span>Doctor / Technician Master</span>
+                     </button>
+
+                     <button
+                       onClick={() => { setActiveMenu('test-master'); setMobileMenuOpen(false); }}
+                       className={`w-full text-left flex items-center gap-3.5 px-4 py-2.5 rounded-xl text-xs sidebar-nav-btn cursor-pointer ${activeMenu === 'test-master' ? 'shadow-md font-black' : 'font-semibold'}`}
+                       style={getNavButtonStyle('test-master')}
+                     >
+                       <FlaskConical className="h-4 w-4 shrink-0" />
+                       <span>Test Master</span>
+                     </button>
 
                     <button
                       onClick={() => { setActiveMenu('user-management'); setMobileMenuOpen(false); }}
@@ -1604,6 +1619,17 @@ export function DashboardModule({
               </button>
 
               <button
+                id="menu-test-master"
+                onClick={() => setActiveMenu('test-master')}
+                title={sidebarCollapsed ? "Test Master" : undefined}
+                className={`w-full text-left flex items-center gap-3.5 py-2.5 rounded-xl text-xs sidebar-nav-btn cursor-pointer ${sidebarCollapsed ? 'justify-center px-2' : 'px-4'} ${activeMenu === 'test-master' ? 'shadow-md font-black' : 'font-semibold'}`}
+                style={getNavButtonStyle('test-master')}
+              >
+                <FlaskConical className="h-4 w-4 shrink-0" />
+                {!sidebarCollapsed && <span>Test Master</span>}
+              </button>
+
+              <button
                 id="menu-user-management"
                 onClick={() => setActiveMenu('user-management')}
                 title={sidebarCollapsed ? "User Management" : undefined}
@@ -1805,6 +1831,7 @@ export function DashboardModule({
                   patients={patients}
                   onRegister={handleAddB2CPatient}
                   onCancel={() => setActiveMenu('dashboard')}
+                  testMasters={testMasters}
                 />
               )}
 
@@ -1813,6 +1840,7 @@ export function DashboardModule({
                   patients={patients}
                   onRegister={handleAddB2BPatient}
                   onCancel={() => setActiveMenu('dashboard')}
+                  testMasters={testMasters}
                 />
               )}
 
@@ -1892,6 +1920,14 @@ export function DashboardModule({
                   onDeleteTechnician={handleDeleteTechnician}
                   onSaveDevice={handleSaveDevice}
                   onDeleteDevice={handleDeleteDevice}
+                />
+              )}
+
+              {activeMenu === 'test-master' && (
+                <TestMasterView
+                  testMasters={testMasters}
+                  onSaveTestMaster={handleSaveTestMaster}
+                  onDeleteTestMaster={handleDeleteTestMaster}
                 />
               )}
 

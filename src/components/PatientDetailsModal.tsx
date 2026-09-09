@@ -459,6 +459,7 @@ export function PatientDetailsModal({
                     <th className="px-3 py-2">Department</th>
                     <th className="px-3 py-2">Status</th>
                     <th className="px-3 py-2">Barcode No</th>
+                    <th className="px-3 py-2 text-right">Rate</th>
                     <th className="px-3 py-2 text-center">Barcode Re-Print</th>
                     <th className="px-3 py-2 text-center">Remarks</th>
                     <th className="px-3 py-2 text-center">Actions</th>
@@ -531,18 +532,21 @@ export function PatientDetailsModal({
                               </span>
                             )}
                           </td>
-                          <td className="px-3 py-3.5 font-mono text-xs">
-                            {isEditing ? (
-                              <input 
-                                type="text"
-                                value={editServiceBarcode}
-                                onChange={(e) => setEditServiceBarcode(e.target.value)}
-                                className="bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 p-1 rounded font-mono text-xs"
-                              />
-                            ) : (
-                              s.barcodeNo
-                            )}
-                          </td>
+                           <td className="px-3 py-3.5 font-mono text-xs">
+                             {isEditing ? (
+                               <input 
+                                 type="text"
+                                 value={editServiceBarcode}
+                                 onChange={(e) => setEditServiceBarcode(e.target.value)}
+                                 className="bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 p-1 rounded font-mono text-xs"
+                               />
+                             ) : (
+                               s.barcodeNo
+                             )}
+                           </td>
+                           <td className="px-3 py-3.5 text-right font-mono text-xs">
+                             {s.rate != null ? `₹${s.rate.toFixed(2)}` : '-'}
+                           </td>
                           <td className="px-3 py-3.5 text-center">
                             <div className="flex items-center justify-center gap-1.5">
                               <select

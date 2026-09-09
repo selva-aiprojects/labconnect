@@ -12,11 +12,13 @@ import {
   ExternalLink, User, Layers, ArrowRight, Save
 } from 'lucide-react';
 import { Patient } from '../types/lims_app';
+import { TestMaster } from '../types/testMaster';
 
 interface B2CRegistrationProps {
   patients: Patient[];
   onRegister: (patientData: Omit<Patient, 'id' | 'bookingNo' | 'bookingDate' | 'status' | 'phlebotomist' | 'apptDttm'>) => void;
   onCancel: () => void;
+  testMasters: TestMaster[];
 }
 
 interface ServiceItem {
@@ -26,6 +28,10 @@ interface ServiceItem {
   category: string;
   quantity: number;
   unitPrice: number;
+  testMasterId?: string;
+  sampleType?: string;
+  units?: string;
+  referenceRange?: string;
 }
 
 const DEFAULT_SERVICES: ServiceItem[] = [
@@ -195,7 +201,7 @@ function calculateAgeDetails(dobString: string): { years: number; months: number
   };
 }
 
-export function B2CRegistration({ patients, onRegister, onCancel }: B2CRegistrationProps) {
+export function B2CRegistration({ patients, onRegister, onCancel, testMasters }: B2CRegistrationProps) {
   const [step, setStep] = useState<number>(1);
 
   // --- Step 1 Search State ---
@@ -380,7 +386,18 @@ export function B2CRegistration({ patients, onRegister, onCancel }: B2CRegistrat
   }, []);
 
   const availableServices = useMemo(() => {
-    return MASTER_SERVICES.filter(service => {
+    const mapped = testMasters.filter(tm => tm.active).map(tm => ({
+      code: tm.id,
+      cptCode: tm.id.replace('TEST-', 'CPT-'),
+      name: tm.testName,
+      category: tm.department,
+      unitPrice: tm.rate,
+      sampleType: tm.sampleType,
+      units: tm.units,
+      referenceRange: tm.referenceRange,
+      testMasterId: tm.id
+    }));
+    return mapped.filter(service => {
       const matchesCategory = serviceCategory === 'All Categories' || service.category.toLowerCase() === serviceCategory.toLowerCase();
       const term = searchService.toLowerCase().trim();
       const matchesSearch = !term || 
@@ -389,7 +406,7 @@ export function B2CRegistration({ patients, onRegister, onCancel }: B2CRegistrat
         service.cptCode.toLowerCase().includes(term);
       return matchesCategory && matchesSearch;
     });
-  }, [searchService, serviceCategory]);
+  }, [searchService, serviceCategory, testMasters]);
 
   // Sync Age and DOB
   const handleDobChange = (val: string) => {
@@ -1523,7 +1540,8 @@ export function B2CRegistration({ patients, onRegister, onCancel }: B2CRegistrat
                         <div key={service.code} className="p-2.5 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800/80 rounded-xl flex items-center justify-between text-xs hover:border-indigo-300 dark:hover:border-indigo-700 transition-colors">
                           <div className="min-w-0 pr-2 text-left">
                             <span className="font-bold text-zinc-800 dark:text-zinc-150 block truncate" title={service.name}>{service.name}</span>
-                            <span className="text-[9px] text-zinc-400 font-mono block mt-0.5">{service.code} &bull; CPT {service.cptCode} &bull; ₹{service.unitPrice}</span>
+                            <span className="text-[9px] text-zinc-400 font-mono block mt-0.5">{service.code} &bull; {service.category} &bull; ₹{service.unitPrice.toFixed(2)}</span>
+                            {service.sampleType && <span className="text-[9px] text-zinc-400 block mt-0.5">Sample: {service.sampleType} &bull; Ref: {service.referenceRange}</span>}
                           </div>
                           <button
                             type="button"
@@ -1533,9 +1551,19 @@ export function B2CRegistration({ patients, onRegister, onCancel }: B2CRegistrat
                                 if (exists) {
                                   return prev.map(s => s.code === service.code ? { ...s, quantity: s.quantity + 1 } : s);
                                 }
-                                return [...prev, { ...service, quantity: 1 }];
+                                return [...prev, { 
+                                  code: service.code, 
+                                  cptCode: service.cptCode, 
+                                  name: service.name, 
+                                  category: service.category, 
+                                  quantity: 1, 
+                                  unitPrice: service.unitPrice,
+                                  testMasterId: service.testMasterId,
+                                  sampleType: service.sampleType,
+                                  units: service.units,
+                                  referenceRange: service.referenceRange
+                                }];
                               });
-                              // Clear validation error when a service is successfully added
                               setValidationErrors(prev => ({ ...prev, selectedServices: false }));
                             }}
                             className={`px-2.5 py-1 text-[10px] font-black rounded-lg transition-colors cursor-pointer shrink-0 ${

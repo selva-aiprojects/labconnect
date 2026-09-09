@@ -72,6 +72,10 @@ export interface Patient {
     quantity: number;
     unitPrice: number;
     discount?: number;
+    testMasterId?: string;
+    sampleType?: string;
+    units?: string;
+    referenceRange?: string;
   }>;
   discountType?: string;
   discountPercent?: number;
@@ -137,6 +141,8 @@ export interface Patient {
     status: string;
     barcodeNo: string;
     remarks: string;
+    testMasterId?: string;
+    rate?: number;
   }>;
 
   // Structured clinical results populated when the analyzer completes testing.

@@ -11,11 +11,13 @@ import {
   Info, Layers, Plus, X, ClipboardList, ExternalLink, User, ArrowRight, Save, Printer
 } from 'lucide-react';
 import { Patient } from '../types/lims_app';
+import { TestMaster } from '../types/testMaster';
 
 interface B2BRegistrationProps {
   patients: Patient[];
   onRegister: (patientData: Omit<Patient, 'id' | 'bookingNo' | 'bookingDate' | 'status' | 'phlebotomist' | 'apptDttm'>) => void;
   onCancel: () => void;
+  testMasters: TestMaster[];
 }
 
 interface ServiceItem {
@@ -25,6 +27,10 @@ interface ServiceItem {
   category: string;
   quantity: number;
   unitPrice: number;
+  testMasterId?: string;
+  sampleType?: string;
+  units?: string;
+  referenceRange?: string;
 }
 
 const DEFAULT_SERVICES: ServiceItem[] = [
@@ -153,7 +159,7 @@ const DEFAULT_COMPANIES = [
   }
 ];
 
-export function B2BRegistration({ patients, onRegister, onCancel }: B2BRegistrationProps) {
+export function B2BRegistration({ patients, onRegister, onCancel, testMasters }: B2BRegistrationProps) {
   const [step, setStep] = useState<number>(1);
 
   // Search States
@@ -1118,30 +1124,43 @@ export function B2BRegistration({ patients, onRegister, onCancel }: B2BRegistrat
             {searchService.trim() && (
               <div className="bg-zinc-50 dark:bg-zinc-950/40 border border-zinc-200 dark:border-zinc-800 p-3 rounded-2xl max-h-48 overflow-y-auto space-y-1.5">
                 <span className="text-[9px] uppercase font-black tracking-wider text-zinc-400 block">Available Master Matches:</span>
-                {MASTER_SERVICES.filter(s => {
+                {testMasters.filter(tm => tm.active).map(tm => {
                   const term = searchService.toLowerCase();
-                  const matchesTerm = s.name.toLowerCase().includes(term) || s.code.toLowerCase().includes(term) || s.cptCode.toLowerCase().includes(term);
-                  const matchesCat = serviceCategory === 'All Categories' || s.category === serviceCategory;
-                  return matchesTerm && matchesCat;
-                }).map(s => (
-                  <div key={s.code} className="p-2 bg-white dark:bg-zinc-900 border border-zinc-150 dark:border-zinc-800/85 rounded-lg flex items-center justify-between text-xs font-semibold">
-                    <div>
-                      <span className="font-extrabold text-zinc-800 dark:text-zinc-100">{s.name}</span>
-                      <span className="text-[10px] text-zinc-400 ml-2 font-mono">Code: {s.code} &bull; CPT: {s.cptCode}</span>
+                  const matchesTerm = tm.testName.toLowerCase().includes(term) || tm.id.toLowerCase().includes(term) || tm.department.toLowerCase().includes(term);
+                  const matchesCat = serviceCategory === 'All Categories' || tm.department === serviceCategory;
+                  if (!matchesTerm || !matchesCat) return null;
+                  const service = {
+                    code: tm.id,
+                    cptCode: tm.id.replace('TEST-', 'CPT-'),
+                    name: tm.testName,
+                    category: tm.department,
+                    unitPrice: tm.rate,
+                    sampleType: tm.sampleType,
+                    units: tm.units,
+                    referenceRange: tm.referenceRange,
+                    testMasterId: tm.id
+                  };
+                  return (
+                    <div key={service.code} className="p-2 bg-white dark:bg-zinc-900 border border-zinc-150 dark:border-zinc-800/85 rounded-lg flex items-center justify-between text-xs font-semibold">
+                      <div>
+                        <span className="font-extrabold text-zinc-800 dark:text-zinc-100">{service.name}</span>
+                        <span className="text-[10px] text-zinc-400 ml-2 font-mono">Code: {service.code} &bull; Dept: {service.category} &bull; ₹{service.unitPrice.toFixed(2)}</span>
+                        {service.sampleType && <span className="text-[10px] text-zinc-400 ml-2">Sample: {service.sampleType}</span>}
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (selectedServices.some(item => item.code === service.code)) return;
+                          setSelectedServices(prev => [...prev, { ...service, quantity: 1 }]);
+                          setSearchService('');
+                        }}
+                        className="px-2.5 py-1 bg-[#3c3bb6] text-white text-[10px] font-black rounded-lg hover:bg-opacity-90"
+                      >
+                        + Add
+                      </button>
                     </div>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        if (selectedServices.some(item => item.code === s.code)) return;
-                        setSelectedServices(prev => [...prev, { ...s, quantity: 1 }]);
-                        setSearchService('');
-                      }}
-                      className="px-2.5 py-1 bg-[#3c3bb6] text-white text-[10px] font-black rounded-lg hover:bg-opacity-90"
-                    >
-                      + Add
-                    </button>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             )}
 
