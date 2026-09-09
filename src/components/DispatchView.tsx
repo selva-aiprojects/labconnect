@@ -5,6 +5,8 @@
 
 import { useRef, useState } from 'react';
 import { Truck, Mail, Smartphone, Printer, Check, RefreshCw, Send, Share2, ClipboardCheck, Eye } from 'lucide-react';
+import html2canvas from 'html2canvas';
+import jsPDF from 'jspdf';
 import { Patient } from '../types/lims_app';
 import { LabReport } from './LabReport';
 
@@ -49,47 +51,41 @@ export function DispatchView({ patients }: DispatchViewProps) {
     }, 800);
   };
 
-  const handlePrintReport = () => {
-    const printWindow = window.open('', '_blank', 'width=900,height=1100');
-    if (!printWindow) {
-      alert('Please allow pop-ups to print the report.');
-      return;
-    }
+  const handlePrintReport = async () => {
     const reportEl = printableReportRef.current;
     if (!reportEl) return;
-    const stylesheetMarkup = Array.from(document.querySelectorAll('link[rel="stylesheet"], style'))
-      .map(link => link.outerHTML)
-      .join('');
-    const printMarkup = `
-      <html><head><title>Lab Report - ${activePatient?.name}</title>
-      ${stylesheetMarkup}
-      <style>
-        @page { size: A4; margin: 12mm; }
-        * { box-sizing: border-box; }
-        body { margin: 0; background: #fff; }
-        .lab-report { max-width: 100%; border: 0; box-shadow: none; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-        .lab-report > header,
-        .lab-report > footer,
-        .lab-report > section:first-of-type,
-        .lab-report > section:last-of-type,
-        .lab-report > section > div > section,
-        .lab-report > section > div > section > div,
-        .lab-report .border-l-\[5px\] { break-inside: avoid; page-break-inside: avoid; }
-        .report-explained { break-before: page; page-break-before: always; }
-        .report-explained-item { break-inside: avoid; page-break-inside: avoid; }
-        .lab-report h1,
-        .lab-report h2,
-        .lab-report h3,
-        .lab-report p { orphans: 3; widows: 3; }
-      </style></head><body>
-    ${reportEl.innerHTML}</body></html>`;
-    printWindow.onload = () => {
-      printWindow.focus();
-      printWindow.print();
-    };
-    printWindow.document.open();
-    printWindow.document.write(printMarkup);
-    printWindow.document.close();
+    try {
+      const canvas = await html2canvas(reportEl, {
+        backgroundColor: '#ffffff',
+        scale: 2,
+        useCORS: true,
+        logging: false
+      });
+      const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+      const pageWidth = 210;
+      const pageHeight = 297;
+      const margin = 8;
+      const contentWidth = pageWidth - margin * 2;
+      const contentHeight = pageHeight - margin * 2;
+      const imageHeight = (canvas.height * contentWidth) / canvas.width;
+      const pageImageHeight = (canvas.width * contentHeight) / contentWidth;
+      const pageCount = Math.ceil(canvas.height / pageImageHeight);
+
+      for (let page = 0; page < pageCount; page += 1) {
+        if (page > 0) pdf.addPage();
+        const offset = page * pageImageHeight;
+        pdf.addImage(canvas, 'PNG', margin, margin - (offset * contentWidth) / canvas.width, contentWidth, imageHeight);
+      }
+
+      const filename = `${activePatient?.name || 'lab-report'}`
+        .replace(/[^a-z0-9]+/gi, '-')
+        .replace(/^-|-$/g, '')
+        .toLowerCase();
+      pdf.save(`${filename || 'lab-report'}.pdf`);
+    } catch (error) {
+      console.error('Unable to generate the lab report PDF', error);
+      alert('The PDF could not be generated. Please try again.');
+    }
   };
 
   // A blank, white-styled report for print (no Tailwind dependency)
