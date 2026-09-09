@@ -57,6 +57,15 @@ export type TraceabilityRecord = {
   checkedAt: string;
 };
 
+export type InventoryLot = {
+  id: string;
+  lotId: string;
+  reagentName: string;
+  availableUnits: number;
+  status: 'available' | 'low-stock' | 'expired' | 'quarantined';
+  updatedAt: string;
+};
+
 export function advanceDeviationStatus(
   deviation: DeviationRecord
 ): DeviationRecord {
@@ -110,6 +119,33 @@ export function createTraceabilityRecord(
     reviewer,
     note,
     checkedAt: new Date().toISOString()
+  };
+}
+
+export function createInventoryLot(
+  lotId: string,
+  reagentName: string,
+  availableUnits: number,
+  status: 'available' | 'low-stock' | 'expired' | 'quarantined' = 'available'
+): InventoryLot {
+  return {
+    id: `INV-${Math.random().toString(36).slice(2, 8).toUpperCase()}`,
+    lotId,
+    reagentName,
+    availableUnits,
+    status,
+    updatedAt: new Date().toISOString()
+  };
+}
+
+export function consumeInventoryLot(lot: InventoryLot, units: number): InventoryLot {
+  const nextUnits = Math.max(0, lot.availableUnits - units);
+
+  return {
+    ...lot,
+    availableUnits: nextUnits,
+    status: nextUnits <= 5 ? 'low-stock' : 'available',
+    updatedAt: new Date().toISOString()
   };
 }
 

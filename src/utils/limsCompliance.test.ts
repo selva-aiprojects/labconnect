@@ -1,6 +1,6 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
-import { advanceDeviationStatus, closeCapaAction, createApprovalRecord, createAuditEntry, createCapaAction, createDeviationRecord, createQualityIssuesFromResults, createTraceabilityRecord } from './limsCompliance';
+import { advanceDeviationStatus, closeCapaAction, consumeInventoryLot, createApprovalRecord, createAuditEntry, createCapaAction, createDeviationRecord, createInventoryLot, createQualityIssuesFromResults, createTraceabilityRecord } from './limsCompliance';
 
 describe('lims compliance utilities', () => {
   it('creates a signed audit entry with actor, reason, and timestamp', () => {
@@ -94,5 +94,15 @@ describe('lims compliance utilities', () => {
     assert.equal(trace.reagentLot, 'LOT-2048-B');
     assert.equal(trace.status, 'accepted');
     assert.ok(trace.id.startsWith('TR-'));
+  });
+
+  it('tracks reagent inventory and consumption by lot', () => {
+    const lot = createInventoryLot('LOT-2048-B', 'Chemistry Reagent', 24, 'available');
+    const consumed = consumeInventoryLot(lot, 6);
+
+    assert.equal(lot.lotId, 'LOT-2048-B');
+    assert.equal(consumed.availableUnits, 18);
+    assert.equal(consumed.status, 'available');
+    assert.ok(consumed.id.startsWith('INV-'));
   });
 });
