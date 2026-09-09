@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Activity, AlertTriangle, CheckCircle2, ClipboardCheck, ShieldAlert, TrendingUp } from 'lucide-react';
-import { advanceDeviationStatus, closeCapaAction, createCapaAction, createDeviationRecord, createQualityIssuesFromResults, createTraceabilityRecord } from '../utils/limsCompliance';
+import { advanceDeviationStatus, advanceNonConformanceStatus, closeCapaAction, createCapaAction, createDeviationRecord, createNonConformanceRecord, createQualityIssuesFromResults, createTraceabilityRecord, NonConformanceRecord, QualityIssue } from '../utils/limsCompliance';
 
 const qcResults = [
   { name: 'Hemoglobin', value: '9.5', unit: 'g/dL', flag: 'L' as const, reference: '12-16' },
@@ -30,7 +30,8 @@ export function QualityView() {
   const [deviations, setDeviations] = useState(initialDeviations);
   const [capa, setCapa] = useState(initialCapa);
   const [traceability, setTraceability] = useState(initialTraceability);
-  const qualityIssues = createQualityIssuesFromResults(qcResults);
+  const [qualityIssues] = useState<QualityIssue[]>(() => createQualityIssuesFromResults(qcResults));
+  const [nonConformances, setNonConformances] = useState<NonConformanceRecord[]>([]);
 
   const handleAdvanceDeviation = (id: string) => {
     setDeviations(current => current.map(item => item.id === id ? advanceDeviationStatus(item) : item));
@@ -38,6 +39,19 @@ export function QualityView() {
 
   const handleCloseCapa = (id: string) => {
     setCapa(current => current.map(item => item.id === id ? closeCapaAction(item) : item));
+  };
+
+  const handleCreateNonConformance = (issue: QualityIssue) => {
+    if (nonConformances.some(record => record.sourceQualityIssueId === issue.id)) return;
+
+    setNonConformances(current => [
+      createNonConformanceRecord(issue.id, issue.title, 'QA Reviewer', issue.severity, 'Hold affected result and repeat the applicable control or specimen review.'),
+      ...current
+    ]);
+  };
+
+  const handleAdvanceNonConformance = (id: string) => {
+    setNonConformances(current => current.map(item => item.id === id ? advanceNonConformanceStatus(item) : item));
   };
 
   return (
@@ -113,6 +127,13 @@ export function QualityView() {
                 <div className="mt-3 text-[9px] text-zinc-400">
                   Status: <span className="font-bold text-zinc-600 dark:text-zinc-200">{issue.status}</span>
                 </div>
+                <button
+                  onClick={() => handleCreateNonConformance(issue)}
+                  disabled={nonConformances.some(record => record.sourceQualityIssueId === issue.id)}
+                  className="mt-3 w-full rounded-xl border border-rose-200 dark:border-rose-900 bg-rose-50 dark:bg-rose-950/20 px-2.5 py-1.5 text-[9px] font-bold text-rose-700 dark:text-rose-300 disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  {nonConformances.some(record => record.sourceQualityIssueId === issue.id) ? 'Non-Conformance Opened' : 'Open Non-Conformance'}
+                </button>
               </div>
             ))}
           </div>
@@ -146,6 +167,36 @@ export function QualityView() {
               </div>
             ))}
           </div>
+        </div>
+      </div>
+
+      <div className="bg-white dark:bg-zinc-900 rounded-3xl border border-zinc-200/60 dark:border-zinc-800 shadow-sm overflow-hidden">
+        <div className="px-4 py-3 border-b border-zinc-200/60 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-950/20 flex items-center justify-between">
+          <span className="text-[10px] font-extrabold uppercase tracking-widest text-zinc-400">Non-Conformance Register</span>
+          <span className="text-[9px] font-bold text-rose-600 dark:text-rose-400">{nonConformances.filter(item => item.status !== 'resolved').length} active</span>
+        </div>
+        <div className="p-4 space-y-3">
+          {nonConformances.length === 0 ? (
+            <p className="text-[10px] text-zinc-500">No non-conformances opened. Create one from a QC flag when containment is required.</p>
+          ) : nonConformances.map(item => (
+            <div key={item.id} className="rounded-2xl border border-rose-100 dark:border-rose-900/60 bg-rose-50/40 dark:bg-rose-950/10 p-3">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <span className="text-[11px] font-bold text-zinc-800 dark:text-zinc-100">{item.id} · {item.title}</span>
+                <span className="text-[9px] uppercase font-black text-rose-600 dark:text-rose-400">{item.status}</span>
+              </div>
+              <p className="mt-2 text-[10px] text-zinc-500">Containment: {item.containment}</p>
+              <div className="mt-3 flex items-center justify-between text-[9px] text-zinc-400">
+                <span>Owner: {item.owner} · Severity: {item.severity}</span>
+                <button
+                  onClick={() => handleAdvanceNonConformance(item.id)}
+                  disabled={item.status === 'resolved'}
+                  className="rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 px-2 py-1 font-bold text-zinc-700 dark:text-zinc-200 disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  {item.status === 'open' ? 'Start investigation' : item.status === 'investigating' ? 'Resolve' : 'Resolved'}
+                </button>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
 

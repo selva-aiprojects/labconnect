@@ -18,6 +18,17 @@ export type QualityIssue = {
   status: 'open' | 'investigating' | 'resolved';
 };
 
+export type NonConformanceRecord = {
+  id: string;
+  sourceQualityIssueId: string;
+  title: string;
+  owner: string;
+  severity: 'low' | 'medium' | 'high';
+  containment: string;
+  status: 'open' | 'investigating' | 'resolved';
+  createdAt: string;
+};
+
 export type DeviationRecord = {
   id: string;
   title: string;
@@ -88,6 +99,35 @@ export function advanceDeviationStatus(
   return {
     ...deviation,
     status: nextStatus
+  };
+}
+
+export function createNonConformanceRecord(
+  sourceQualityIssueId: string,
+  title: string,
+  owner: string,
+  severity: 'low' | 'medium' | 'high',
+  containment: string
+): NonConformanceRecord {
+  return {
+    id: `NC-${Math.random().toString(36).slice(2, 8).toUpperCase()}`,
+    sourceQualityIssueId,
+    title,
+    owner,
+    severity,
+    containment,
+    status: 'open',
+    createdAt: new Date().toISOString()
+  };
+}
+
+export function advanceNonConformanceStatus(record: NonConformanceRecord): NonConformanceRecord {
+  const statusOrder: Array<NonConformanceRecord['status']> = ['open', 'investigating', 'resolved'];
+  const currentIndex = statusOrder.indexOf(record.status);
+
+  return {
+    ...record,
+    status: statusOrder[Math.min(currentIndex + 1, statusOrder.length - 1)]
   };
 }
 

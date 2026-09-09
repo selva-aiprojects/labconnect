@@ -1,6 +1,6 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
-import { advanceDeviationStatus, closeCapaAction, completeCalibration, consumeInventoryLot, createApprovalRecord, createAuditEntry, createCalibrationRecord, createCapaAction, createDeviationRecord, createInventoryLot, createQualityIssuesFromResults, createTraceabilityRecord } from './limsCompliance';
+import { advanceDeviationStatus, advanceNonConformanceStatus, closeCapaAction, completeCalibration, consumeInventoryLot, createApprovalRecord, createAuditEntry, createCalibrationRecord, createCapaAction, createDeviationRecord, createInventoryLot, createNonConformanceRecord, createQualityIssuesFromResults, createTraceabilityRecord } from './limsCompliance';
 
 describe('lims compliance utilities', () => {
   it('creates a signed audit entry with actor, reason, and timestamp', () => {
@@ -132,5 +132,23 @@ describe('lims compliance utilities', () => {
     assert.equal(completed.instrumentId, 'ANL-A12');
     assert.equal(completed.reviewer, 'QA Manager');
     assert.ok(completed.id.startsWith('CAL-'));
+  });
+
+  it('tracks non-conformance from containment through resolution', () => {
+    const record = createNonConformanceRecord(
+      'QI-1',
+      'Creatinine result outside expected control pathway',
+      'QA Reviewer',
+      'high',
+      'Hold affected report and repeat the control run.'
+    );
+    const investigating = advanceNonConformanceStatus(record);
+    const resolved = advanceNonConformanceStatus(investigating);
+
+    assert.equal(record.status, 'open');
+    assert.equal(investigating.status, 'investigating');
+    assert.equal(resolved.status, 'resolved');
+    assert.equal(resolved.sourceQualityIssueId, 'QI-1');
+    assert.ok(resolved.id.startsWith('NC-'));
   });
 });
