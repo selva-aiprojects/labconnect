@@ -1,6 +1,6 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
-import { createAuditEntry, createCapaAction, createDeviationRecord, createQualityIssuesFromResults } from './limsCompliance';
+import { advanceDeviationStatus, closeCapaAction, createAuditEntry, createCapaAction, createDeviationRecord, createQualityIssuesFromResults } from './limsCompliance';
 
 describe('lims compliance utilities', () => {
   it('creates a signed audit entry with actor, reason, and timestamp', () => {
@@ -46,5 +46,23 @@ describe('lims compliance utilities', () => {
     assert.equal(capa.sourceDeviationId, deviation.id);
     assert.ok(deviation.id.startsWith('DEV-'));
     assert.ok(capa.id.startsWith('CAPA-'));
+  });
+
+  it('advances deviation lifecycle and closes CAPA actions', () => {
+    const deviation = createDeviationRecord(
+      'Unexpected reagent lot variance',
+      'QA Reviewer',
+      'medium',
+      'Reagent lot variance observed during three runs.',
+      'open'
+    );
+
+    const evolved = advanceDeviationStatus(deviation);
+    const capa = createCapaAction('Validate reagent lot variance logs', 'QA Manager', 'Due today', 'in progress', evolved.id);
+    const closed = closeCapaAction(capa);
+
+    assert.equal(evolved.status, 'investigating');
+    assert.equal(closed.status, 'closed');
+    assert.equal(closed.sourceDeviationId, evolved.id);
   });
 });

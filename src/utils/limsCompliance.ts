@@ -37,6 +37,26 @@ export type CapaAction = {
   sourceDeviationId: string;
 };
 
+export function advanceDeviationStatus(
+  deviation: DeviationRecord
+): DeviationRecord {
+  const statusOrder: Array<DeviationRecord['status']> = ['open', 'investigating', 'resolved'];
+  const currentIndex = statusOrder.indexOf(deviation.status);
+  const nextStatus = statusOrder[Math.min(currentIndex + 1, statusOrder.length - 1)];
+
+  return {
+    ...deviation,
+    status: nextStatus
+  };
+}
+
+export function closeCapaAction(capa: CapaAction): CapaAction {
+  return {
+    ...capa,
+    status: 'closed'
+  };
+}
+
 export function createAuditEntry(
   action: string,
   actor: string,
