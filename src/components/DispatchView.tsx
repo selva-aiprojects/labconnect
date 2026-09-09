@@ -57,15 +57,16 @@ export function DispatchView({ patients }: DispatchViewProps) {
     }
     const reportEl = printableReportRef.current;
     if (!reportEl) return;
+    const stylesheetMarkup = Array.from(document.querySelectorAll('link[rel="stylesheet"], style'))
+      .map(link => link.outerHTML)
+      .join('');
     const printMarkup = `
       <html><head><title>Lab Report - ${activePatient?.name}</title>
+      ${stylesheetMarkup}
       <style>
-        body { font-family: Arial, Helvetica, sans-serif; margin: 24px; color: #18181b; }
-        table { width: 100%; border-collapse: collapse; }
-        th, td { border: 1px solid #e4e4e7; padding: 6px 8px; text-align: left; font-size: 12px; }
-        thead th { background: #f4f4f5; text-transform: uppercase; font-size: 10px; letter-spacing: 0.05em; }
-        .report-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px; }
-        h1 { color: #3c3bb6; margin: 0; font-size: 22px; }
+        @page { size: A4; margin: 12mm; }
+        body { margin: 0; background: #fff; }
+        .lab-report { max-width: 100%; border: 0; box-shadow: none; }
       </style></head><body>
     ${reportEl.innerHTML}</body></html>`;
     printWindow.onload = () => {
@@ -394,9 +395,8 @@ export function DispatchView({ patients }: DispatchViewProps) {
               </div>
             </div>
             <div className="flex-1 overflow-y-auto p-6">
-              <LabReport patient={activePatient} />
-              <div className="hidden">
-                <div ref={printableReportRef}>{renderPrintable(activePatient)}</div>
+              <div ref={printableReportRef}>
+                <LabReport patient={activePatient} />
               </div>
             </div>
           </div>
