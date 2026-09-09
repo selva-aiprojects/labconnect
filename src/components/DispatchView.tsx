@@ -55,12 +55,38 @@ export function DispatchView({ patients }: DispatchViewProps) {
     const reportEl = printableReportRef.current;
     if (!reportEl) return;
     try {
-      const canvas = await html2canvas(reportEl, {
+      const fallbackUnsupportedColors = (value: string, fallback: string) => /oklch|oklab/i.test(value) ? fallback : value;
+      const canvasOptions = {
         backgroundColor: '#ffffff',
         scale: 2,
         useCORS: true,
-        logging: false
-      });
+        logging: false,
+        onclone: (clonedDocument: Document) => {
+          const clonedReport = clonedDocument.querySelector('.lab-report');
+          if (!clonedReport) return;
+          const sourceElements = [reportEl, ...Array.from(reportEl.querySelectorAll('*'))];
+          const clonedElements = [clonedReport, ...Array.from(clonedReport.querySelectorAll('*'))];
+          clonedElements.forEach((clonedElement, index) => {
+            const sourceElement = sourceElements[index];
+            if (!sourceElement) return;
+            const styles = window.getComputedStyle(sourceElement);
+            const element = clonedElement as HTMLElement;
+            element.style.color = fallbackUnsupportedColors(styles.color, '#475569');
+            element.style.backgroundColor = fallbackUnsupportedColors(styles.backgroundColor, '#ffffff');
+            element.style.borderTopColor = fallbackUnsupportedColors(styles.borderTopColor, '#cbd5e1');
+            element.style.borderRightColor = fallbackUnsupportedColors(styles.borderRightColor, '#cbd5e1');
+            element.style.borderBottomColor = fallbackUnsupportedColors(styles.borderBottomColor, '#cbd5e1');
+            element.style.borderLeftColor = fallbackUnsupportedColors(styles.borderLeftColor, '#cbd5e1');
+          });
+        }
+      };
+      let canvas;
+      try {
+        canvas = await html2canvas(reportEl, canvasOptions);
+      } catch (renderError) {
+        console.warn('Standard lab report canvas rendering failed; retrying with browser SVG rendering.', renderError);
+        canvas = await html2canvas(reportEl, { ...canvasOptions, foreignObjectRendering: true });
+      }
       const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
       const pageWidth = 210;
       const pageHeight = 297;
