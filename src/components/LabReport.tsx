@@ -52,16 +52,25 @@ function resultState(result: TestResult) {
   return 'normal';
 }
 
+function reportStatusFor(patient: Patient, abnormalCount: number) {
+  if (patient.reportStatus) return patient.reportStatus;
+  if (patient.status === 'Cancelled') return 'CANCELLED';
+  if (patient.status === 'Completed') return abnormalCount > 0 ? 'UNDER REVIEW' : 'REVIEWED';
+  return 'DRAFT';
+}
+
 function ResultTile({ result }: { result: TestResult; key?: React.Key; tileKey?: string }) {
   const state = resultState(result);
   const accent = state === 'normal' ? 'border-emerald-500' : state === 'low' ? 'border-amber-400' : 'border-rose-400';
   const valueColor = state === 'normal' ? 'text-[#164b70]' : state === 'low' ? 'text-amber-700' : 'text-rose-700';
+  const stateLabel = state === 'normal' ? 'NORMAL' : state === 'low' ? 'LOW' : result.flag === 'A' ? 'ABNORMAL' : 'HIGH';
 
   return (
     <div className={`border-l-[5px] ${accent} bg-[#f2f4f5] px-4 py-3.5 min-h-[120px]`}>
       <p className="text-[14px] leading-snug font-semibold text-[#3b6280]">{result.name}</p>
       <p className="mt-2 text-[11px] text-slate-500">Result: <strong className={`ml-1 text-[20px] font-medium ${valueColor}`}>{result.value}</strong> <span className="text-[12px] text-slate-500">{result.unit || ''}</span></p>
       <p className="mt-1 text-[11px] text-slate-500">Range: <span className="text-slate-600">{result.reference || 'See laboratory reference'}</span></p>
+      <p className={`mt-2 text-[10px] font-black uppercase tracking-wider ${valueColor}`}>Status: {stateLabel}</p>
     </div>
   );
 }
@@ -77,6 +86,10 @@ export function LabReport({ patient, signature, signedAt }: LabReportProps) {
   const results = patient.testResults || [];
   const groups = groupDefinitions.map((definition, index) => ({ ...definition, results: results.filter(result => getGroupIndex(result) === index) })).filter(group => group.results.length > 0);
   const abnormalCount = results.filter(result => resultState(result) !== 'normal').length;
+  const reportStatus = reportStatusFor(patient, abnormalCount);
+  const accessionNo = patient.accessionNo || `ACC-${patient.bookingNo.replace(/[^A-Z0-9]/gi, '')}`;
+  const specimenId = patient.specimenId || `SMP-${patient.id.padStart(6, '0')}`;
+  const specimenType = patient.specimenType || patient.servicesList?.[0]?.sample || 'Serum';
 
   return (
     <article className="lab-report overflow-hidden border border-slate-200 bg-white text-slate-700 shadow-sm">
@@ -94,10 +107,15 @@ export function LabReport({ patient, signature, signedAt }: LabReportProps) {
         <div className="sm:col-span-2"><span className="report-label">Patient</span><strong>{patient.name}</strong></div>
         <div><span className="report-label">Age / sex</span><strong>{patient.ageUnitStr || `${patient.age} Y / ${patient.gender}`}</strong></div>
         <div><span className="report-label">Patient ID</span><strong>{patient.patientId || patient.bookingNo}</strong></div>
+        <div><span className="report-label">Accession number</span><strong>{accessionNo}</strong></div>
+        <div><span className="report-label">Specimen ID</span><strong>{specimenId}</strong></div>
+        <div><span className="report-label">Specimen</span><strong>{specimenType}</strong></div>
         <div><span className="report-label">Sample collected</span><strong>{patient.collectionDttm || patient.apptDttm || 'Not recorded'}</strong></div>
         <div><span className="report-label">Referred by</span><strong>{patient.billDetails?.doctorName || 'Not recorded'}</strong></div>
-        <div><span className="report-label">Report status</span><strong className={abnormalCount ? 'text-amber-700' : 'text-emerald-700'}>{abnormalCount ? `${abnormalCount} review required` : 'Within range'}</strong></div>
+        <div><span className="report-label">Report status</span><strong className={reportStatus === 'FINAL' || reportStatus === 'REVIEWED' ? 'text-emerald-700' : reportStatus === 'CANCELLED' ? 'text-rose-700' : 'text-amber-700'}>{reportStatus}</strong></div>
         <div><span className="report-label">Report number</span><strong>{patient.bookingNo}</strong></div>
+        <div><span className="report-label">Received</span><strong>{patient.receivedDttm || 'Not recorded'}</strong></div>
+        <div><span className="report-label">Reported</span><strong>{patient.reportedDttm || signedAt || 'Not recorded'}</strong></div>
       </section>
 
       <section className="px-5 py-6 sm:px-8">
@@ -105,7 +123,7 @@ export function LabReport({ patient, signature, signedAt }: LabReportProps) {
         {groups.length === 0 ? <div className="border border-dashed border-slate-300 px-5 py-12 text-center text-sm text-slate-500">No laboratory results are available for this report yet.</div> : <div className="space-y-6">{groups.map(group => <section key={group.name} className="grid gap-5 border-b border-slate-300 pb-6 last:border-b-0 last:pb-0 md:grid-cols-[150px_1fr]"><div className="flex items-center gap-3 md:flex-col md:justify-start md:gap-2 md:border-r md:border-dashed md:border-slate-400 md:pr-5"><div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full border-[4px] border-emerald-500 text-emerald-600"><ProfileIcon icon={group.icon} /></div><div className="md:text-center"><h3 className="text-[11px] font-bold uppercase tracking-[0.12em] text-[#164b70]">{group.name}</h3><p className="mt-1 text-[10px] text-slate-400">{group.description}</p></div></div><div><div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">{group.results.map((result, index) => <ResultTile key={`${result.name}-${index}`} tileKey={`${result.name}-${index}`} result={result} />)}</div><div className="mt-3 flex gap-2 text-[11px] leading-relaxed text-slate-500"><CircleHelp className="mt-0.5 shrink-0 text-[#164b70]" size={15} /><p>{explanationFor(group, group.results)}</p></div></div></section>)}</div>}
       </section>
 
-      <footer className="border-t border-slate-200 bg-[#f7f9fa] px-5 py-5 sm:px-8"><div className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between"><div className="max-w-2xl text-[10px] leading-relaxed text-slate-500"><p>* Reference ranges are laboratory-specific and may vary by age, gender and methodology. This report is electronically generated and valid without a physical signature.</p><p className="mt-1">Please discuss any flagged result with your healthcare professional. This summary does not replace medical advice.</p></div><div className="min-w-48 text-left sm:text-right"><p className="border-b border-slate-400 pb-1 text-xs font-semibold text-slate-700">{signature || 'Dr. Alistair Sterling, MD'}</p><p className="mt-1 text-[9px] font-bold uppercase tracking-wider text-slate-400">Consultant Pathologist</p><p className="mt-2 text-[9px] text-slate-400">Generated: {signedAt || new Date().toLocaleString()}</p></div></div></footer>
+      <footer className="border-t border-slate-200 bg-[#f7f9fa] px-5 py-5 sm:px-8"><div className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between"><div className="max-w-2xl text-[10px] leading-relaxed text-slate-500"><p>* Reference ranges are laboratory-specific and may vary by age, gender and methodology.</p><p className="mt-1">Please discuss any flagged result with your healthcare professional. This summary does not replace medical advice.</p><p className="mt-1 font-semibold text-slate-600">{signature ? 'Electronically reviewed by the authorized laboratory professional.' : 'Authorization pending. This document is a clinical result preview and is not a final signed report.'}</p></div><div className="min-w-48 text-left sm:text-right"><p className="border-b border-slate-400 pb-1 text-xs font-semibold text-slate-700">{signature || 'Authorization pending'}</p><p className="mt-1 text-[9px] font-bold uppercase tracking-wider text-slate-400">{signature ? 'Consultant Pathologist' : 'Review required'}</p><p className="mt-2 text-[9px] text-slate-400">Generated: {signedAt || new Date().toLocaleString()}</p></div></div></footer>
     </article>
   );
 }

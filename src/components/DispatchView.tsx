@@ -69,10 +69,11 @@ export function DispatchView({ patients }: DispatchViewProps) {
         body { margin: 0; background: #fff; }
         .lab-report { max-width: 100%; border: 0; box-shadow: none; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
         .lab-report > header,
-        .lab-report > section,
         .lab-report > footer,
-        .lab-report > section > section,
-        .lab-report > section > section > div,
+        .lab-report > section:first-of-type,
+        .lab-report > section:last-of-type,
+        .lab-report > section > div > section,
+        .lab-report > section > div > section > div,
         .lab-report .border-l-\[5px\] { break-inside: avoid; page-break-inside: avoid; }
         .lab-report h1,
         .lab-report h2,

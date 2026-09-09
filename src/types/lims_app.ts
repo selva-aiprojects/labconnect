@@ -78,6 +78,13 @@ export interface Patient {
   isAuthRequired?: string;
   isNonStandard?: boolean;
   collectionDttm?: string;
+  receivedDttm?: string;
+  processedDttm?: string;
+  reportedDttm?: string;
+  accessionNo?: string;
+  specimenId?: string;
+  specimenType?: string;
+  reportStatus?: 'DRAFT' | 'UNDER REVIEW' | 'REVIEWED' | 'FINAL' | 'AMENDED' | 'CANCELLED';
 
   // Insurance & Payment
   insuranceReceiver?: string;
