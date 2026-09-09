@@ -4,9 +4,10 @@
  */
 
 import { useState } from 'react';
-import { ShieldCheck, Check, Award, FileText } from 'lucide-react';
+import { ShieldCheck, Check, Award, FileText, ClipboardList, Activity } from 'lucide-react';
 import { Patient } from '../types/lims_app';
 import { LabReport } from './LabReport';
+import { createAuditEntry, createQualityIssuesFromResults } from '../utils/limsCompliance';
 
 interface AuthorizationViewProps {
   patients: Patient[];
@@ -17,12 +18,20 @@ export function AuthorizationView({ patients, onAuthorizeReport }: Authorization
   const [selectedId, setSelectedId] = useState<string>('');
   const [signature, setSignature] = useState('Dr. Alistair Sterling, MD, Pathologist');
   const [authorizedRecords, setAuthorizedRecords] = useState<string[]>([]);
+  const [auditTrail, setAuditTrail] = useState<Record<string, Array<{ id: string; action: string; actor: string; patientName: string; reason: string; timestamp: string }>>>({});
 
   // We look for patients with 'Completed' status. In a real workflow, once completed, they need senior path validation.
   const completedPatients = patients.filter(p => p.status === 'Completed' && !authorizedRecords.includes(p.id));
   const activePatient = patients.find(p => p.id === selectedId) || completedPatients[0];
 
+  const qualityIssues = activePatient ? createQualityIssuesFromResults(activePatient.testResults || []) : [];
+
   const handleAuthorize = (id: string, name: string) => {
+    const entry = createAuditEntry('Result approved', signature, name, 'Pathologist sign-off completed');
+    setAuditTrail(prev => ({
+      ...prev,
+      [id]: [entry, ...(prev[id] || [])].slice(0, 5)
+    }));
     setAuthorizedRecords(prev => [...prev, id]);
     onAuthorizeReport(id);
     alert(`Clinical report has been digitally signed & authorized by ${signature} for ${name}. It is now locked and ready for immediate dispatch.`);
@@ -106,26 +115,70 @@ export function AuthorizationView({ patients, onAuthorizeReport }: Authorization
 
               <LabReport patient={activePatient} signature={signature} />
 
-              {/* Pathology signature section */}
+              <div className="grid grid-cols-1 xl:grid-cols-[1.3fr_0.7fr] gap-5">
+                <div className="bg-zinc-50/50 dark:bg-zinc-950/20 p-4 rounded-2xl border border-zinc-200/40 dark:border-zinc-800/60 space-y-3">
+                  <h4 className="text-[10px] font-extrabold uppercase tracking-widest text-zinc-400 flex items-center gap-1.5">
+                    <Award className="h-4 w-4" /> Physician Certification & Signature
+                  </h4>
+                  
+                  <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+                    <div className="text-[10px] text-zinc-400 font-semibold space-y-1">
+                      <p>Approved By: <span className="text-zinc-800 dark:text-zinc-200 font-bold">{signature}</span></p>
+                      <p>Regulatory Authority: Central Hub Pathology Commission</p>
+                      <p className="text-zinc-500">Panel: {activePatient.testPanel} &bull; Analytes: {activePatient.testResults?.length || 0}</p>
+                    </div>
+
+                    <button
+                      onClick={() => handleAuthorize(activePatient.id, activePatient.name)}
+                      className="px-5 py-2.5 bg-[#3c3bb6] hover:bg-[#31309c] text-white font-extrabold text-xs rounded-xl flex items-center gap-2 shadow-md shadow-indigo-600/10 cursor-pointer"
+                    >
+                      <ShieldCheck className="h-4 w-4" />
+                      <span>Sign & Authorize Report</span>
+                    </button>
+                  </div>
+                </div>
+
+                <div className="bg-zinc-50/50 dark:bg-zinc-950/20 p-4 rounded-2xl border border-zinc-200/40 dark:border-zinc-800/60 space-y-3">
+                  <h4 className="text-[10px] font-extrabold uppercase tracking-widest text-zinc-400 flex items-center gap-1.5">
+                    <ClipboardList className="h-4 w-4" /> Quality Watch
+                  </h4>
+                  <div className="space-y-2 text-[10px] text-zinc-500">
+                    {qualityIssues.length === 0 ? (
+                      <p className="text-emerald-600 font-bold">No abnormal result flags detected.</p>
+                    ) : (
+                      qualityIssues.map(issue => (
+                        <div key={issue.id} className="rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-2">
+                          <div className="flex items-center justify-between gap-2">
+                            <span className="font-bold text-zinc-700 dark:text-zinc-200">{issue.title}</span>
+                            <span className="uppercase text-[9px] font-black text-amber-600">{issue.severity}</span>
+                          </div>
+                          <p className="mt-1 text-zinc-500">{issue.description}</p>
+                        </div>
+                      ))
+                    )}
+                  </div>
+                </div>
+              </div>
+
               <div className="bg-zinc-50/50 dark:bg-zinc-950/20 p-4 rounded-2xl border border-zinc-200/40 dark:border-zinc-800/60 space-y-3">
                 <h4 className="text-[10px] font-extrabold uppercase tracking-widest text-zinc-400 flex items-center gap-1.5">
-                  <Award className="h-4 w-4" /> Physician Certification & Signature
+                  <Activity className="h-4 w-4" /> Audit Trail
                 </h4>
-                
-                <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
-                  <div className="text-[10px] text-zinc-400 font-semibold space-y-1">
-                    <p>Approved By: <span className="text-zinc-800 dark:text-zinc-200 font-bold">{signature}</span></p>
-                    <p>Regulatory Authority: Central Hub Pathology Commission</p>
-                    <p className="text-zinc-500">Panel: {activePatient.testPanel} &bull; Analytes: {activePatient.testResults?.length || 0}</p>
-                  </div>
-
-                  <button
-                    onClick={() => handleAuthorize(activePatient.id, activePatient.name)}
-                    className="px-5 py-2.5 bg-[#3c3bb6] hover:bg-[#31309c] text-white font-extrabold text-xs rounded-xl flex items-center gap-2 shadow-md shadow-indigo-600/10 cursor-pointer"
-                  >
-                    <ShieldCheck className="h-4 w-4" />
-                    <span>Sign & Authorize Report</span>
-                  </button>
+                <div className="space-y-2 text-[10px] text-zinc-500">
+                  {(auditTrail[activePatient.id] || []).length === 0 ? (
+                    <p className="text-zinc-500">No sign-off events yet. Authorization will generate the first audit entry.</p>
+                  ) : (
+                    auditTrail[activePatient.id].map(entry => (
+                      <div key={entry.id} className="rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-2.5">
+                        <div className="flex items-center justify-between gap-2">
+                          <span className="font-bold text-zinc-700 dark:text-zinc-200">{entry.action}</span>
+                          <span className="text-zinc-400">{new Date(entry.timestamp).toLocaleString()}</span>
+                        </div>
+                        <p className="mt-1">Actor: {entry.actor}</p>
+                        <p>Reason: {entry.reason}</p>
+                      </div>
+                    ))
+                  )}
                 </div>
               </div>
 

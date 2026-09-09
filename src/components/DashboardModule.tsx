@@ -10,7 +10,7 @@ import {
   Layers, Clock, Filter, Sparkles, Check, RefreshCw, Smartphone,
   Sun, Moon, MapPin, ChevronDown, ChevronLeft, ChevronRight, UserPlus,
   Building2, ClipboardList, ExternalLink, Home, Calendar,
-  ShieldCheck, Truck, Menu, X, ShieldAlert, Cpu, Palette, Scale, Dna, Terminal
+  ShieldCheck, Truck, Menu, X, ShieldAlert, Cpu, Palette, Scale, Dna, Terminal, ClipboardCheck
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { LimsRole } from '../types/lims';
@@ -31,6 +31,7 @@ import { ThemeCustomizerView } from './ThemeCustomizerView';
 import { RevenueDashboardView } from './RevenueDashboardView';
 import { PortParityView } from './PortParityView';
 import { MolecularPlateView } from './MolecularPlateView';
+import { QualityView } from './QualityView';
 import { CybeLogo } from './CybeLogo';
 
 interface DashboardModuleProps {
@@ -1115,6 +1116,17 @@ export function DashboardModule({
                       <Truck className="h-4 w-4 shrink-0" />
                       <span>Dispatch Desk</span>
                     </button>
+
+                    <button 
+                      onClick={() => { setActiveMenu('quality'); setMobileMenuOpen(false); }}
+                      className={`w-full text-left flex items-center gap-3.5 px-4 py-2.5 rounded-xl text-xs sidebar-nav-btn cursor-pointer ${
+                        activeMenu === 'quality' ? 'shadow-md font-black' : 'font-semibold'
+                      }`}
+                      style={getNavButtonStyle('quality')}
+                    >
+                      <ClipboardCheck className="h-4 w-4 shrink-0" />
+                      <span>Quality & Compliance</span>
+                    </button>
                   </div>
 
                   {/* System Settings */}
@@ -1377,6 +1389,19 @@ export function DashboardModule({
                 <Truck className="h-4 w-4 shrink-0" />
                 {!sidebarCollapsed && <span>Dispatch Desk</span>}
               </button>
+
+              <button 
+                id="menu-quality"
+                onClick={() => setActiveMenu('quality')}
+                title={sidebarCollapsed ? "Quality & Compliance" : undefined}
+                className={`w-full text-left flex items-center gap-3.5 py-2.5 rounded-xl text-xs sidebar-nav-btn cursor-pointer ${
+                  sidebarCollapsed ? 'justify-center px-2' : 'px-4'
+                } ${activeMenu === 'quality' ? 'shadow-md font-black' : 'font-semibold'}`}
+                style={getNavButtonStyle('quality')}
+              >
+                <ClipboardCheck className="h-4 w-4 shrink-0" />
+                {!sidebarCollapsed && <span>Quality & Compliance</span>}
+              </button>
             </div>
 
             {/* System Settings & Custom Theme */}
@@ -1621,6 +1646,10 @@ export function DashboardModule({
                 <DispatchView 
                   patients={patients}
                 />
+              )}
+
+              {activeMenu === 'quality' && (
+                <QualityView />
               )}
 
               {activeMenu === 'patient-list' && (
