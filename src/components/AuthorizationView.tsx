@@ -7,7 +7,7 @@ import { useState } from 'react';
 import { ShieldCheck, Check, Award, FileText, ClipboardList, Activity } from 'lucide-react';
 import { Patient } from '../types/lims_app';
 import { LabReport } from './LabReport';
-import { createAuditEntry, createQualityIssuesFromResults } from '../utils/limsCompliance';
+import { createApprovalRecord, createAuditEntry, createQualityIssuesFromResults } from '../utils/limsCompliance';
 
 interface AuthorizationViewProps {
   patients: Patient[];
@@ -19,6 +19,7 @@ export function AuthorizationView({ patients, onAuthorizeReport }: Authorization
   const [signature, setSignature] = useState('Dr. Alistair Sterling, MD, Pathologist');
   const [authorizedRecords, setAuthorizedRecords] = useState<string[]>([]);
   const [auditTrail, setAuditTrail] = useState<Record<string, Array<{ id: string; action: string; actor: string; patientName: string; reason: string; timestamp: string }>>>({});
+  const [approvalHistory, setApprovalHistory] = useState<Array<{ id: string; patientName: string; approver: string; decision: 'approved' | 'rejected' | 'on-hold'; rationale: string; riskLevel: 'low' | 'medium' | 'high'; approvedAt: string }>>([]);
 
   // We look for patients with 'Completed' status. In a real workflow, once completed, they need senior path validation.
   const completedPatients = patients.filter(p => p.status === 'Completed' && !authorizedRecords.includes(p.id));
@@ -28,10 +29,13 @@ export function AuthorizationView({ patients, onAuthorizeReport }: Authorization
 
   const handleAuthorize = (id: string, name: string) => {
     const entry = createAuditEntry('Result approved', signature, name, 'Pathologist sign-off completed');
+    const approval = createApprovalRecord(name, signature, 'approved', 'Critical review passed with no unresolved deviations.', qualityIssues.length > 0 ? 'medium' : 'low');
+
     setAuditTrail(prev => ({
       ...prev,
       [id]: [entry, ...(prev[id] || [])].slice(0, 5)
     }));
+    setApprovalHistory(prev => [approval, ...prev].slice(0, 5));
     setAuthorizedRecords(prev => [...prev, id]);
     onAuthorizeReport(id);
     alert(`Clinical report has been digitally signed & authorized by ${signature} for ${name}. It is now locked and ready for immediate dispatch.`);
@@ -160,25 +164,52 @@ export function AuthorizationView({ patients, onAuthorizeReport }: Authorization
                 </div>
               </div>
 
-              <div className="bg-zinc-50/50 dark:bg-zinc-950/20 p-4 rounded-2xl border border-zinc-200/40 dark:border-zinc-800/60 space-y-3">
-                <h4 className="text-[10px] font-extrabold uppercase tracking-widest text-zinc-400 flex items-center gap-1.5">
-                  <Activity className="h-4 w-4" /> Audit Trail
-                </h4>
-                <div className="space-y-2 text-[10px] text-zinc-500">
-                  {(auditTrail[activePatient.id] || []).length === 0 ? (
-                    <p className="text-zinc-500">No sign-off events yet. Authorization will generate the first audit entry.</p>
-                  ) : (
-                    auditTrail[activePatient.id].map(entry => (
-                      <div key={entry.id} className="rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-2.5">
-                        <div className="flex items-center justify-between gap-2">
-                          <span className="font-bold text-zinc-700 dark:text-zinc-200">{entry.action}</span>
-                          <span className="text-zinc-400">{new Date(entry.timestamp).toLocaleString()}</span>
+              <div className="grid grid-cols-1 xl:grid-cols-2 gap-5">
+                <div className="bg-zinc-50/50 dark:bg-zinc-950/20 p-4 rounded-2xl border border-zinc-200/40 dark:border-zinc-800/60 space-y-3">
+                  <h4 className="text-[10px] font-extrabold uppercase tracking-widest text-zinc-400 flex items-center gap-1.5">
+                    <Activity className="h-4 w-4" /> Audit Trail
+                  </h4>
+                  <div className="space-y-2 text-[10px] text-zinc-500">
+                    {(auditTrail[activePatient.id] || []).length === 0 ? (
+                      <p className="text-zinc-500">No sign-off events yet. Authorization will generate the first audit entry.</p>
+                    ) : (
+                      auditTrail[activePatient.id].map(entry => (
+                        <div key={entry.id} className="rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-2.5">
+                          <div className="flex items-center justify-between gap-2">
+                            <span className="font-bold text-zinc-700 dark:text-zinc-200">{entry.action}</span>
+                            <span className="text-zinc-400">{new Date(entry.timestamp).toLocaleString()}</span>
+                          </div>
+                          <p className="mt-1">Actor: {entry.actor}</p>
+                          <p>Reason: {entry.reason}</p>
                         </div>
-                        <p className="mt-1">Actor: {entry.actor}</p>
-                        <p>Reason: {entry.reason}</p>
-                      </div>
-                    ))
-                  )}
+                      ))
+                    )}
+                  </div>
+                </div>
+
+                <div className="bg-zinc-50/50 dark:bg-zinc-950/20 p-4 rounded-2xl border border-zinc-200/40 dark:border-zinc-800/60 space-y-3">
+                  <h4 className="text-[10px] font-extrabold uppercase tracking-widest text-zinc-400 flex items-center gap-1.5">
+                    <ShieldCheck className="h-4 w-4" /> Approval Ledger
+                  </h4>
+                  <div className="space-y-2 text-[10px] text-zinc-500">
+                    {approvalHistory.length === 0 ? (
+                      <p className="text-zinc-500">No regulated approvals recorded yet.</p>
+                    ) : (
+                      approvalHistory.map(record => (
+                        <div key={record.id} className="rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-2.5">
+                          <div className="flex items-center justify-between gap-2">
+                            <span className="font-bold text-zinc-700 dark:text-zinc-200">{record.decision}</span>
+                            <span className={`uppercase text-[9px] font-black px-1.5 py-0.5 rounded-full ${record.riskLevel === 'low' ? 'bg-emerald-50 text-emerald-600' : record.riskLevel === 'medium' ? 'bg-amber-50 text-amber-600' : 'bg-rose-50 text-rose-600'}`}>
+                              {record.riskLevel}
+                            </span>
+                          </div>
+                          <p className="mt-1">Patient: {record.patientName}</p>
+                          <p>Approver: {record.approver}</p>
+                          <p>Reason: {record.rationale}</p>
+                        </div>
+                      ))
+                    )}
+                  </div>
                 </div>
               </div>
 

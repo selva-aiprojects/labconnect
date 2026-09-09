@@ -37,6 +37,16 @@ export type CapaAction = {
   sourceDeviationId: string;
 };
 
+export type ApprovalRecord = {
+  id: string;
+  patientName: string;
+  approver: string;
+  decision: 'approved' | 'rejected' | 'on-hold';
+  rationale: string;
+  riskLevel: 'low' | 'medium' | 'high';
+  approvedAt: string;
+};
+
 export function advanceDeviationStatus(
   deviation: DeviationRecord
 ): DeviationRecord {
@@ -54,6 +64,24 @@ export function closeCapaAction(capa: CapaAction): CapaAction {
   return {
     ...capa,
     status: 'closed'
+  };
+}
+
+export function createApprovalRecord(
+  patientName: string,
+  approver: string,
+  decision: 'approved' | 'rejected' | 'on-hold',
+  rationale: string,
+  riskLevel: 'low' | 'medium' | 'high' = 'medium'
+): ApprovalRecord {
+  return {
+    id: `APR-${Math.random().toString(36).slice(2, 8).toUpperCase()}`,
+    patientName,
+    approver,
+    decision,
+    rationale,
+    riskLevel,
+    approvedAt: new Date().toISOString()
   };
 }
 

@@ -1,6 +1,6 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
-import { advanceDeviationStatus, closeCapaAction, createAuditEntry, createCapaAction, createDeviationRecord, createQualityIssuesFromResults } from './limsCompliance';
+import { advanceDeviationStatus, closeCapaAction, createApprovalRecord, createAuditEntry, createCapaAction, createDeviationRecord, createQualityIssuesFromResults } from './limsCompliance';
 
 describe('lims compliance utilities', () => {
   it('creates a signed audit entry with actor, reason, and timestamp', () => {
@@ -64,5 +64,20 @@ describe('lims compliance utilities', () => {
     assert.equal(evolved.status, 'investigating');
     assert.equal(closed.status, 'closed');
     assert.equal(closed.sourceDeviationId, evolved.id);
+  });
+
+  it('creates a structured approval record for regulated sign-off', () => {
+    const approval = createApprovalRecord(
+      'Jane Doe',
+      'Dr. Alistair Sterling',
+      'approved',
+      'Critical review passed with no unresolved deviations.',
+      'low'
+    );
+
+    assert.equal(approval.decision, 'approved');
+    assert.equal(approval.patientName, 'Jane Doe');
+    assert.equal(approval.riskLevel, 'low');
+    assert.ok(approval.id.startsWith('APR-'));
   });
 });
