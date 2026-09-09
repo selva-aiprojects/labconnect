@@ -238,7 +238,7 @@ export function DispatchView({ patients }: DispatchViewProps) {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginTop: 32 }}>
         <div>
           <div style={{ borderBottom: '1px solid #a1a1aa', paddingBottom: 2, minWidth: 180 }}>
-            <strong>Dr. Alistair Sterling, MD</strong>
+            <strong>Dr. S.P. Arivarasan, MD (Pathology) Consultant Pathologist</strong>
           </div>
           <div style={{ fontSize: 10, color: '#71717a', marginTop: 2 }}>Consultant Pathologist</div>
         </div>

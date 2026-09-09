@@ -16,7 +16,7 @@ interface AuthorizationViewProps {
 
 export function AuthorizationView({ patients, onAuthorizeReport }: AuthorizationViewProps) {
   const [selectedId, setSelectedId] = useState<string>('');
-  const [signature, setSignature] = useState('Dr. Alistair Sterling, MD, Pathologist');
+  const [signature, setSignature] = useState('Dr. S.P. Arivarasan, MD (Pathology) Consultant Pathologist');
   const [authorizedRecords, setAuthorizedRecords] = useState<string[]>([]);
   const [auditTrail, setAuditTrail] = useState<Record<string, Array<{ id: string; action: string; actor: string; patientName: string; reason: string; timestamp: string }>>>({});
   const [approvalHistory, setApprovalHistory] = useState<Array<{ id: string; patientName: string; approver: string; decision: 'approved' | 'rejected' | 'on-hold'; rationale: string; riskLevel: 'low' | 'medium' | 'high'; approvedAt: string }>>([]);
