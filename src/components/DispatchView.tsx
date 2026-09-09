@@ -72,13 +72,13 @@ export function DispatchView({ patients }: DispatchViewProps) {
             if (!sourceElement) return;
             const styles = window.getComputedStyle(sourceElement);
             const element = clonedElement as HTMLElement;
-            element.style.color = fallbackUnsupportedColors(styles.color, '#475569');
-            element.style.backgroundColor = fallbackUnsupportedColors(styles.backgroundColor, '#ffffff');
-            element.style.borderTopColor = fallbackUnsupportedColors(styles.borderTopColor, '#cbd5e1');
-            element.style.borderRightColor = fallbackUnsupportedColors(styles.borderRightColor, '#cbd5e1');
-            element.style.borderBottomColor = fallbackUnsupportedColors(styles.borderBottomColor, '#cbd5e1');
-            element.style.borderLeftColor = fallbackUnsupportedColors(styles.borderLeftColor, '#cbd5e1');
+            for (let propertyIndex = 0; propertyIndex < styles.length; propertyIndex += 1) {
+              const property = styles.item(propertyIndex);
+              const value = styles.getPropertyValue(property);
+              element.style.setProperty(property, fallbackUnsupportedColors(value, '#475569'));
+            }
           });
+          clonedDocument.querySelectorAll('style, link[rel="stylesheet"]').forEach(styleElement => styleElement.remove());
         }
       };
       let canvas;
