@@ -8,13 +8,15 @@ import { Truck, Mail, Smartphone, Printer, Check, RefreshCw, Send, Share2, Clipb
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 import { Patient } from '../types/lims_app';
+import { DoctorRecord } from '../types/doctors';
 import { LabReport } from './LabReport';
 
 interface DispatchViewProps {
   patients: Patient[];
+  doctors: DoctorRecord[];
 }
 
-export function DispatchView({ patients }: DispatchViewProps) {
+export function DispatchView({ patients, doctors }: DispatchViewProps) {
   const [selectedId, setSelectedId] = useState<string>('');
   const [dispatchStatus, setDispatchStatus] = useState<Record<string, { email: boolean, sms: boolean, print: boolean }>>({});
   const [sendingChannel, setSendingChannel] = useState<'email' | 'sms' | 'print' | null>(null);
@@ -24,6 +26,8 @@ export function DispatchView({ patients }: DispatchViewProps) {
   // Completed or Reported patients are ready for dispatch
   const readyPatients = patients.filter(p => p.status === 'Completed');
   const activePatient = patients.find(p => p.id === selectedId) || readyPatients[0];
+  const defaultDoctor = doctors.find(doctor => doctor.active) || doctors[0];
+  const reportSignature = defaultDoctor ? `${defaultDoctor.name}, ${defaultDoctor.qualification} ${defaultDoctor.specialty}` : 'Consultant Pathologist';
 
   const handleDispatch = (id: string, channel: 'email' | 'sms' | 'print', value: string) => {
     if (sendingChannel) return;
@@ -495,7 +499,7 @@ export function DispatchView({ patients }: DispatchViewProps) {
             </div>
             <div className="flex-1 overflow-y-auto p-6">
               <div ref={printableReportRef}>
-                <LabReport patient={activePatient} />
+                <LabReport patient={activePatient} signature={reportSignature} />
               </div>
             </div>
           </div>

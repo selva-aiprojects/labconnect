@@ -6,9 +6,11 @@
 import { useState } from 'react';
 import { FlaskConical, Check, Play, RefreshCw, Printer, AlertTriangle, HelpCircle, FileText } from 'lucide-react';
 import { Patient } from '../types/lims_app';
+import { TechnicianRecord } from '../types/technicians';
 
 interface PhlebotomyViewProps {
   patients: Patient[];
+  technicians: TechnicianRecord[];
   onCollectSample: (id: string, phlebName: string) => void;
   onPrintBarcode: (id: string, bookingNo: string) => void;
   printedBarcodes: string[];
@@ -17,13 +19,14 @@ interface PhlebotomyViewProps {
 
 export function PhlebotomyView({ 
   patients, 
+  technicians,
   onCollectSample, 
   onPrintBarcode,
   printedBarcodes,
   isPrinting
 }: PhlebotomyViewProps) {
   const [selectedId, setSelectedId] = useState<string>('');
-  const [phlebName, setPhlebName] = useState('Marcus Vance');
+  const [phlebName, setPhlebName] = useState(technicians.find(technician => technician.active)?.name || '');
   
   // Tube draw state guide
   const [drawnTubes, setDrawnTubes] = useState<Record<string, boolean>>({});
@@ -74,9 +77,7 @@ export function PhlebotomyView({
             onChange={(e) => setPhlebName(e.target.value)}
             className="bg-transparent focus:outline-none text-xs font-bold text-zinc-800 dark:text-zinc-200 cursor-pointer"
           >
-            <option value="Marcus Vance">Marcus Vance (Phlebotomist)</option>
-            <option value="Sarah Jenkins">Sarah Jenkins (Receptionist)</option>
-            <option value="Dr. Alistair Sterling">Dr. Alistair Sterling (Admin)</option>
+            {technicians.filter(technician => technician.active).map(technician => <option key={technician.id} value={technician.name}>{technician.name} ({technician.role})</option>)}
           </select>
         </div>
       </div>

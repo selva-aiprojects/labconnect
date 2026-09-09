@@ -18,6 +18,8 @@ import { Patient, TestResult } from '../types/lims_app';
 import { CustomTheme } from '../types/theme';
 import { LabDevice, MASTER_DEVICE_REGISTRY, getEnabledDevices } from '../types/device';
 import { ManagedUser, MASTER_USER_REGISTRY } from '../types/users';
+import { DoctorRecord, MASTER_DOCTOR_REGISTRY } from '../types/doctors';
+import { TechnicianRecord, MASTER_TECHNICIAN_REGISTRY } from '../types/technicians';
 import { getStoredThemeForUser, applyThemeToDocument, getFontSizePx } from '../utils/themeUtils';
 
 import { DashboardHome } from './DashboardHome';
@@ -38,6 +40,7 @@ import { InventoryView } from './InventoryView';
 import { CalibrationView } from './CalibrationView';
 import { DeviceMasterView } from './DeviceMasterView';
 import { UserManagementView } from './UserManagementView';
+import { MasterDataView } from './MasterDataView';
 import { CybeLogo } from './CybeLogo';
 
 interface DashboardModuleProps {
@@ -63,6 +66,15 @@ function createBarcodeSvg(value: string) {
   }
 
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${x + 12} 82" width="100%" height="82" role="img" aria-label="Barcode ${value}">${bars.join('')}<text x="${(x + 12) / 2}" y="79" text-anchor="middle" font-family="Arial, sans-serif" font-size="10">${value}</text></svg>`;
+}
+
+function loadMasterRecords<T>(key: string, fallback: T[]): T[] {
+  try {
+    const stored = localStorage.getItem(key);
+    return stored ? JSON.parse(stored) as T[] : fallback;
+  } catch {
+    return fallback;
+  }
 }
 
 const INITIAL_PATIENTS: Patient[] = [
@@ -791,13 +803,26 @@ export function DashboardModule({
   
   // Custom Tester Role allows changing views instantly for testing
   const [testerRole, setTesterRole] = useState<LimsRole>(role);
-  const [devices, setDevices] = useState<LabDevice[]>(MASTER_DEVICE_REGISTRY);
+  const [devices, setDevices] = useState<LabDevice[]>(() => loadMasterRecords('lims.devices', MASTER_DEVICE_REGISTRY));
   const enabledDevices = getEnabledDevices(devices);
   const [users, setUsers] = useState<ManagedUser[]>(MASTER_USER_REGISTRY);
+  const [doctors, setDoctors] = useState<DoctorRecord[]>(() => loadMasterRecords('lims.doctors', MASTER_DOCTOR_REGISTRY));
+  const [technicians, setTechnicians] = useState<TechnicianRecord[]>(() => loadMasterRecords('lims.technicians', MASTER_TECHNICIAN_REGISTRY));
+
+  useEffect(() => { localStorage.setItem('lims.devices', JSON.stringify(devices)); }, [devices]);
+  useEffect(() => { localStorage.setItem('lims.doctors', JSON.stringify(doctors)); }, [doctors]);
+  useEffect(() => { localStorage.setItem('lims.technicians', JSON.stringify(technicians)); }, [technicians]);
 
   const handleToggleDevice = (id: string) => {
     setDevices(current => current.map(device => device.id === id ? { ...device, enabled: !device.enabled } : device));
   };
+
+  const handleSaveDoctor = (record: DoctorRecord) => setDoctors(current => current.some(item => item.id === record.id) ? current.map(item => item.id === record.id ? record : item) : [...current, record]);
+  const handleSaveTechnician = (record: TechnicianRecord) => setTechnicians(current => current.some(item => item.id === record.id) ? current.map(item => item.id === record.id ? record : item) : [...current, record]);
+  const handleSaveDevice = (record: LabDevice) => setDevices(current => current.some(item => item.id === record.id) ? current.map(item => item.id === record.id ? record : item) : [...current, record]);
+  const handleDeleteDoctor = (id: string) => setDoctors(current => current.filter(item => item.id !== id));
+  const handleDeleteTechnician = (id: string) => setTechnicians(current => current.filter(item => item.id !== id));
+  const handleDeleteDevice = (id: string) => setDevices(current => current.filter(item => item.id !== id));
 
   const handleToggleUser = (id: string) => {
     if (users.find(user => user.id === id)?.username === username) {
@@ -1233,6 +1258,15 @@ export function DashboardModule({
                     </button>
 
                     <button
+                      onClick={() => { setActiveMenu('master-data'); setMobileMenuOpen(false); }}
+                      className={`w-full text-left flex items-center gap-3.5 px-4 py-2.5 rounded-xl text-xs sidebar-nav-btn cursor-pointer ${activeMenu === 'master-data' ? 'shadow-md font-black' : 'font-semibold'}`}
+                      style={getNavButtonStyle('master-data')}
+                    >
+                      <Users className="h-4 w-4 shrink-0" />
+                      <span>Doctor / Technician Master</span>
+                    </button>
+
+                    <button
                       onClick={() => { setActiveMenu('user-management'); setMobileMenuOpen(false); }}
                       className={`w-full text-left flex items-center gap-3.5 px-4 py-2.5 rounded-xl text-xs sidebar-nav-btn cursor-pointer ${
                         activeMenu === 'user-management' ? 'shadow-md font-black' : 'font-semibold'
@@ -1559,6 +1593,17 @@ export function DashboardModule({
               </button>
 
               <button
+                id="menu-master-data"
+                onClick={() => setActiveMenu('master-data')}
+                title={sidebarCollapsed ? "Doctor / Technician Master" : undefined}
+                className={`w-full text-left flex items-center gap-3.5 py-2.5 rounded-xl text-xs sidebar-nav-btn cursor-pointer ${sidebarCollapsed ? 'justify-center px-2' : 'px-4'} ${activeMenu === 'master-data' ? 'shadow-md font-black' : 'font-semibold'}`}
+                style={getNavButtonStyle('master-data')}
+              >
+                <Users className="h-4 w-4 shrink-0" />
+                {!sidebarCollapsed && <span>Doctor / Technician Master</span>}
+              </button>
+
+              <button
                 id="menu-user-management"
                 onClick={() => setActiveMenu('user-management')}
                 title={sidebarCollapsed ? "User Management" : undefined}
@@ -1774,6 +1819,7 @@ export function DashboardModule({
               {activeMenu === 'phlebotomy' && (
                 <PhlebotomyView 
                   patients={patients}
+                  technicians={technicians}
                   onCollectSample={handleCollectSample}
                   onPrintBarcode={handlePrintBarcode}
                   printedBarcodes={printedBarcodes}
@@ -1807,6 +1853,7 @@ export function DashboardModule({
               {activeMenu === 'authorization' && (
                 <AuthorizationView 
                   patients={patients}
+                  doctors={doctors}
                   onAuthorizeReport={handleAuthorizeReport}
                 />
               )}
@@ -1814,6 +1861,7 @@ export function DashboardModule({
               {activeMenu === 'dispatch' && (
                 <DispatchView 
                   patients={patients}
+                  doctors={doctors}
                 />
               )}
 
@@ -1831,6 +1879,20 @@ export function DashboardModule({
 
               {activeMenu === 'device-master' && (
                 <DeviceMasterView devices={devices} onToggleDevice={handleToggleDevice} />
+              )}
+
+              {activeMenu === 'master-data' && (
+                <MasterDataView
+                  doctors={doctors}
+                  technicians={technicians}
+                  devices={devices}
+                  onSaveDoctor={handleSaveDoctor}
+                  onDeleteDoctor={handleDeleteDoctor}
+                  onSaveTechnician={handleSaveTechnician}
+                  onDeleteTechnician={handleDeleteTechnician}
+                  onSaveDevice={handleSaveDevice}
+                  onDeleteDevice={handleDeleteDevice}
+                />
               )}
 
               {activeMenu === 'user-management' && (

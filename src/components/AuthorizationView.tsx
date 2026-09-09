@@ -6,17 +6,20 @@
 import { useState } from 'react';
 import { ShieldCheck, Check, Award, FileText, ClipboardList, Activity } from 'lucide-react';
 import { Patient } from '../types/lims_app';
+import { DoctorRecord } from '../types/doctors';
 import { LabReport } from './LabReport';
 import { createApprovalRecord, createAuditEntry, createQualityIssuesFromResults } from '../utils/limsCompliance';
 
 interface AuthorizationViewProps {
   patients: Patient[];
+  doctors: DoctorRecord[];
   onAuthorizeReport: (id: string) => void;
 }
 
-export function AuthorizationView({ patients, onAuthorizeReport }: AuthorizationViewProps) {
+export function AuthorizationView({ patients, doctors, onAuthorizeReport }: AuthorizationViewProps) {
   const [selectedId, setSelectedId] = useState<string>('');
-  const [signature, setSignature] = useState('Dr. S.P. Arivarasan, MD (Pathology) Consultant Pathologist');
+  const defaultDoctor = doctors.find(doctor => doctor.active) || doctors[0];
+  const [signature, setSignature] = useState(defaultDoctor ? `${defaultDoctor.name}, ${defaultDoctor.qualification} ${defaultDoctor.specialty}` : 'Consultant Pathologist');
   const [authorizedRecords, setAuthorizedRecords] = useState<string[]>([]);
   const [auditTrail, setAuditTrail] = useState<Record<string, Array<{ id: string; action: string; actor: string; patientName: string; reason: string; timestamp: string }>>>({});
   const [approvalHistory, setApprovalHistory] = useState<Array<{ id: string; patientName: string; approver: string; decision: 'approved' | 'rejected' | 'on-hold'; rationale: string; riskLevel: 'low' | 'medium' | 'high'; approvedAt: string }>>([]);
