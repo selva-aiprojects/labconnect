@@ -75,6 +75,8 @@ export function DispatchView({ patients }: DispatchViewProps) {
         .lab-report > section > div > section,
         .lab-report > section > div > section > div,
         .lab-report .border-l-\[5px\] { break-inside: avoid; page-break-inside: avoid; }
+        .report-explained { break-before: page; page-break-before: always; }
+        .report-explained-item { break-inside: avoid; page-break-inside: avoid; }
         .lab-report h1,
         .lab-report h2,
         .lab-report h3,

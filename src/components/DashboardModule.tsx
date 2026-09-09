@@ -701,6 +701,51 @@ const INITIAL_PATIENTS: Patient[] = [
   }
 ];
 
+const sampleResultsForPanel = (panel: string): TestResult[] => {
+  if (panel.includes('Lipid')) return [
+    { name: 'Total Cholesterol', value: '185', unit: 'mg/dL', reference: '< 200', flag: 'N' },
+    { name: 'Triglycerides', value: '142', unit: 'mg/dL', reference: '< 150', flag: 'N' },
+    { name: 'HDL Cholesterol', value: '48', unit: 'mg/dL', reference: '> 40', flag: 'N' },
+    { name: 'LDL Cholesterol', value: '105', unit: 'mg/dL', reference: '< 130', flag: 'N' },
+    { name: 'VLDL Cholesterol', value: '28', unit: 'mg/dL', reference: '5 - 40', flag: 'N' }
+  ];
+  if (panel.includes('HbA1c') || panel.includes('G.U.J')) return [
+    { name: 'Fasting Plasma Glucose', value: '92', unit: 'mg/dL', reference: '70 - 100', flag: 'N' },
+    { name: 'Post Prandial Glucose', value: '128', unit: 'mg/dL', reference: '80 - 140', flag: 'N' },
+    { name: 'HbA1c', value: '5.6', unit: '%', reference: '< 5.7', flag: 'N' }
+  ];
+  if (panel.includes('CBC') || panel.includes('Hemogram')) return [
+    { name: 'Hemoglobin', value: '14.2', unit: 'g/dL', reference: '12.0 - 16.0', flag: 'N' },
+    { name: 'WBC Count', value: '6.8', unit: 'x10^3/uL', reference: '4.0 - 11.0', flag: 'N' },
+    { name: 'Platelets', value: '245', unit: 'x10^3/uL', reference: '150 - 450', flag: 'N' }
+  ];
+  if (panel.includes('Liver') || panel.includes('LFT')) return [
+    { name: 'Total Bilirubin', value: '0.8', unit: 'mg/dL', reference: '0.2 - 1.2', flag: 'N' },
+    { name: 'ALT (SGPT)', value: '24', unit: 'U/L', reference: '7 - 56', flag: 'N' },
+    { name: 'AST (SGOT)', value: '28', unit: 'U/L', reference: '10 - 40', flag: 'N' }
+  ];
+  if (panel.includes('Renal') || panel.includes('Kidney') || panel.includes('Creatinine')) return [
+    { name: 'Urea', value: '28', unit: 'mg/dL', reference: '15 - 45', flag: 'N' },
+    { name: 'Creatinine', value: '1.0', unit: 'mg/dL', reference: '0.7 - 1.3', flag: 'N' },
+    { name: 'Uric Acid', value: '5.2', unit: 'mg/dL', reference: '3.4 - 7.0', flag: 'N' }
+  ];
+  if (panel.includes('Thyroid')) return [
+    { name: 'TSH', value: '2.1', unit: 'mIU/L', reference: '0.4 - 4.0', flag: 'N' },
+    { name: 'Free T4', value: '1.2', unit: 'ng/dL', reference: '0.8 - 1.8', flag: 'N' }
+  ];
+  if (panel.includes('Electrolyte')) return [
+    { name: 'Sodium', value: '139', unit: 'mmol/L', reference: '135 - 145', flag: 'N' },
+    { name: 'Potassium', value: '4.2', unit: 'mmol/L', reference: '3.5 - 5.1', flag: 'N' },
+    { name: 'Chloride', value: '102', unit: 'mmol/L', reference: '98 - 107', flag: 'N' }
+  ];
+  return [{ name: 'Screening Result', value: 'Within range', reference: 'Laboratory reference', flag: 'N' }];
+};
+
+const SEEDED_PATIENTS = INITIAL_PATIENTS.map(patient => patient.testResults?.length ? patient : {
+  ...patient,
+  testResults: sampleResultsForPanel(patient.testPanel)
+});
+
 export function DashboardModule({
   username,
   role,
@@ -709,7 +754,7 @@ export function DashboardModule({
   darkMode,
   onToggleDarkMode
 }: DashboardModuleProps) {
-  const [patients, setPatients] = useState<Patient[]>(INITIAL_PATIENTS);
+  const [patients, setPatients] = useState<Patient[]>(SEEDED_PATIENTS);
   const [activeMenu, setActiveMenu] = useState<string>('dashboard');
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -774,7 +819,7 @@ export function DashboardModule({
 
   // Reset/Refresh Data
   const handleRefreshDatabase = () => {
-    setPatients(INITIAL_PATIENTS);
+    setPatients(SEEDED_PATIENTS);
     setToastMessage("LIMS Database state reset successfully.");
     setTimeout(() => setToastMessage(null), 3000);
   };
