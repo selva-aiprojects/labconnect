@@ -1163,7 +1163,7 @@ export function DashboardModule({
                       <span>Equipment Calibration</span>
                     </button>
 
-                    <button 
+                    <button
                       onClick={() => { setActiveMenu('device-master'); setMobileMenuOpen(false); }}
                       className={`w-full text-left flex items-center gap-3.5 px-4 py-2.5 rounded-xl text-xs sidebar-nav-btn cursor-pointer ${
                         activeMenu === 'device-master' ? 'shadow-md font-black' : 'font-semibold'
@@ -1473,7 +1473,7 @@ export function DashboardModule({
                 {!sidebarCollapsed && <span>Equipment Calibration</span>}
               </button>
 
-              <button 
+              <button
                 id="menu-device-master"
                 onClick={() => setActiveMenu('device-master')}
                 title={sidebarCollapsed ? "Device Integration Master" : undefined}
