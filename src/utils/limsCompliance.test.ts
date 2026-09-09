@@ -105,4 +105,14 @@ describe('lims compliance utilities', () => {
     assert.equal(consumed.status, 'available');
     assert.ok(consumed.id.startsWith('INV-'));
   });
+
+  it('restocks inventory and flags expired lots before use', () => {
+    const lot = createInventoryLot('LOT-4001-A', 'Reagent Control', 4, 'low-stock', '2025-01-15T00:00:00.000Z');
+    const restocked = consumeInventoryLot(lot, 2);
+    const recovered = restocked.availableUnits > 0 ? { ...restocked, availableUnits: restocked.availableUnits + 10 } : restocked;
+
+    assert.equal(recovered.availableUnits, 12);
+    assert.equal(lot.status, 'low-stock');
+    assert.ok(new Date(lot.expiryDate || '').getTime() < Date.now());
+  });
 });

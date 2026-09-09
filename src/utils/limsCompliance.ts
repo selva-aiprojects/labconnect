@@ -63,6 +63,7 @@ export type InventoryLot = {
   reagentName: string;
   availableUnits: number;
   status: 'available' | 'low-stock' | 'expired' | 'quarantined';
+  expiryDate?: string;
   updatedAt: string;
 };
 
@@ -126,7 +127,8 @@ export function createInventoryLot(
   lotId: string,
   reagentName: string,
   availableUnits: number,
-  status: 'available' | 'low-stock' | 'expired' | 'quarantined' = 'available'
+  status: 'available' | 'low-stock' | 'expired' | 'quarantined' = 'available',
+  expiryDate?: string
 ): InventoryLot {
   return {
     id: `INV-${Math.random().toString(36).slice(2, 8).toUpperCase()}`,
@@ -134,17 +136,39 @@ export function createInventoryLot(
     reagentName,
     availableUnits,
     status,
+    expiryDate,
     updatedAt: new Date().toISOString()
   };
 }
 
 export function consumeInventoryLot(lot: InventoryLot, units: number): InventoryLot {
+  const expired = lot.expiryDate ? new Date(lot.expiryDate).getTime() < Date.now() : false;
   const nextUnits = Math.max(0, lot.availableUnits - units);
+
+  const resolvedStatus: InventoryLot['status'] = expired
+    ? 'expired'
+    : nextUnits <= 0
+      ? 'low-stock'
+      : nextUnits <= 5
+        ? 'low-stock'
+        : 'available';
 
   return {
     ...lot,
     availableUnits: nextUnits,
-    status: nextUnits <= 5 ? 'low-stock' : 'available',
+    status: resolvedStatus,
+    updatedAt: new Date().toISOString()
+  };
+}
+
+export function restockInventoryLot(lot: InventoryLot, units: number): InventoryLot {
+  const nextUnits = Math.max(0, lot.availableUnits + units);
+  const expired = lot.expiryDate ? new Date(lot.expiryDate).getTime() < Date.now() : false;
+
+  return {
+    ...lot,
+    availableUnits: nextUnits,
+    status: expired ? 'expired' : nextUnits <= 5 ? 'low-stock' : 'available',
     updatedAt: new Date().toISOString()
   };
 }
