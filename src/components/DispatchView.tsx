@@ -102,6 +102,15 @@ export function DispatchView({ patients }: DispatchViewProps) {
           (clonedReport as HTMLElement).style.minWidth = `${captureWidth}px`;
           (clonedReport as HTMLElement).style.maxWidth = 'none';
           (clonedReport as HTMLElement).style.margin = '0';
+          const setCaptureStyle = (selector: string, styles: Partial<CSSStyleDeclaration>) => {
+            clonedReport.querySelectorAll<HTMLElement>(selector).forEach(element => Object.assign(element.style, styles));
+          };
+          setCaptureStyle(':scope > header > div', { display: 'flex', flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'space-between', gap: '16px' });
+          setCaptureStyle(':scope > header h1', { lineHeight: '1.2', margin: '0' });
+          setCaptureStyle(':scope > header p', { lineHeight: '1.4' });
+          setCaptureStyle(':scope > section:nth-of-type(1)', { display: 'grid', gridTemplateColumns: 'repeat(4, minmax(0, 1fr))' });
+          setCaptureStyle('.report-explained-item', { display: 'grid', gridTemplateColumns: '180px minmax(0, 1fr)', breakInside: 'avoid', pageBreakInside: 'avoid' });
+          setCaptureStyle('.report-explained-item > div:last-child', { display: 'grid', gridTemplateColumns: '180px minmax(0, 1fr) minmax(0, 1fr)' });
           clonedDocument.querySelectorAll('style, link[rel="stylesheet"]').forEach(styleElement => styleElement.remove());
         }
       };
