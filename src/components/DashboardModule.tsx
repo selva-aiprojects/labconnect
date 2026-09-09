@@ -17,6 +17,7 @@ import { LimsRole } from '../types/lims';
 import { Patient, TestResult } from '../types/lims_app';
 import { CustomTheme } from '../types/theme';
 import { LabDevice, MASTER_DEVICE_REGISTRY, getEnabledDevices } from '../types/device';
+import { ManagedUser, MASTER_USER_REGISTRY } from '../types/users';
 import { getStoredThemeForUser, applyThemeToDocument, getFontSizePx } from '../utils/themeUtils';
 
 import { DashboardHome } from './DashboardHome';
@@ -36,6 +37,7 @@ import { QualityView } from './QualityView';
 import { InventoryView } from './InventoryView';
 import { CalibrationView } from './CalibrationView';
 import { DeviceMasterView } from './DeviceMasterView';
+import { UserManagementView } from './UserManagementView';
 import { CybeLogo } from './CybeLogo';
 
 interface DashboardModuleProps {
@@ -746,9 +748,20 @@ export function DashboardModule({
   const [testerRole, setTesterRole] = useState<LimsRole>(role);
   const [devices, setDevices] = useState<LabDevice[]>(MASTER_DEVICE_REGISTRY);
   const enabledDevices = getEnabledDevices(devices);
+  const [users, setUsers] = useState<ManagedUser[]>(MASTER_USER_REGISTRY);
 
   const handleToggleDevice = (id: string) => {
     setDevices(current => current.map(device => device.id === id ? { ...device, enabled: !device.enabled } : device));
+  };
+
+  const handleToggleUser = (id: string) => {
+    if (users.find(user => user.id === id)?.username === username) {
+      setToastMessage('Your active session cannot be disabled from its own account.');
+      setTimeout(() => setToastMessage(null), 3000);
+      return;
+    }
+
+    setUsers(current => current.map(user => user.id === id ? { ...user, status: user.status === 'active' ? 'disabled' : 'active' } : user));
   };
 
   // Printed barcodes storage
@@ -1173,6 +1186,17 @@ export function DashboardModule({
                       <Settings2 className="h-4 w-4 shrink-0" />
                       <span>Device Integration Master</span>
                     </button>
+
+                    <button
+                      onClick={() => { setActiveMenu('user-management'); setMobileMenuOpen(false); }}
+                      className={`w-full text-left flex items-center gap-3.5 px-4 py-2.5 rounded-xl text-xs sidebar-nav-btn cursor-pointer ${
+                        activeMenu === 'user-management' ? 'shadow-md font-black' : 'font-semibold'
+                      }`}
+                      style={getNavButtonStyle('user-management')}
+                    >
+                      <User className="h-4 w-4 shrink-0" />
+                      <span>User Management</span>
+                    </button>
                   </details>
 
                   {/* System Settings */}
@@ -1485,6 +1509,19 @@ export function DashboardModule({
                 <Settings2 className="h-4 w-4 shrink-0" />
                 {!sidebarCollapsed && <span>Device Integration Master</span>}
               </button>
+
+              <button
+                id="menu-user-management"
+                onClick={() => setActiveMenu('user-management')}
+                title={sidebarCollapsed ? "User Management" : undefined}
+                className={`w-full text-left flex items-center gap-3.5 py-2.5 rounded-xl text-xs sidebar-nav-btn cursor-pointer ${
+                  sidebarCollapsed ? 'justify-center px-2' : 'px-4'
+                } ${activeMenu === 'user-management' ? 'shadow-md font-black' : 'font-semibold'}`}
+                style={getNavButtonStyle('user-management')}
+              >
+                <User className="h-4 w-4 shrink-0" />
+                {!sidebarCollapsed && <span>User Management</span>}
+              </button>
             </details>
 
             {/* System Settings & Custom Theme */}
@@ -1746,6 +1783,10 @@ export function DashboardModule({
 
               {activeMenu === 'device-master' && (
                 <DeviceMasterView devices={devices} onToggleDevice={handleToggleDevice} />
+              )}
+
+              {activeMenu === 'user-management' && (
+                <UserManagementView users={users} onToggleUser={handleToggleUser} />
               )}
 
               {activeMenu === 'patient-list' && (
