@@ -6,7 +6,7 @@
 import { useState, useEffect, FormEvent } from 'react';
 import { 
   Eye, EyeOff, Lock, User, AlertCircle, Sparkles, CheckCircle2, 
-  HelpCircle, Sun, Moon, Loader2, RefreshCw, KeyRound, ArrowRight
+  HelpCircle, Sun, Moon, Loader2, RefreshCw, KeyRound, ArrowRight, ShieldCheck
 } from 'lucide-react';
 import { motion } from 'motion/react';
 import { SupportedLanguage, TRANSLATIONS, LimsRole } from '../types/lims';
@@ -166,7 +166,11 @@ export function LoginModule({ onLoginSuccess, darkMode, onToggleDarkMode, onBack
     <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950 flex flex-col justify-between transition-colors duration-300 font-sans">
       
       {/* Top Utility Nav bar */}
-      <nav className="absolute top-0 right-0 left-0 flex items-center justify-between p-6 z-30">
+      <nav className="absolute top-0 right-0 left-0 flex items-center justify-between px-6 py-5 sm:px-10 z-30">
+        <div className="hidden lg:flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.18em] text-zinc-400 dark:text-zinc-500">
+          <span className="h-2 w-2 rounded-full bg-emerald-500" />
+          Central diagnostic hub
+        </div>
         {/* Language selector */}
         <div className="flex items-center gap-3 ml-auto">
           <LanguageSelector currentLang={lang} onLanguageChange={setLang} />
@@ -177,13 +181,13 @@ export function LoginModule({ onLoginSuccess, darkMode, onToggleDarkMode, onBack
       <main className="flex-1 grid grid-cols-1 lg:grid-cols-12 min-h-screen items-stretch overflow-hidden">
         
         {/* Left Side: Illustration / Brand area (Desktop only) */}
-        <section className="hidden lg:flex lg:col-span-5 xl:col-span-6 bg-gradient-to-br from-indigo-900 via-indigo-950 to-zinc-950 text-white relative flex-col justify-between p-12 overflow-hidden border-r border-indigo-950/40">
+        <section className="hidden lg:flex lg:col-span-5 xl:col-span-6 bg-[#101827] text-white relative flex-col justify-between p-12 overflow-hidden border-r border-slate-800">
           {/* Diagnostic Grid Grid lines overlay */}
-          <div className="absolute inset-0 bg-[linear-gradient(to_right,#1e1b4b_1px,transparent_1px),linear-gradient(to_bottom,#1e1b4b_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] opacity-30" />
+          <div className="absolute inset-0 bg-[linear-gradient(to_right,#263247_1px,transparent_1px),linear-gradient(to_bottom,#263247_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] opacity-25" />
           
           {/* Fluid medical/biological vector bubble accents */}
-          <div className="absolute -top-12 -left-12 w-64 h-64 bg-indigo-500/10 rounded-full blur-3xl" />
-          <div className="absolute bottom-1/4 -right-24 w-80 h-80 bg-pink-500/10 rounded-full blur-3xl animate-pulse" />
+          <div className="absolute -top-12 -left-12 w-64 h-64 bg-sky-500/10 rounded-full blur-3xl" />
+          <div className="absolute bottom-1/4 -right-24 w-80 h-80 bg-emerald-500/10 rounded-full blur-3xl" />
 
           {/* Top Brand Logo Container */}
           <div className={`relative z-10 py-2 flex items-center ${
@@ -200,32 +204,32 @@ export function LoginModule({ onLoginSuccess, darkMode, onToggleDarkMode, onBack
 
           {/* Interactive Lab illustration / Mock dashboard mock-up */}
           <div className="relative z-10 my-auto max-w-lg space-y-8">
-            <div className="p-8 bg-indigo-950/40 border border-indigo-800/20 backdrop-blur-md rounded-3xl shadow-2xl relative overflow-hidden group">
-              <div className="absolute top-0 right-0 h-1.5 w-1/3 bg-indigo-500 rounded-bl-full" />
+            <div className="p-8 bg-slate-900/70 border border-slate-700/80 backdrop-blur-md rounded-3xl shadow-2xl relative overflow-hidden group">
+              <div className="absolute top-0 right-0 h-1.5 w-1/3 bg-sky-500 rounded-bl-full" />
               
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-500/20 text-indigo-300 font-bold text-[10px] uppercase tracking-wider mb-5 border border-indigo-500/30">
-                <Sparkles className="h-3 w-3 text-indigo-400" /> New Release 2026.4
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-sky-500/10 text-sky-300 font-bold text-[10px] uppercase tracking-wider mb-5 border border-sky-500/30">
+                <ShieldCheck className="h-3 w-3 text-sky-400" /> Controlled clinical access
               </span>
               
               <h2 id="banner-main-title" className="text-3xl font-extrabold tracking-tight leading-tight">
-                {t.bannerTitle}
+                Trusted access for every diagnostic decision.
               </h2>
-              <p className="text-sm text-indigo-200/80 leading-relaxed font-normal mt-4">
-                {t.bannerSubtitle}
+              <p className="text-sm text-slate-300 leading-relaxed font-normal mt-4">
+                Enter the LabConnect command layer to monitor specimens, quality controls, approvals, and connected instruments from one governed workspace.
               </p>
 
               {/* Sample Metrics grid */}
               <div className="grid grid-cols-3 gap-4 mt-8 pt-6 border-t border-indigo-900/40">
                 <div>
-                  <span className="block text-[10px] uppercase tracking-wider text-indigo-400 font-bold">Processing SLA</span>
+                  <span className="block text-[10px] uppercase tracking-wider text-sky-400 font-bold">Processing SLA</span>
                   <span className="block text-xl font-black font-mono text-zinc-100 mt-1">99.98%</span>
                 </div>
                 <div>
-                  <span className="block text-[10px] uppercase tracking-wider text-indigo-400 font-bold">Verified Tests</span>
+                  <span className="block text-[10px] uppercase tracking-wider text-sky-400 font-bold">Verified Tests</span>
                   <span className="block text-xl font-black font-mono text-zinc-100 mt-1">1.8M/mo</span>
                 </div>
                 <div>
-                  <span className="block text-[10px] uppercase tracking-wider text-indigo-400 font-bold">Lab Latency</span>
+                  <span className="block text-[10px] uppercase tracking-wider text-sky-400 font-bold">Lab Latency</span>
                   <span className="block text-xl font-black font-mono text-zinc-100 mt-1">&lt;14ms</span>
                 </div>
               </div>
@@ -259,12 +263,15 @@ export function LoginModule({ onLoginSuccess, darkMode, onToggleDarkMode, onBack
             </div>
 
             {/* Standard Header */}
-            <div className="space-y-2 text-center lg:text-left">
-              <h2 className="text-2xl font-extrabold tracking-tight text-zinc-900 dark:text-white">
-                {t.signInTitle}
+            <div className="space-y-3 text-center lg:text-left">
+              <div className="flex items-center justify-center lg:justify-start gap-2 text-[10px] font-black uppercase tracking-[0.18em] text-indigo-600 dark:text-indigo-400">
+                <Lock className="h-3.5 w-3.5" /> Secure workspace access
+              </div>
+              <h2 className="text-3xl font-extrabold tracking-tight text-zinc-900 dark:text-white">
+                Sign in to LabConnect
               </h2>
-              <p className="text-xs text-zinc-500 dark:text-zinc-400 font-medium leading-relaxed">
-                {t.signInSub}
+              <p className="text-sm text-zinc-500 dark:text-zinc-400 font-medium leading-relaxed">
+                {t.signInSub} Your session is protected by role-based access controls.
               </p>
             </div>
 
@@ -471,12 +478,12 @@ export function LoginModule({ onLoginSuccess, darkMode, onToggleDarkMode, onBack
             </div>
 
             {/* DEMO PROFILES PANEL: Super handy for stakeholder presentations! */}
-            <div className="p-4 bg-indigo-50/30 dark:bg-indigo-950/20 border border-indigo-100 dark:border-indigo-950 rounded-2xl space-y-3.5">
-              <span className="text-[11px] font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-wider flex items-center gap-1">
-                <Sparkles className="h-3.5 w-3.5" /> Stakeholder Demo Quick-Fill
+            <div className="p-4 bg-zinc-100/70 dark:bg-zinc-900/70 border border-zinc-200 dark:border-zinc-800 rounded-2xl space-y-3.5">
+              <span className="text-[11px] font-bold text-zinc-700 dark:text-zinc-300 uppercase tracking-wider flex items-center gap-1">
+                <Sparkles className="h-3.5 w-3.5 text-indigo-500" /> Demo access profiles
               </span>
               <p className="text-[10px] text-zinc-500 dark:text-zinc-400 leading-normal font-medium">
-                Select a clinical persona profile to instantly populate fields and preview role-specific LIMS workspaces.
+                Use a controlled demo profile to preview a role-specific workspace.
               </p>
               <div className="grid grid-cols-3 gap-2">
                 <button
