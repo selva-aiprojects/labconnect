@@ -106,11 +106,21 @@ export function DispatchView({ patients }: DispatchViewProps) {
             clonedReport.querySelectorAll<HTMLElement>(selector).forEach(element => Object.assign(element.style, styles));
           };
           setCaptureStyle(':scope > header > div', { display: 'flex', flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'space-between', gap: '16px' });
-          setCaptureStyle(':scope > header h1', { lineHeight: '1.2', margin: '0' });
+          setCaptureStyle(':scope > header > div > div:first-child', { flex: '0 0 58%', minWidth: '0' });
+          setCaptureStyle(':scope > header > div > div:last-child', { flex: '1 1 auto', minWidth: '0', textAlign: 'right' });
+          setCaptureStyle(':scope > header h1', { lineHeight: '1.2', margin: '0', whiteSpace: 'nowrap' });
           setCaptureStyle(':scope > header p', { lineHeight: '1.4' });
+          const headerSubtitle = clonedReport.querySelector<HTMLElement>(':scope > header > div > div:first-child > p');
+          if (headerSubtitle) headerSubtitle.style.marginTop = '8px';
           setCaptureStyle(':scope > section:nth-of-type(1)', { display: 'grid', gridTemplateColumns: 'repeat(4, minmax(0, 1fr))' });
           setCaptureStyle('.report-explained-item', { display: 'grid', gridTemplateColumns: '180px minmax(0, 1fr)', breakInside: 'avoid', pageBreakInside: 'avoid' });
           setCaptureStyle('.report-explained-item > div:last-child', { display: 'grid', gridTemplateColumns: '180px minmax(0, 1fr) minmax(0, 1fr)' });
+          const explainedSection = clonedReport.querySelector<HTMLElement>('.report-explained');
+          if (explainedSection) {
+            const pageHeightCss = captureWidth * 281 / 194;
+            const remainder = pageHeightCss - (explainedSection.offsetTop % pageHeightCss);
+            if (remainder < pageHeightCss - 24) explainedSection.style.marginTop = `${remainder}px`;
+          }
           clonedDocument.querySelectorAll('style, link[rel="stylesheet"]').forEach(styleElement => styleElement.remove());
         }
       };
