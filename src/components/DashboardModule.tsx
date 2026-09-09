@@ -990,10 +990,11 @@ export function DashboardModule({
                   </div>
 
                   {/* Executive & Financial */}
-                  <div className="space-y-1.5">
-                    <span className="text-[10px] font-extrabold uppercase tracking-widest block px-4 mb-1 opacity-60 font-mono" style={{ color: currentTheme.sidebarTextColor }}>
+                  <details open className="group space-y-1.5">
+                    <summary className="flex items-center justify-between px-4 mb-1 list-none cursor-pointer text-[10px] font-extrabold uppercase tracking-widest opacity-60 font-mono" style={{ color: currentTheme.sidebarTextColor }}>
                       Executive Finance
-                    </span>
+                      <ChevronDown className="h-3 w-3 transition-transform group-open:rotate-180" />
+                    </summary>
 
                     <button 
                       onClick={() => { setActiveMenu('revenue-cockpit'); setMobileMenuOpen(false); }}
@@ -1005,13 +1006,14 @@ export function DashboardModule({
                       <Scale className="h-4 w-4 shrink-0" />
                       <span>Revenue & AR/AP Cockpit</span>
                     </button>
-                  </div>
+                  </details>
 
                   {/* Registration Workflows */}
-                  <div className="space-y-1.5">
-                    <span className="text-[10px] font-extrabold uppercase tracking-widest block px-4 mb-1 opacity-60 font-mono" style={{ color: currentTheme.sidebarTextColor }}>
+                  <details open className="group space-y-1.5">
+                    <summary className="flex items-center justify-between px-4 mb-1 list-none cursor-pointer text-[10px] font-extrabold uppercase tracking-widest opacity-60 font-mono" style={{ color: currentTheme.sidebarTextColor }}>
                       Registration
-                    </span>
+                      <ChevronDown className="h-3 w-3 transition-transform group-open:rotate-180" />
+                    </summary>
                     
                     <button 
                       onClick={() => { setActiveMenu('reg-b2c'); setMobileMenuOpen(false); }}
@@ -1045,13 +1047,14 @@ export function DashboardModule({
                       <Database className="h-4 w-4 shrink-0" />
                       <span>Patient Database</span>
                     </button>
-                  </div>
+                  </details>
 
                   {/* Lab Workflows */}
-                  <div className="space-y-1.5">
-                    <span className="text-[10px] font-extrabold uppercase tracking-widest block px-4 mb-1 opacity-60 font-mono" style={{ color: currentTheme.sidebarTextColor }}>
+                  <details open className="group space-y-1.5">
+                    <summary className="flex items-center justify-between px-4 mb-1 list-none cursor-pointer text-[10px] font-extrabold uppercase tracking-widest opacity-60 font-mono" style={{ color: currentTheme.sidebarTextColor }}>
                       Lab Workflow
-                    </span>
+                      <ChevronDown className="h-3 w-3 transition-transform group-open:rotate-180" />
+                    </summary>
 
                     <button 
                       onClick={() => { setActiveMenu('phlebotomy'); setMobileMenuOpen(false); }}
@@ -1151,13 +1154,14 @@ export function DashboardModule({
                       <Cpu className="h-4 w-4 shrink-0" />
                       <span>Equipment Calibration</span>
                     </button>
-                  </div>
+                  </details>
 
                   {/* System Settings */}
-                  <div className="space-y-1.5">
-                    <span className="text-[10px] font-extrabold uppercase tracking-widest block px-4 mb-1 opacity-60 font-mono" style={{ color: currentTheme.sidebarTextColor }}>
+                  <details open className="group space-y-1.5">
+                    <summary className="flex items-center justify-between px-4 mb-1 list-none cursor-pointer text-[10px] font-extrabold uppercase tracking-widest opacity-60 font-mono" style={{ color: currentTheme.sidebarTextColor }}>
                       Settings
-                    </span>
+                      <ChevronDown className="h-3 w-3 transition-transform group-open:rotate-180" />
+                    </summary>
 
                     <button 
                       onClick={() => { setActiveMenu('theme-customizer'); setMobileMenuOpen(false); }}
@@ -1169,7 +1173,7 @@ export function DashboardModule({
                       <Palette className="h-4 w-4 shrink-0" />
                       <span>Theme Studio & Colors</span>
                     </button>
-                  </div>
+                  </details>
                 </nav>
               </div>
 
@@ -1259,12 +1263,11 @@ export function DashboardModule({
             </div>
 
             {/* Executive & Financial Intelligence */}
-            <div className="space-y-1.5">
-              {!sidebarCollapsed && (
-                <span className="text-[10px] font-extrabold uppercase tracking-widest block px-4 mb-2 opacity-60 font-mono" style={{ color: currentTheme.sidebarTextColor }}>
-                  Executive Finance
-                </span>
-              )}
+            <details open className="group space-y-1.5">
+              <summary className={`flex items-center justify-between list-none cursor-pointer text-[10px] font-extrabold uppercase tracking-widest mb-2 opacity-60 font-mono ${sidebarCollapsed ? 'px-2 justify-center' : 'px-4'}`} style={{ color: currentTheme.sidebarTextColor }}>
+                {!sidebarCollapsed && <span>Executive Finance</span>}
+                {!sidebarCollapsed && <ChevronDown className="h-3 w-3 transition-transform group-open:rotate-180" />}
+              </summary>
 
               <button 
                 id="menu-revenue-cockpit"
@@ -1278,15 +1281,14 @@ export function DashboardModule({
                 <Scale className="h-4 w-4 shrink-0" />
                 {!sidebarCollapsed && <span>Revenue & AR/AP Cockpit</span>}
               </button>
-            </div>
+            </details>
 
             {/* Registration workflows */}
-            <div className="space-y-1.5">
-              {!sidebarCollapsed && (
-                <span className="text-[10px] font-extrabold uppercase tracking-widest block px-4 mb-2 opacity-60 font-mono" style={{ color: currentTheme.sidebarTextColor }}>
-                  Registration
-                </span>
-              )}
+            <details open className="group space-y-1.5">
+              <summary className={`flex items-center justify-between list-none cursor-pointer text-[10px] font-extrabold uppercase tracking-widest mb-2 opacity-60 font-mono ${sidebarCollapsed ? 'px-2 justify-center' : 'px-4'}`} style={{ color: currentTheme.sidebarTextColor }}>
+                {!sidebarCollapsed && <span>Registration</span>}
+                {!sidebarCollapsed && <ChevronDown className="h-3 w-3 transition-transform group-open:rotate-180" />}
+              </summary>
 
               <button 
                 id="menu-reg-b2c"
@@ -1326,15 +1328,14 @@ export function DashboardModule({
                 <Database className="h-4 w-4 shrink-0" />
                 {!sidebarCollapsed && <span>Patient Database</span>}
               </button>
-            </div>
+            </details>
 
             {/* Clinical lab workflows */}
-            <div className="space-y-1.5">
-              {!sidebarCollapsed && (
-                <span className="text-[10px] font-extrabold uppercase tracking-widest block px-4 mb-2 opacity-60 font-mono" style={{ color: currentTheme.sidebarTextColor }}>
-                  Lab Workflow
-                </span>
-              )}
+            <details open className="group space-y-1.5">
+              <summary className={`flex items-center justify-between list-none cursor-pointer text-[10px] font-extrabold uppercase tracking-widest mb-2 opacity-60 font-mono ${sidebarCollapsed ? 'px-2 justify-center' : 'px-4'}`} style={{ color: currentTheme.sidebarTextColor }}>
+                {!sidebarCollapsed && <span>Lab Workflow</span>}
+                {!sidebarCollapsed && <ChevronDown className="h-3 w-3 transition-transform group-open:rotate-180" />}
+              </summary>
 
               <button 
                 id="menu-phlebotomy"
@@ -1452,15 +1453,14 @@ export function DashboardModule({
                 <Cpu className="h-4 w-4 shrink-0" />
                 {!sidebarCollapsed && <span>Equipment Calibration</span>}
               </button>
-            </div>
+            </details>
 
             {/* System Settings & Custom Theme */}
-            <div className="space-y-1.5">
-              {!sidebarCollapsed && (
-                <span className="text-[10px] font-extrabold uppercase tracking-widest block px-4 mb-2 opacity-60 font-mono" style={{ color: currentTheme.sidebarTextColor }}>
-                  Settings
-                </span>
-              )}
+            <details open className="group space-y-1.5">
+              <summary className={`flex items-center justify-between list-none cursor-pointer text-[10px] font-extrabold uppercase tracking-widest mb-2 opacity-60 font-mono ${sidebarCollapsed ? 'px-2 justify-center' : 'px-4'}`} style={{ color: currentTheme.sidebarTextColor }}>
+                {!sidebarCollapsed && <span>Settings</span>}
+                {!sidebarCollapsed && <ChevronDown className="h-3 w-3 transition-transform group-open:rotate-180" />}
+              </summary>
 
               <button 
                 id="menu-theme-customizer"
@@ -1474,7 +1474,7 @@ export function DashboardModule({
                 <Palette className="h-4 w-4 shrink-0" />
                 {!sidebarCollapsed && <span>Theme Studio & Colors</span>}
               </button>
-            </div>
+            </details>
 
           </nav>
         </div>
