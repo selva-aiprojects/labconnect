@@ -54,6 +54,7 @@ export function DispatchView({ patients }: DispatchViewProps) {
   const handlePrintReport = async () => {
     const reportEl = printableReportRef.current;
     if (!reportEl) return;
+    const reportRoot = reportEl.querySelector<HTMLElement>('.lab-report') || reportEl;
     try {
       const fallbackUnsupportedColors = (value: string, fallback: string) => /oklch|oklab/i.test(value) ? fallback : value;
       const canvasOptions = {
@@ -64,7 +65,7 @@ export function DispatchView({ patients }: DispatchViewProps) {
         onclone: (clonedDocument: Document) => {
           const clonedReport = clonedDocument.querySelector('.lab-report');
           if (!clonedReport) return;
-          const sourceElements = [reportEl, ...Array.from(reportEl.querySelectorAll('*'))];
+          const sourceElements = [reportRoot, ...Array.from(reportRoot.querySelectorAll('*'))];
           const clonedElements = [clonedReport, ...Array.from(clonedReport.querySelectorAll('*'))];
           clonedElements.forEach((clonedElement, index) => {
             const sourceElement = sourceElements[index];
@@ -82,10 +83,10 @@ export function DispatchView({ patients }: DispatchViewProps) {
       };
       let canvas;
       try {
-        canvas = await html2canvas(reportEl, canvasOptions);
+        canvas = await html2canvas(reportRoot, canvasOptions);
       } catch (renderError) {
         console.warn('Standard lab report canvas rendering failed; retrying with browser SVG rendering.', renderError);
-        canvas = await html2canvas(reportEl, { ...canvasOptions, foreignObjectRendering: true });
+        canvas = await html2canvas(reportRoot, { ...canvasOptions, foreignObjectRendering: true });
       }
       const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
       const pageWidth = 210;
@@ -93,14 +94,24 @@ export function DispatchView({ patients }: DispatchViewProps) {
       const margin = 8;
       const contentWidth = pageWidth - margin * 2;
       const contentHeight = pageHeight - margin * 2;
-      const imageHeight = (canvas.height * contentWidth) / canvas.width;
-      const pageImageHeight = (canvas.width * contentHeight) / contentWidth;
+      const pageImageHeight = Math.floor((canvas.width * contentHeight) / contentWidth);
       const pageCount = Math.ceil(canvas.height / pageImageHeight);
 
       for (let page = 0; page < pageCount; page += 1) {
         if (page > 0) pdf.addPage();
         const offset = page * pageImageHeight;
-        pdf.addImage(canvas, 'PNG', margin, margin - (offset * contentWidth) / canvas.width, contentWidth, imageHeight);
+        const sliceHeight = Math.min(pageImageHeight, canvas.height - offset);
+        const pageCanvas = document.createElement('canvas');
+        pageCanvas.width = canvas.width;
+        pageCanvas.height = sliceHeight;
+        const pageContext = pageCanvas.getContext('2d');
+        if (!pageContext) throw new Error('Unable to create the PDF page canvas.');
+        pageContext.fillStyle = '#ffffff';
+        pageContext.fillRect(0, 0, pageCanvas.width, pageCanvas.height);
+        pageContext.drawImage(canvas, 0, offset, canvas.width, sliceHeight, 0, 0, canvas.width, sliceHeight);
+        const pageImage = pageCanvas.toDataURL('image/jpeg', 0.92);
+        const pageHeight = (sliceHeight * contentWidth) / canvas.width;
+        pdf.addImage(pageImage, 'JPEG', margin, margin, contentWidth, pageHeight);
       }
 
       const filename = `${activePatient?.name || 'lab-report'}`
