@@ -5,30 +5,24 @@
 
 import { useState, useEffect } from 'react';
 import { Cpu, RefreshCw, Play, CheckCircle2, AlertTriangle, Layers, Database, Sparkles } from 'lucide-react';
-import { Patient, Analyzer, TestResult } from '../types/lims_app';
+import { Patient, TestResult } from '../types/lims_app';
+import { LabDevice } from '../types/device';
 
 interface TechnicianViewProps {
   patients: Patient[];
   onCompleteTesting: (id: string, testResults: TestResult[]) => void;
+  devices: LabDevice[];
 }
 
-export function TechnicianView({ patients, onCompleteTesting }: TechnicianViewProps) {
+export function TechnicianView({ patients, onCompleteTesting, devices }: TechnicianViewProps) {
   const [selectedId, setSelectedId] = useState<string>('');
-  const [activeAnalyzer, setActiveAnalyzer] = useState<string>('Cybe H-560');
+  const [activeAnalyzer, setActiveAnalyzer] = useState<string>(devices[0]?.name || '');
   const [isProcessing, setIsProcessing] = useState(false);
   const [logFeed, setLogFeed] = useState<string[]>([]);
   const [progress, setProgress] = useState(0);
 
   const processingPatients = patients.filter(p => p.status === 'In Progress');
   const activePatient = patients.find(p => p.id === selectedId) || processingPatients[0];
-
-  // Connected Analyzers list
-  const analyzers: Analyzer[] = [
-    { name: 'Cybe XL-200', type: 'Clinical Chemistry Suite', status: 'online', load: 68, reagentLevel: 91 },
-    { name: 'Cybe XL-640', type: 'High-Throughput Biochemistry', status: 'online', load: 84, reagentLevel: 72 },
-    { name: 'Cybe H-560', type: '5-Part Hematology System', status: 'online', load: 42, reagentLevel: 88 },
-    { name: 'Cybe ECL-760', type: 'Automated Coagulation Analyzer', status: 'maintenance', load: 0, reagentLevel: 45 }
-  ];
 
   // Simulated log steps
   const testSteps = [
@@ -145,14 +139,14 @@ export function TechnicianView({ patients, onCompleteTesting }: TechnicianViewPr
 
       {/* Grid: Connected Analyzers list */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {analyzers.map(item => (
+        {devices.filter(device => device.deviceType === 'analyzer').map(item => (
           <div 
             key={item.name} 
             className="bg-white dark:bg-zinc-900 p-4 rounded-2xl border border-zinc-200/60 dark:border-zinc-800 shadow-sm space-y-3"
           >
             <div className="flex items-center justify-between">
-              <span className="text-[10px] font-extrabold text-zinc-400 uppercase tracking-wide">{item.type}</span>
-              <span className={`inline-flex h-2 w-2 rounded-full ${
+              <span className="text-[10px] font-extrabold text-zinc-400 uppercase tracking-wide">{item.department} · {item.protocol}</span>
+                <span className={`inline-flex h-2 w-2 rounded-full ${
                 item.status === 'online' ? 'bg-emerald-500' : item.status === 'maintenance' ? 'bg-amber-500' : 'bg-rose-500'
               }`} />
             </div>
@@ -237,9 +231,9 @@ export function TechnicianView({ patients, onCompleteTesting }: TechnicianViewPr
                     disabled={isProcessing}
                     className="bg-zinc-50 dark:bg-zinc-950 text-xs font-bold text-zinc-800 dark:text-zinc-200 border border-zinc-200 dark:border-zinc-800 px-3 py-1.5 rounded-xl cursor-pointer"
                   >
-                    <option value="Cybe H-560">Cybe H-560 Hematology Suite</option>
-                    <option value="Cybe XL-200">Cybe XL-200 Chemistry Bench</option>
-                    <option value="Cybe XL-640">Cybe XL-640 Chemistry Suite</option>
+                    {devices.filter(device => device.deviceType === 'analyzer').map(device => (
+                      <option key={device.id} value={device.name}>{device.name} ({device.model})</option>
+                    ))}
                   </select>
                 </div>
               </div>

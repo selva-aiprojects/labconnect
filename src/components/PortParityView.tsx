@@ -11,10 +11,12 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { CustomTheme } from '../types/theme';
+import { LabDevice } from '../types/device';
 
 interface PortParityViewProps {
   currentTheme: CustomTheme;
   darkMode: boolean;
+  devices: LabDevice[];
 }
 
 interface AnalyzerPort {
@@ -41,53 +43,27 @@ interface AnalyteComparison {
   dilutionApplied: string;
 }
 
-export function PortParityView({ currentTheme, darkMode }: PortParityViewProps) {
+export function PortParityView({ currentTheme, darkMode, devices }: PortParityViewProps) {
   const [selectedPortId, setSelectedPortId] = useState<string>('PORT-01');
   const [isScanningTape, setIsScanningTape] = useState(false);
   const [tapeScanned, setTapeScanned] = useState(true);
   const [toast, setToast] = useState<string | null>(null);
 
-  const ports: AnalyzerPort[] = [
-    {
-      id: 'PORT-01',
-      name: 'Cybe XL-640 (Clinical Chemistry)',
-      type: 'Automated Photometric Analyzer',
-      portType: 'RS-232 Serial (COM1)',
-      baudRate: '9600, 8, N, 1 (ASTM E1381)',
-      status: 'streaming',
-      packetsReceived: 4289,
+  const ports: AnalyzerPort[] = devices
+    .filter(device => device.deviceType === 'analyzer')
+    .map((device, index) => ({
+      id: device.id,
+      name: `${device.name} (${device.department})`,
+      type: `${device.model} Analyzer`,
+      portType: device.protocol === 'TCP/IP' ? 'TCP/IP Socket (Port 5100)' : device.protocol === 'RS-232' ? 'RS-232 Serial (COM1)' : 'USB-Serial FTDI',
+      baudRate: device.protocol === 'TCP/IP' ? '100 Mbps (HL7 v2.5.1)' : '9600, 8, N, 1 (ASTM E1381)',
+      status: device.activeSampleBarcode ? 'streaming' : 'online',
+      packetsReceived: 4289 - index * 700,
       crcErrorCount: 0,
-      lastPacketTime: '2 seconds ago',
-      activeSampleBarcode: 'BAR-99014 (Mr. Test Dummy)',
-      dilutionFactor: 1
-    },
-    {
-      id: 'PORT-02',
-      name: 'Cybe H-560 (5-Part Hematology)',
-      type: 'Automated Hematology Flow Cytometry',
-      portType: 'TCP/IP Socket (Port 5100)',
-      baudRate: '100 Mbps (HL7 v2.5.1)',
-      status: 'streaming',
-      packetsReceived: 1840,
-      crcErrorCount: 0,
-      lastPacketTime: '14 seconds ago',
-      activeSampleBarcode: 'BAR-44919 (Mrs. Lalitha Devi)',
-      dilutionFactor: 1
-    },
-    {
-      id: 'PORT-03',
-      name: 'Roche Cobas 6000 (Immunochemistry)',
-      type: 'Chemiluminescence Immunoassay',
-      portType: 'RS-232 Serial (COM1)',
-      baudRate: '19200, 8, N, 1 (CLSI LIS01-A2)',
-      status: 'online',
-      packetsReceived: 920,
-      crcErrorCount: 0,
-      lastPacketTime: '1 minute ago',
-      activeSampleBarcode: 'BAR-11881 (Ms. Sarah Vance)',
-      dilutionFactor: 10
-    }
-  ];
+      lastPacketTime: device.lastSeenAt,
+      activeSampleBarcode: `${device.activeSampleBarcode || 'No active sample'}${device.activeSampleBarcode ? ' (Master Registry)' : ''}`,
+      dilutionFactor: device.id === 'DEV-XL640' ? 10 : 1
+    }));
 
   const activePort = ports.find(p => p.id === selectedPortId) || ports[0];
 

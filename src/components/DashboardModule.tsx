@@ -10,12 +10,13 @@ import {
   Layers, Clock, Filter, Sparkles, Check, RefreshCw, Smartphone,
   Sun, Moon, MapPin, ChevronDown, ChevronLeft, ChevronRight, UserPlus,
   Building2, ClipboardList, ExternalLink, Home, Calendar,
-  ShieldCheck, Truck, Menu, X, ShieldAlert, Cpu, Palette, Scale, Dna, Terminal, ClipboardCheck
+  ShieldCheck, Truck, Menu, X, ShieldAlert, Cpu, Palette, Scale, Dna, Terminal, ClipboardCheck, Settings2
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { LimsRole } from '../types/lims';
 import { Patient, TestResult } from '../types/lims_app';
 import { CustomTheme } from '../types/theme';
+import { LabDevice, MASTER_DEVICE_REGISTRY, getEnabledDevices } from '../types/device';
 import { getStoredThemeForUser, applyThemeToDocument, getFontSizePx } from '../utils/themeUtils';
 
 import { DashboardHome } from './DashboardHome';
@@ -34,6 +35,7 @@ import { MolecularPlateView } from './MolecularPlateView';
 import { QualityView } from './QualityView';
 import { InventoryView } from './InventoryView';
 import { CalibrationView } from './CalibrationView';
+import { DeviceMasterView } from './DeviceMasterView';
 import { CybeLogo } from './CybeLogo';
 
 interface DashboardModuleProps {
@@ -742,6 +744,12 @@ export function DashboardModule({
   
   // Custom Tester Role allows changing views instantly for testing
   const [testerRole, setTesterRole] = useState<LimsRole>(role);
+  const [devices, setDevices] = useState<LabDevice[]>(MASTER_DEVICE_REGISTRY);
+  const enabledDevices = getEnabledDevices(devices);
+
+  const handleToggleDevice = (id: string) => {
+    setDevices(current => current.map(device => device.id === id ? { ...device, enabled: !device.enabled } : device));
+  };
 
   // Printed barcodes storage
   const [printedBarcodes, setPrintedBarcodes] = useState<string[]>([]);
@@ -977,7 +985,7 @@ export function DashboardModule({
                 <nav className="p-4 space-y-5">
                   {/* General Overview */}
                   <div className="space-y-1">
-                    <button 
+                    <button
                       onClick={() => { setActiveMenu('dashboard'); setMobileMenuOpen(false); }}
                       className={`w-full text-left flex items-center gap-3.5 px-4 py-2.5 rounded-xl text-xs sidebar-nav-btn cursor-pointer ${
                         activeMenu === 'dashboard' ? 'shadow-md font-black' : 'font-semibold'
@@ -1154,6 +1162,17 @@ export function DashboardModule({
                       <Cpu className="h-4 w-4 shrink-0" />
                       <span>Equipment Calibration</span>
                     </button>
+
+                    <button 
+                      onClick={() => { setActiveMenu('device-master'); setMobileMenuOpen(false); }}
+                      className={`w-full text-left flex items-center gap-3.5 px-4 py-2.5 rounded-xl text-xs sidebar-nav-btn cursor-pointer ${
+                        activeMenu === 'device-master' ? 'shadow-md font-black' : 'font-semibold'
+                      }`}
+                      style={getNavButtonStyle('device-master')}
+                    >
+                      <Settings2 className="h-4 w-4 shrink-0" />
+                      <span>Device Integration Master</span>
+                    </button>
                   </details>
 
                   {/* System Settings */}
@@ -1248,7 +1267,7 @@ export function DashboardModule({
             
             {/* General section */}
             <div className="space-y-1">
-              <button 
+              <button
                 id="menu-dashboard"
                 onClick={() => setActiveMenu('dashboard')}
                 title={sidebarCollapsed ? "Dashboard Overview" : undefined}
@@ -1452,6 +1471,19 @@ export function DashboardModule({
               >
                 <Cpu className="h-4 w-4 shrink-0" />
                 {!sidebarCollapsed && <span>Equipment Calibration</span>}
+              </button>
+
+              <button 
+                id="menu-device-master"
+                onClick={() => setActiveMenu('device-master')}
+                title={sidebarCollapsed ? "Device Integration Master" : undefined}
+                className={`w-full text-left flex items-center gap-3.5 py-2.5 rounded-xl text-xs sidebar-nav-btn cursor-pointer ${
+                  sidebarCollapsed ? 'justify-center px-2' : 'px-4'
+                } ${activeMenu === 'device-master' ? 'shadow-md font-black' : 'font-semibold'}`}
+                style={getNavButtonStyle('device-master')}
+              >
+                <Settings2 className="h-4 w-4 shrink-0" />
+                {!sidebarCollapsed && <span>Device Integration Master</span>}
               </button>
             </details>
 
@@ -1668,6 +1700,7 @@ export function DashboardModule({
                 <TechnicianView 
                   patients={patients}
                   onCompleteTesting={handleCompleteTesting}
+                  devices={enabledDevices}
                 />
               )}
 
@@ -1675,6 +1708,7 @@ export function DashboardModule({
                 <PortParityView 
                   currentTheme={currentTheme}
                   darkMode={darkMode}
+                  devices={enabledDevices}
                 />
               )}
 
@@ -1708,6 +1742,10 @@ export function DashboardModule({
 
               {activeMenu === 'calibration' && (
                 <CalibrationView />
+              )}
+
+              {activeMenu === 'device-master' && (
+                <DeviceMasterView devices={devices} onToggleDevice={handleToggleDevice} />
               )}
 
               {activeMenu === 'patient-list' && (
