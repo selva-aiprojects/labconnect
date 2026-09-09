@@ -65,8 +65,19 @@ export function DispatchView({ patients }: DispatchViewProps) {
       ${stylesheetMarkup}
       <style>
         @page { size: A4; margin: 12mm; }
+        * { box-sizing: border-box; }
         body { margin: 0; background: #fff; }
-        .lab-report { max-width: 100%; border: 0; box-shadow: none; }
+        .lab-report { max-width: 100%; border: 0; box-shadow: none; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+        .lab-report > header,
+        .lab-report > section,
+        .lab-report > footer,
+        .lab-report > section > section,
+        .lab-report > section > section > div,
+        .lab-report .border-l-\[5px\] { break-inside: avoid; page-break-inside: avoid; }
+        .lab-report h1,
+        .lab-report h2,
+        .lab-report h3,
+        .lab-report p { orphans: 3; widows: 3; }
       </style></head><body>
     ${reportEl.innerHTML}</body></html>`;
     printWindow.onload = () => {
