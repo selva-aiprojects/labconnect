@@ -1235,7 +1235,7 @@ export function DashboardModule({
 
       {/* 1. Desktop Sidebar Navigation */}
       <aside 
-        className={`hidden md:flex border-r flex-col justify-between transition-all duration-300 ${
+        className={`hidden md:flex h-screen border-r flex-col transition-all duration-300 overflow-hidden sticky top-0 ${
           sidebarCollapsed ? 'w-20' : 'w-64'
         }`}
         style={{
@@ -1287,7 +1287,7 @@ export function DashboardModule({
           </div>
 
           {/* Navigation group */}
-          <nav className={`p-3 space-y-6 ${sidebarCollapsed ? 'px-2' : 'p-4'}`}>
+          <nav className={`sidebar-scrollbar flex-1 min-h-0 overflow-y-auto p-3 space-y-6 ${sidebarCollapsed ? 'px-2' : 'p-4'}`}>
             
             {/* General section */}
             <div className="space-y-1">
