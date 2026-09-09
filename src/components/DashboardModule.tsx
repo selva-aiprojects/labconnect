@@ -1208,60 +1208,68 @@ export function DashboardModule({
                       <span>Pathologist Sign</span>
                     </button>
 
-                    <button 
-                      onClick={() => { setActiveMenu('dispatch'); setMobileMenuOpen(false); }}
-                      className={`w-full text-left flex items-center gap-3.5 px-4 py-2.5 rounded-xl text-xs sidebar-nav-btn cursor-pointer ${
-                        activeMenu === 'dispatch' ? 'shadow-md font-black' : 'font-semibold'
-                      }`}
-                      style={getNavButtonStyle('dispatch')}
-                    >
-                      <Truck className="h-4 w-4 shrink-0" />
-                      <span>Dispatch Desk</span>
-                    </button>
+                     <button
+                       onClick={() => { setActiveMenu('dispatch'); setMobileMenuOpen(false); }}
+                       className={`w-full text-left flex items-center gap-3.5 px-4 py-2.5 rounded-xl text-xs sidebar-nav-btn cursor-pointer ${
+                         activeMenu === 'dispatch' ? 'shadow-md font-black' : 'font-semibold'
+                       }`}
+                       style={getNavButtonStyle('dispatch')}
+                     >
+                       <Truck className="h-4 w-4 shrink-0" />
+                       <span>Dispatch Desk</span>
+                     </button>
+                   </details>
 
-                    <button 
-                      onClick={() => { setActiveMenu('quality'); setMobileMenuOpen(false); }}
-                      className={`w-full text-left flex items-center gap-3.5 px-4 py-2.5 rounded-xl text-xs sidebar-nav-btn cursor-pointer ${
-                        activeMenu === 'quality' ? 'shadow-md font-black' : 'font-semibold'
-                      }`}
-                      style={getNavButtonStyle('quality')}
-                    >
-                      <ClipboardCheck className="h-4 w-4 shrink-0" />
-                      <span>Quality & Compliance</span>
-                    </button>
+                   {/* System Administration */}
+                   <details open className="group space-y-1.5">
+                     <summary className="flex items-center justify-between px-4 mb-1 list-none cursor-pointer text-[10px] font-extrabold uppercase tracking-widest opacity-60 font-mono" style={{ color: currentTheme.sidebarTextColor }}>
+                       System Administration
+                       <ChevronDown className="h-3 w-3 transition-transform group-open:rotate-180" />
+                     </summary>
 
-                    <button 
-                      onClick={() => { setActiveMenu('inventory'); setMobileMenuOpen(false); }}
-                      className={`w-full text-left flex items-center gap-3.5 px-4 py-2.5 rounded-xl text-xs sidebar-nav-btn cursor-pointer ${
-                        activeMenu === 'inventory' ? 'shadow-md font-black' : 'font-semibold'
-                      }`}
-                      style={getNavButtonStyle('inventory')}
-                    >
-                      <Database className="h-4 w-4 shrink-0" />
-                      <span>Inventory & Lot Tracking</span>
-                    </button>
+                     <button
+                       onClick={() => { setActiveMenu('quality'); setMobileMenuOpen(false); }}
+                       className={`w-full text-left flex items-center gap-3.5 px-4 py-2.5 rounded-xl text-xs sidebar-nav-btn cursor-pointer ${
+                         activeMenu === 'quality' ? 'shadow-md font-black' : 'font-semibold'
+                       }`}
+                       style={getNavButtonStyle('quality')}
+                     >
+                       <ClipboardCheck className="h-4 w-4 shrink-0" />
+                       <span>Quality & Compliance</span>
+                     </button>
 
-                    <button 
-                      onClick={() => { setActiveMenu('calibration'); setMobileMenuOpen(false); }}
-                      className={`w-full text-left flex items-center gap-3.5 px-4 py-2.5 rounded-xl text-xs sidebar-nav-btn cursor-pointer ${
-                        activeMenu === 'calibration' ? 'shadow-md font-black' : 'font-semibold'
-                      }`}
-                      style={getNavButtonStyle('calibration')}
-                    >
-                      <Cpu className="h-4 w-4 shrink-0" />
-                      <span>Equipment Calibration</span>
-                    </button>
+                     <button
+                       onClick={() => { setActiveMenu('inventory'); setMobileMenuOpen(false); }}
+                       className={`w-full text-left flex items-center gap-3.5 px-4 py-2.5 rounded-xl text-xs sidebar-nav-btn cursor-pointer ${
+                         activeMenu === 'inventory' ? 'shadow-md font-black' : 'font-semibold'
+                       }`}
+                       style={getNavButtonStyle('inventory')}
+                     >
+                       <Database className="h-4 w-4 shrink-0" />
+                       <span>Inventory & Lot Tracking</span>
+                     </button>
 
-                    <button
-                      onClick={() => { setActiveMenu('device-master'); setMobileMenuOpen(false); }}
-                      className={`w-full text-left flex items-center gap-3.5 px-4 py-2.5 rounded-xl text-xs sidebar-nav-btn cursor-pointer ${
-                        activeMenu === 'device-master' ? 'shadow-md font-black' : 'font-semibold'
-                      }`}
-                      style={getNavButtonStyle('device-master')}
-                    >
-                      <Settings2 className="h-4 w-4 shrink-0" />
-                      <span>Device Integration Master</span>
-                    </button>
+                     <button
+                       onClick={() => { setActiveMenu('calibration'); setMobileMenuOpen(false); }}
+                       className={`w-full text-left flex items-center gap-3.5 px-4 py-2.5 rounded-xl text-xs sidebar-nav-btn cursor-pointer ${
+                         activeMenu === 'calibration' ? 'shadow-md font-black' : 'font-semibold'
+                       }`}
+                       style={getNavButtonStyle('calibration')}
+                     >
+                       <Cpu className="h-4 w-4 shrink-0" />
+                       <span>Equipment Calibration</span>
+                     </button>
+
+                     <button
+                       onClick={() => { setActiveMenu('device-master'); setMobileMenuOpen(false); }}
+                       className={`w-full text-left flex items-center gap-3.5 px-4 py-2.5 rounded-xl text-xs sidebar-nav-btn cursor-pointer ${
+                         activeMenu === 'device-master' ? 'shadow-md font-black' : 'font-semibold'
+                       }`}
+                       style={getNavButtonStyle('device-master')}
+                     >
+                       <Settings2 className="h-4 w-4 shrink-0" />
+                       <span>Device Integration Master</span>
+                     </button>
 
                      <button
                        onClick={() => { setActiveMenu('master-data'); setMobileMenuOpen(false); }}
@@ -1281,37 +1289,29 @@ export function DashboardModule({
                        <span>Test Master</span>
                      </button>
 
-                    <button
-                      onClick={() => { setActiveMenu('user-management'); setMobileMenuOpen(false); }}
-                      className={`w-full text-left flex items-center gap-3.5 px-4 py-2.5 rounded-xl text-xs sidebar-nav-btn cursor-pointer ${
-                        activeMenu === 'user-management' ? 'shadow-md font-black' : 'font-semibold'
-                      }`}
-                      style={getNavButtonStyle('user-management')}
-                    >
-                      <User className="h-4 w-4 shrink-0" />
-                      <span>User Management</span>
-                    </button>
-                  </details>
+                     <button
+                       onClick={() => { setActiveMenu('user-management'); setMobileMenuOpen(false); }}
+                       className={`w-full text-left flex items-center gap-3.5 px-4 py-2.5 rounded-xl text-xs sidebar-nav-btn cursor-pointer ${
+                         activeMenu === 'user-management' ? 'shadow-md font-black' : 'font-semibold'
+                       }`}
+                       style={getNavButtonStyle('user-management')}
+                     >
+                       <User className="h-4 w-4 shrink-0" />
+                       <span>User Management</span>
+                     </button>
 
-                  {/* System Settings */}
-                  <details open className="group space-y-1.5">
-                    <summary className="flex items-center justify-between px-4 mb-1 list-none cursor-pointer text-[10px] font-extrabold uppercase tracking-widest opacity-60 font-mono" style={{ color: currentTheme.sidebarTextColor }}>
-                      Settings
-                      <ChevronDown className="h-3 w-3 transition-transform group-open:rotate-180" />
-                    </summary>
-
-                    <button 
-                      onClick={() => { setActiveMenu('theme-customizer'); setMobileMenuOpen(false); }}
-                      className={`w-full text-left flex items-center gap-3.5 px-4 py-2.5 rounded-xl text-xs sidebar-nav-btn cursor-pointer ${
-                        activeMenu === 'theme-customizer' ? 'shadow-md font-black' : 'font-semibold'
-                      }`}
-                      style={getNavButtonStyle('theme-customizer')}
-                    >
-                      <Palette className="h-4 w-4 shrink-0" />
-                      <span>Theme Studio & Colors</span>
-                    </button>
-                  </details>
-                </nav>
+                     <button
+                       onClick={() => { setActiveMenu('theme-customizer'); setMobileMenuOpen(false); }}
+                       className={`w-full text-left flex items-center gap-3.5 px-4 py-2.5 rounded-xl text-xs sidebar-nav-btn cursor-pointer ${
+                         activeMenu === 'theme-customizer' ? 'shadow-md font-black' : 'font-semibold'
+                       }`}
+                       style={getNavButtonStyle('theme-customizer')}
+                     >
+                       <Palette className="h-4 w-4 shrink-0" />
+                       <span>Theme Studio & Colors</span>
+                     </button>
+                   </details>
+                 </nav>
               </div>
 
               {/* Mobile Footer */}
@@ -1542,129 +1542,128 @@ export function DashboardModule({
                 {!sidebarCollapsed && <span>Pathologist Sign</span>}
               </button>
 
-              <button 
-                id="menu-dispatch"
-                onClick={() => setActiveMenu('dispatch')}
-                title={sidebarCollapsed ? "Dispatch Desk" : undefined}
-                className={`w-full text-left flex items-center gap-3.5 py-2.5 rounded-xl text-xs sidebar-nav-btn cursor-pointer ${
-                  sidebarCollapsed ? 'justify-center px-2' : 'px-4'
-                } ${activeMenu === 'dispatch' ? 'shadow-md font-black' : 'font-semibold'}`}
-                style={getNavButtonStyle('dispatch')}
-              >
-                <Truck className="h-4 w-4 shrink-0" />
-                {!sidebarCollapsed && <span>Dispatch Desk</span>}
-              </button>
+               <button
+                 id="menu-dispatch"
+                 onClick={() => setActiveMenu('dispatch')}
+                 title={sidebarCollapsed ? "Dispatch Desk" : undefined}
+                 className={`w-full text-left flex items-center gap-3.5 py-2.5 rounded-xl text-xs sidebar-nav-btn cursor-pointer ${
+                   sidebarCollapsed ? 'justify-center px-2' : 'px-4'
+                 } ${activeMenu === 'dispatch' ? 'shadow-md font-black' : 'font-semibold'}`}
+                 style={getNavButtonStyle('dispatch')}
+               >
+                 <Truck className="h-4 w-4 shrink-0" />
+                 {!sidebarCollapsed && <span>Dispatch Desk</span>}
+               </button>
+             </details>
 
-              <button 
-                id="menu-quality"
-                onClick={() => setActiveMenu('quality')}
-                title={sidebarCollapsed ? "Quality & Compliance" : undefined}
-                className={`w-full text-left flex items-center gap-3.5 py-2.5 rounded-xl text-xs sidebar-nav-btn cursor-pointer ${
-                  sidebarCollapsed ? 'justify-center px-2' : 'px-4'
-                } ${activeMenu === 'quality' ? 'shadow-md font-black' : 'font-semibold'}`}
-                style={getNavButtonStyle('quality')}
-              >
-                <ClipboardCheck className="h-4 w-4 shrink-0" />
-                {!sidebarCollapsed && <span>Quality & Compliance</span>}
-              </button>
+             {/* System Administration */}
+             <details open className="group space-y-1.5">
+               <summary className={`flex items-center justify-between list-none cursor-pointer text-[10px] font-extrabold uppercase tracking-widest mb-2 opacity-60 font-mono ${sidebarCollapsed ? 'px-2 justify-center' : 'px-4'}`} style={{ color: currentTheme.sidebarTextColor }}>
+                 {!sidebarCollapsed && <span>System Administration</span>}
+                 {!sidebarCollapsed && <ChevronDown className="h-3 w-3 transition-transform group-open:rotate-180" />}
+               </summary>
 
-              <button 
-                id="menu-inventory"
-                onClick={() => setActiveMenu('inventory')}
-                title={sidebarCollapsed ? "Inventory & Lot Tracking" : undefined}
-                className={`w-full text-left flex items-center gap-3.5 py-2.5 rounded-xl text-xs sidebar-nav-btn cursor-pointer ${
-                  sidebarCollapsed ? 'justify-center px-2' : 'px-4'
-                } ${activeMenu === 'inventory' ? 'shadow-md font-black' : 'font-semibold'}`}
-                style={getNavButtonStyle('inventory')}
-              >
-                <Database className="h-4 w-4 shrink-0" />
-                {!sidebarCollapsed && <span>Inventory & Lot Tracking</span>}
-              </button>
+               <button
+                 id="menu-quality"
+                 onClick={() => setActiveMenu('quality')}
+                 title={sidebarCollapsed ? "Quality & Compliance" : undefined}
+                 className={`w-full text-left flex items-center gap-3.5 py-2.5 rounded-xl text-xs sidebar-nav-btn cursor-pointer ${
+                   sidebarCollapsed ? 'justify-center px-2' : 'px-4'
+                 } ${activeMenu === 'quality' ? 'shadow-md font-black' : 'font-semibold'}`}
+                 style={getNavButtonStyle('quality')}
+               >
+                 <ClipboardCheck className="h-4 w-4 shrink-0" />
+                 {!sidebarCollapsed && <span>Quality & Compliance</span>}
+               </button>
 
-              <button 
-                id="menu-calibration"
-                onClick={() => setActiveMenu('calibration')}
-                title={sidebarCollapsed ? "Equipment Calibration" : undefined}
-                className={`w-full text-left flex items-center gap-3.5 py-2.5 rounded-xl text-xs sidebar-nav-btn cursor-pointer ${
-                  sidebarCollapsed ? 'justify-center px-2' : 'px-4'
-                } ${activeMenu === 'calibration' ? 'shadow-md font-black' : 'font-semibold'}`}
-                style={getNavButtonStyle('calibration')}
-              >
-                <Cpu className="h-4 w-4 shrink-0" />
-                {!sidebarCollapsed && <span>Equipment Calibration</span>}
-              </button>
+               <button
+                 id="menu-inventory"
+                 onClick={() => setActiveMenu('inventory')}
+                 title={sidebarCollapsed ? "Inventory & Lot Tracking" : undefined}
+                 className={`w-full text-left flex items-center gap-3.5 py-2.5 rounded-xl text-xs sidebar-nav-btn cursor-pointer ${
+                   sidebarCollapsed ? 'justify-center px-2' : 'px-4'
+                 } ${activeMenu === 'inventory' ? 'shadow-md font-black' : 'font-semibold'}`}
+                 style={getNavButtonStyle('inventory')}
+               >
+                 <Database className="h-4 w-4 shrink-0" />
+                 {!sidebarCollapsed && <span>Inventory & Lot Tracking</span>}
+               </button>
 
-              <button
-                id="menu-device-master"
-                onClick={() => setActiveMenu('device-master')}
-                title={sidebarCollapsed ? "Device Integration Master" : undefined}
-                className={`w-full text-left flex items-center gap-3.5 py-2.5 rounded-xl text-xs sidebar-nav-btn cursor-pointer ${
-                  sidebarCollapsed ? 'justify-center px-2' : 'px-4'
-                } ${activeMenu === 'device-master' ? 'shadow-md font-black' : 'font-semibold'}`}
-                style={getNavButtonStyle('device-master')}
-              >
-                <Settings2 className="h-4 w-4 shrink-0" />
-                {!sidebarCollapsed && <span>Device Integration Master</span>}
-              </button>
+               <button
+                 id="menu-calibration"
+                 onClick={() => setActiveMenu('calibration')}
+                 title={sidebarCollapsed ? "Equipment Calibration" : undefined}
+                 className={`w-full text-left flex items-center gap-3.5 py-2.5 rounded-xl text-xs sidebar-nav-btn cursor-pointer ${
+                   sidebarCollapsed ? 'justify-center px-2' : 'px-4'
+                 } ${activeMenu === 'calibration' ? 'shadow-md font-black' : 'font-semibold'}`}
+                 style={getNavButtonStyle('calibration')}
+               >
+                 <Cpu className="h-4 w-4 shrink-0" />
+                 {!sidebarCollapsed && <span>Equipment Calibration</span>}
+               </button>
 
-              <button
-                id="menu-master-data"
-                onClick={() => setActiveMenu('master-data')}
-                title={sidebarCollapsed ? "Doctor / Technician Master" : undefined}
-                className={`w-full text-left flex items-center gap-3.5 py-2.5 rounded-xl text-xs sidebar-nav-btn cursor-pointer ${sidebarCollapsed ? 'justify-center px-2' : 'px-4'} ${activeMenu === 'master-data' ? 'shadow-md font-black' : 'font-semibold'}`}
-                style={getNavButtonStyle('master-data')}
-              >
-                <Users className="h-4 w-4 shrink-0" />
-                {!sidebarCollapsed && <span>Doctor / Technician Master</span>}
-              </button>
+               <button
+                 id="menu-device-master"
+                 onClick={() => setActiveMenu('device-master')}
+                 title={sidebarCollapsed ? "Device Integration Master" : undefined}
+                 className={`w-full text-left flex items-center gap-3.5 py-2.5 rounded-xl text-xs sidebar-nav-btn cursor-pointer ${
+                   sidebarCollapsed ? 'justify-center px-2' : 'px-4'
+                 } ${activeMenu === 'device-master' ? 'shadow-md font-black' : 'font-semibold'}`}
+                 style={getNavButtonStyle('device-master')}
+               >
+                 <Settings2 className="h-4 w-4 shrink-0" />
+                 {!sidebarCollapsed && <span>Device Integration Master</span>}
+               </button>
 
-              <button
-                id="menu-test-master"
-                onClick={() => setActiveMenu('test-master')}
-                title={sidebarCollapsed ? "Test Master" : undefined}
-                className={`w-full text-left flex items-center gap-3.5 py-2.5 rounded-xl text-xs sidebar-nav-btn cursor-pointer ${sidebarCollapsed ? 'justify-center px-2' : 'px-4'} ${activeMenu === 'test-master' ? 'shadow-md font-black' : 'font-semibold'}`}
-                style={getNavButtonStyle('test-master')}
-              >
-                <FlaskConical className="h-4 w-4 shrink-0" />
-                {!sidebarCollapsed && <span>Test Master</span>}
-              </button>
+               <button
+                 id="menu-master-data"
+                 onClick={() => setActiveMenu('master-data')}
+                 title={sidebarCollapsed ? "Doctor / Technician Master" : undefined}
+                 className={`w-full text-left flex items-center gap-3.5 py-2.5 rounded-xl text-xs sidebar-nav-btn cursor-pointer ${sidebarCollapsed ? 'justify-center px-2' : 'px-4'} ${activeMenu === 'master-data' ? 'shadow-md font-black' : 'font-semibold'}`}
+                 style={getNavButtonStyle('master-data')}
+               >
+                 <Users className="h-4 w-4 shrink-0" />
+                 {!sidebarCollapsed && <span>Doctor / Technician Master</span>}
+               </button>
 
-              <button
-                id="menu-user-management"
-                onClick={() => setActiveMenu('user-management')}
-                title={sidebarCollapsed ? "User Management" : undefined}
-                className={`w-full text-left flex items-center gap-3.5 py-2.5 rounded-xl text-xs sidebar-nav-btn cursor-pointer ${
-                  sidebarCollapsed ? 'justify-center px-2' : 'px-4'
-                } ${activeMenu === 'user-management' ? 'shadow-md font-black' : 'font-semibold'}`}
-                style={getNavButtonStyle('user-management')}
-              >
-                <User className="h-4 w-4 shrink-0" />
-                {!sidebarCollapsed && <span>User Management</span>}
-              </button>
-            </details>
+               <button
+                 id="menu-test-master"
+                 onClick={() => setActiveMenu('test-master')}
+                 title={sidebarCollapsed ? "Test Master" : undefined}
+                 className={`w-full text-left flex items-center gap-3.5 py-2.5 rounded-xl text-xs sidebar-nav-btn cursor-pointer ${sidebarCollapsed ? 'justify-center px-2' : 'px-4'} ${activeMenu === 'test-master' ? 'shadow-md font-black' : 'font-semibold'}`}
+                 style={getNavButtonStyle('test-master')}
+               >
+                 <FlaskConical className="h-4 w-4 shrink-0" />
+                 {!sidebarCollapsed && <span>Test Master</span>}
+               </button>
 
-            {/* System Settings & Custom Theme */}
-            <details open className="group space-y-1.5">
-              <summary className={`flex items-center justify-between list-none cursor-pointer text-[10px] font-extrabold uppercase tracking-widest mb-2 opacity-60 font-mono ${sidebarCollapsed ? 'px-2 justify-center' : 'px-4'}`} style={{ color: currentTheme.sidebarTextColor }}>
-                {!sidebarCollapsed && <span>Settings</span>}
-                {!sidebarCollapsed && <ChevronDown className="h-3 w-3 transition-transform group-open:rotate-180" />}
-              </summary>
+               <button
+                 id="menu-user-management"
+                 onClick={() => setActiveMenu('user-management')}
+                 title={sidebarCollapsed ? "User Management" : undefined}
+                 className={`w-full text-left flex items-center gap-3.5 py-2.5 rounded-xl text-xs sidebar-nav-btn cursor-pointer ${
+                   sidebarCollapsed ? 'justify-center px-2' : 'px-4'
+                 } ${activeMenu === 'user-management' ? 'shadow-md font-black' : 'font-semibold'}`}
+                 style={getNavButtonStyle('user-management')}
+               >
+                 <User className="h-4 w-4 shrink-0" />
+                 {!sidebarCollapsed && <span>User Management</span>}
+               </button>
 
-              <button 
-                id="menu-theme-customizer"
-                onClick={() => setActiveMenu('theme-customizer')}
-                title={sidebarCollapsed ? "Theme Studio & Colors" : undefined}
-                className={`w-full text-left flex items-center gap-3.5 py-2.5 rounded-xl text-xs sidebar-nav-btn cursor-pointer ${
-                  sidebarCollapsed ? 'justify-center px-2' : 'px-4'
-                } ${activeMenu === 'theme-customizer' ? 'shadow-md font-black' : 'font-semibold'}`}
-                style={getNavButtonStyle('theme-customizer')}
-              >
-                <Palette className="h-4 w-4 shrink-0" />
-                {!sidebarCollapsed && <span>Theme Studio & Colors</span>}
-              </button>
-            </details>
-
-          </nav>
+               <button
+                 id="menu-theme-customizer"
+                 onClick={() => setActiveMenu('theme-customizer')}
+                 title={sidebarCollapsed ? "Theme Studio & Colors" : undefined}
+                 className={`w-full text-left flex items-center gap-3.5 py-2.5 rounded-xl text-xs sidebar-nav-btn cursor-pointer ${
+                   sidebarCollapsed ? 'justify-center px-2' : 'px-4'
+                 } ${activeMenu === 'theme-customizer' ? 'shadow-md font-black' : 'font-semibold'}`}
+                 style={getNavButtonStyle('theme-customizer')}
+               >
+                 <Palette className="h-4 w-4 shrink-0" />
+                 {!sidebarCollapsed && <span>Theme Studio & Colors</span>}
+               </button>
+             </details>
+           </nav>
         </div>
 
         {/* Sidebar Footer Controls */}

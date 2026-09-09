@@ -4,7 +4,7 @@
  */
 
 import { useRef, useState } from 'react';
-import { Truck, Mail, Smartphone, Printer, Check, RefreshCw, Send, Share2, ClipboardCheck, Eye } from 'lucide-react';
+import { Truck, Mail, Smartphone, Printer, Check, RefreshCw, Send, Share2, ClipboardCheck, Eye, Loader2 } from 'lucide-react';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 import { Patient } from '../types/lims_app';
@@ -21,6 +21,7 @@ export function DispatchView({ patients, doctors }: DispatchViewProps) {
   const [dispatchStatus, setDispatchStatus] = useState<Record<string, { email: boolean, sms: boolean, print: boolean }>>({});
   const [sendingChannel, setSendingChannel] = useState<'email' | 'sms' | 'print' | null>(null);
   const [previewOpen, setPreviewOpen] = useState(false);
+  const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
   const printableReportRef = useRef<HTMLDivElement>(null);
 
   // Completed or Reported patients are ready for dispatch
@@ -57,7 +58,8 @@ export function DispatchView({ patients, doctors }: DispatchViewProps) {
 
   const handlePrintReport = async () => {
     const reportEl = printableReportRef.current;
-    if (!reportEl) return;
+    if (!reportEl || isGeneratingPdf) return;
+    setIsGeneratingPdf(true);
     const reportRoot = reportEl.querySelector<HTMLElement>('.lab-report') || reportEl;
     const captureSurface = document.createElement('div');
     const captureReport = reportRoot.cloneNode(true) as HTMLElement;
@@ -121,16 +123,12 @@ export function DispatchView({ patients, doctors }: DispatchViewProps) {
           setCaptureStyle('.report-explained-item > div:last-child', { display: 'grid', gridTemplateColumns: '180px minmax(0, 1fr) minmax(0, 1fr)' });
           const explainedSection = clonedReport.querySelector<HTMLElement>('.report-explained');
           if (explainedSection) {
-            explainedSection.style.breakBefore = 'page';
-            explainedSection.style.pageBreakBefore = 'always';
-            explainedSection.querySelectorAll<HTMLElement>('.report-explained-item').forEach((item, index) => {
-              item.style.breakInside = 'avoid';
-              item.style.pageBreakInside = 'avoid';
-              if (index > 0) {
-                item.style.breakBefore = 'page';
-                item.style.pageBreakBefore = 'always';
-              }
-            });
+          explainedSection.style.breakBefore = 'page';
+          explainedSection.style.pageBreakBefore = 'always';
+          explainedSection.querySelectorAll<HTMLElement>('.report-explained-item').forEach((item) => {
+            item.style.breakInside = 'avoid';
+            item.style.pageBreakInside = 'avoid';
+          });
           }
           clonedDocument.querySelectorAll('style, link[rel="stylesheet"]').forEach(styleElement => styleElement.remove());
         }
@@ -178,6 +176,7 @@ export function DispatchView({ patients, doctors }: DispatchViewProps) {
       alert('The PDF could not be generated. Please try again.');
     } finally {
       captureSurface.remove();
+      setIsGeneratingPdf(false);
     }
   };
 
@@ -484,9 +483,11 @@ export function DispatchView({ patients, doctors }: DispatchViewProps) {
               <div className="flex items-center gap-2">
                 <button
                   onClick={handlePrintReport}
-                  className="px-4 py-2 bg-[#3c3bb6] hover:bg-[#31309c] text-white font-extrabold text-xs rounded-xl flex items-center gap-1.5 cursor-pointer"
+                  disabled={isGeneratingPdf}
+                  className="px-4 py-2 bg-[#3c3bb6] hover:bg-[#31309c] text-white font-extrabold text-xs rounded-xl flex items-center gap-1.5 cursor-pointer disabled:opacity-70 disabled:cursor-not-allowed"
                 >
-                  <Printer className="h-3.5 w-3.5" /> Print PDF
+                  {isGeneratingPdf ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Printer className="h-3.5 w-3.5" />}
+                  <span>{isGeneratingPdf ? 'Generating...' : 'Print PDF'}</span>
                 </button>
                 <button
                   onClick={() => setPreviewOpen(false)}
@@ -497,7 +498,15 @@ export function DispatchView({ patients, doctors }: DispatchViewProps) {
                 </button>
               </div>
             </div>
-            <div className="flex-1 overflow-y-auto p-6">
+            <div className="flex-1 overflow-y-auto p-6 relative">
+              {isGeneratingPdf && (
+                <div className="absolute inset-0 bg-white/80 dark:bg-zinc-900/80 backdrop-blur-sm z-10 flex items-center justify-center">
+                  <div className="flex flex-col items-center gap-3">
+                    <Loader2 className="h-8 w-8 animate-spin text-indigo-600" />
+                    <span className="text-xs font-black uppercase tracking-wider text-zinc-600">Generating PDF...</span>
+                  </div>
+                </div>
+              )}
               <div ref={printableReportRef}>
                 <LabReport patient={activePatient} signature={reportSignature} />
               </div>

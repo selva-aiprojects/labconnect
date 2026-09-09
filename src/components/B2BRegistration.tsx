@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import { Patient } from '../types/lims_app';
 import { TestMaster } from '../types/testMaster';
+import { LOCATIONS, DEFAULT_COUNTRY, DEFAULT_STATE, DEFAULT_CITY, DEFAULT_NATIONALITY, getStatesForCountry, getCitiesForState } from '../data/locations';
 
 interface B2BRegistrationProps {
   patients: Patient[];
@@ -178,9 +179,9 @@ export function B2BRegistration({ patients, onRegister, onCancel, testMasters }:
   const [website, setWebsite] = useState('www.nexusinsurance.ae');
   const [phone, setPhone] = useState('+971 4 123 4567');
   const [fax, setFax] = useState('+971 4 123 4568');
-  const [country, setCountry] = useState('United Arab Emirates');
-  const [state, setState] = useState('Dubai');
-  const [city, setCity] = useState('Dubai');
+  const [country, setCountry] = useState(DEFAULT_COUNTRY);
+  const [state, setState] = useState(DEFAULT_STATE);
+  const [city, setCity] = useState(DEFAULT_CITY);
   const [clientCategory, setClientCategory] = useState('Corporate');
   const [gstNo, setGstNo] = useState('GST-90812-AE');
   const [taxId, setTaxId] = useState('TAX-NX-998');
@@ -200,10 +201,10 @@ export function B2BRegistration({ patients, onRegister, onCancel, testMasters }:
   const [addressLine2, setAddressLine2] = useState('Al Abraj Street, Business Bay');
   const [area, setArea] = useState('Business Bay');
   const [pincode, setPincode] = useState('00000');
-  const [cityContact, setCityContact] = useState('Dubai');
-  const [stateContact, setStateContact] = useState('Dubai');
-  const [countryContact, setCountryContact] = useState('United Arab Emirates');
-  const [nationality, setNationality] = useState('United Arab Emirates');
+  const [cityContact, setCityContact] = useState(DEFAULT_CITY);
+  const [stateContact, setStateContact] = useState(DEFAULT_STATE);
+  const [countryContact, setCountryContact] = useState(DEFAULT_COUNTRY);
+  const [nationality, setNationality] = useState(DEFAULT_NATIONALITY);
 
   // Step 2 Services States
   const [selectedServices, setSelectedServices] = useState<ServiceItem[]>(DEFAULT_SERVICES);
@@ -762,25 +763,35 @@ export function B2BRegistration({ patients, onRegister, onCancel, testMasters }:
                   <label className="text-[10px] font-bold text-zinc-400 uppercase">Country *</label>
                   <select 
                     value={country} 
-                    onChange={(e) => setCountry(e.target.value)}
+                    onChange={(e) => {
+                      const newCountry = e.target.value;
+                      setCountry(newCountry);
+                      const states = getStatesForCountry(newCountry);
+                      if (states.length > 0) {
+                        setState(states[0].name);
+                        const cities = getCitiesForState(newCountry, states[0].name);
+                        if (cities.length > 0) setCity(cities[0]);
+                      }
+                    }}
                     className="w-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 text-xs p-2.5 rounded-xl outline-none focus:border-indigo-500 dark:text-zinc-200"
                   >
-                    <option value="United Arab Emirates">United Arab Emirates</option>
-                    <option value="India">India</option>
-                    <option value="United Kingdom">United Kingdom</option>
+                    {LOCATIONS.map(l => <option key={l.country} value={l.country}>{l.country}</option>)}
                   </select>
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-[10px] font-bold text-zinc-400 uppercase">State</label>
+                  <label className="text-[10px] font-bold text-zinc-400 uppercase">State / Province</label>
                   <select 
                     value={state} 
-                    onChange={(e) => setState(e.target.value)}
+                    onChange={(e) => {
+                      const newState = e.target.value;
+                      setState(newState);
+                      const cities = getCitiesForState(country, newState);
+                      if (cities.length > 0) setCity(cities[0]);
+                    }}
                     className="w-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 text-xs p-2.5 rounded-xl outline-none focus:border-indigo-500 dark:text-zinc-200"
                   >
-                    <option value="Dubai">Dubai</option>
-                    <option value="Abu Dhabi">Abu Dhabi</option>
-                    <option value="Sharjah">Sharjah</option>
+                    {getStatesForCountry(country).map(s => <option key={s.name} value={s.name}>{s.name}</option>)}
                   </select>
                 </div>
 
@@ -791,8 +802,7 @@ export function B2BRegistration({ patients, onRegister, onCancel, testMasters }:
                     onChange={(e) => setCity(e.target.value)}
                     className="w-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 text-xs p-2.5 rounded-xl outline-none focus:border-indigo-500 dark:text-zinc-200"
                   >
-                    <option value="Dubai">Dubai</option>
-                    <option value="Abu Dhabi">Abu Dhabi</option>
+                    {getCitiesForState(country, state).map(c => <option key={c} value={c}>{c}</option>)}
                   </select>
                 </div>
 
@@ -1008,8 +1018,7 @@ export function B2BRegistration({ patients, onRegister, onCancel, testMasters }:
                     onChange={(e) => setCityContact(e.target.value)}
                     className="w-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 text-xs p-2.5 rounded-xl outline-none focus:border-indigo-500 dark:text-zinc-200"
                   >
-                    <option value="Dubai">Dubai</option>
-                    <option value="Abu Dhabi">Abu Dhabi</option>
+                    {getCitiesForState(countryContact, stateContact).map(c => <option key={c} value={c}>{c}</option>)}
                   </select>
                 </div>
 
@@ -1017,11 +1026,15 @@ export function B2BRegistration({ patients, onRegister, onCancel, testMasters }:
                   <label className="text-[10px] font-bold text-zinc-400 uppercase">State *</label>
                   <select 
                     value={stateContact} 
-                    onChange={(e) => setStateContact(e.target.value)}
+                    onChange={(e) => {
+                      const newState = e.target.value;
+                      setStateContact(newState);
+                      const cities = getCitiesForState(countryContact, newState);
+                      if (cities.length > 0) setCityContact(cities[0]);
+                    }}
                     className="w-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 text-xs p-2.5 rounded-xl outline-none focus:border-indigo-500 dark:text-zinc-200"
                   >
-                    <option value="Dubai">Dubai</option>
-                    <option value="Abu Dhabi">Abu Dhabi</option>
+                    {getStatesForCountry(countryContact).map(s => <option key={s.name} value={s.name}>{s.name}</option>)}
                   </select>
                 </div>
 
@@ -1029,11 +1042,19 @@ export function B2BRegistration({ patients, onRegister, onCancel, testMasters }:
                   <label className="text-[10px] font-bold text-zinc-400 uppercase">Country *</label>
                   <select 
                     value={countryContact} 
-                    onChange={(e) => setCountryContact(e.target.value)}
+                    onChange={(e) => {
+                      const newCountry = e.target.value;
+                      setCountryContact(newCountry);
+                      const states = getStatesForCountry(newCountry);
+                      if (states.length > 0) {
+                        setStateContact(states[0].name);
+                        const cities = getCitiesForState(newCountry, states[0].name);
+                        if (cities.length > 0) setCityContact(cities[0]);
+                      }
+                    }}
                     className="w-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 text-xs p-2.5 rounded-xl outline-none focus:border-indigo-500 dark:text-zinc-200"
                   >
-                    <option value="United Arab Emirates">United Arab Emirates</option>
-                    <option value="India">India</option>
+                    {LOCATIONS.map(l => <option key={l.country} value={l.country}>{l.country}</option>)}
                   </select>
                 </div>
 
@@ -1044,9 +1065,20 @@ export function B2BRegistration({ patients, onRegister, onCancel, testMasters }:
                     onChange={(e) => setNationality(e.target.value)}
                     className="w-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 text-xs p-2.5 rounded-xl outline-none focus:border-indigo-500 dark:text-zinc-200"
                   >
-                    <option value="United Arab Emirates">United Arab Emirates</option>
                     <option value="Indian">Indian</option>
+                    <option value="Emirati">Emirati</option>
                     <option value="British">British</option>
+                    <option value="American">American</option>
+                    <option value="Canadian">Canadian</option>
+                    <option value="Australian">Australian</option>
+                    <option value="Pakistani">Pakistani</option>
+                    <option value="Bangladeshi">Bangladeshi</option>
+                    <option value="Filipino">Filipino</option>
+                    <option value="Saudi">Saudi</option>
+                    <option value="Jordanian">Jordanian</option>
+                    <option value="Lebanese">Lebanese</option>
+                    <option value="Egyptian">Egyptian</option>
+                    <option value="Other">Other</option>
                   </select>
                 </div>
               </div>

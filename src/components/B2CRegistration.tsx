@@ -13,6 +13,7 @@ import {
 } from 'lucide-react';
 import { Patient } from '../types/lims_app';
 import { TestMaster } from '../types/testMaster';
+import { LOCATIONS, DEFAULT_COUNTRY, DEFAULT_STATE, DEFAULT_CITY, DEFAULT_NATIONALITY, DEFAULT_MOBILE_PREFIX, getStatesForCountry, getCitiesForState } from '../data/locations';
 
 interface B2CRegistrationProps {
   patients: Patient[];
@@ -285,11 +286,11 @@ export function B2CRegistration({ patients, onRegister, onCancel, testMasters }:
   const [addressLine1, setAddressLine1] = useState<string>('');
   const [addressLine2, setAddressLine2] = useState<string>('');
   const [area, setArea] = useState<string>('');
-  const [city, setCity] = useState<string>('Dubai');
-  const [state, setState] = useState<string>('Dubai');
-  const [country, setCountry] = useState<string>('United Arab Emirates');
+  const [city, setCity] = useState<string>(DEFAULT_CITY);
+  const [state, setState] = useState<string>(DEFAULT_STATE);
+  const [country, setCountry] = useState<string>(DEFAULT_COUNTRY);
   const [pincode, setPincode] = useState<string>('');
-  const [nationality, setNationality] = useState<string>('Indian');
+  const [nationality, setNationality] = useState<string>(DEFAULT_NATIONALITY);
 
   // --- Step 2 Assessment State ---
   const [height, setHeight] = useState<string>('170.0');
@@ -469,9 +470,9 @@ export function B2CRegistration({ patients, onRegister, onCancel, testMasters }:
     setReferredByDetail(p.referralType.includes('B2B') ? 'Client' : p.referralType);
     setAddressLine1('123 Health Street, Al Nahda');
     setArea('Al Nahda');
-    setCity('Dubai');
-    setCountry('United Arab Emirates');
-    setNationality('Indian');
+    setCity(DEFAULT_CITY);
+    setCountry(DEFAULT_COUNTRY);
+    setNationality(DEFAULT_NATIONALITY);
     setPincode('12345');
 
     // Notify user
@@ -908,9 +909,17 @@ export function B2CRegistration({ patients, onRegister, onCancel, testMasters }:
                       onChange={(e) => setMobilePrefix(e.target.value)}
                       className="bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 text-xs p-2.5 rounded-xl outline-none max-w-[75px]"
                     >
-                      <option value="+971">+971</option>
-                      <option value="+91">+91</option>
-                      <option value="+1">+1</option>
+                      <option value="+971">+971 (UAE)</option>
+                      <option value="+91">+91 (India)</option>
+                      <option value="+1">+1 (USA/Canada)</option>
+                      <option value="+44">+44 (UK)</option>
+                      <option value="+966">+966 (KSA)</option>
+                      <option value="+974">+974 (Qatar)</option>
+                      <option value="+968">+968 (Oman)</option>
+                      <option value="+965">+965 (Kuwait)</option>
+                      <option value="+973">+973 (Bahrain)</option>
+                      <option value="+65">+65 (Singapore)</option>
+                      <option value="+61">+61 (Australia)</option>
                     </select>
                     <input 
                       type="tel" 
@@ -1182,25 +1191,24 @@ export function B2CRegistration({ patients, onRegister, onCancel, testMasters }:
                     }}
                     className={`w-full bg-zinc-50 dark:bg-zinc-950 border text-xs p-2.5 rounded-xl outline-none focus:border-indigo-500 ${validationErrors.city ? 'border-rose-500 ring-1 ring-rose-500/30 dark:border-rose-500' : 'border-zinc-200 dark:border-zinc-800'}`}
                   >
-                    <option value="Dubai">Dubai</option>
-                    <option value="Abu Dhabi">Abu Dhabi</option>
-                    <option value="Sharjah">Sharjah</option>
+                    {getCitiesForState(country, state).map(c => <option key={c} value={c}>{c}</option>)}
                   </select>
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-[10px] font-bold text-zinc-400 uppercase">State *</label>
+                  <label className="text-[10px] font-bold text-zinc-400 uppercase">State / Province *</label>
                   <select 
                     value={state}
                     onChange={(e) => {
-                      setState(e.target.value);
-                      if (e.target.value) setValidationErrors(prev => ({ ...prev, state: false }));
+                      const newState = e.target.value;
+                      setState(newState);
+                      const cities = getCitiesForState(country, newState);
+                      if (cities.length > 0) setCity(cities[0]);
+                      if (newState) setValidationErrors(prev => ({ ...prev, state: false }));
                     }}
                     className={`w-full bg-zinc-50 dark:bg-zinc-950 border text-xs p-2.5 rounded-xl outline-none focus:border-indigo-500 ${validationErrors.state ? 'border-rose-500 ring-1 ring-rose-500/30 dark:border-rose-500' : 'border-zinc-200 dark:border-zinc-800'}`}
                   >
-                    <option value="Dubai">Dubai</option>
-                    <option value="Abu Dhabi">Abu Dhabi</option>
-                    <option value="Sharjah">Sharjah</option>
+                    {getStatesForCountry(country).map(s => <option key={s.name} value={s.name}>{s.name}</option>)}
                   </select>
                 </div>
 
@@ -1209,14 +1217,19 @@ export function B2CRegistration({ patients, onRegister, onCancel, testMasters }:
                   <select 
                     value={country}
                     onChange={(e) => {
-                      setCountry(e.target.value);
-                      if (e.target.value) setValidationErrors(prev => ({ ...prev, country: false }));
+                      const newCountry = e.target.value;
+                      setCountry(newCountry);
+                      const states = getStatesForCountry(newCountry);
+                      if (states.length > 0) {
+                        setState(states[0].name);
+                        const cities = getCitiesForState(newCountry, states[0].name);
+                        if (cities.length > 0) setCity(cities[0]);
+                      }
+                      if (newCountry) setValidationErrors(prev => ({ ...prev, country: false }));
                     }}
                     className={`w-full bg-zinc-50 dark:bg-zinc-950 border text-xs p-2.5 rounded-xl outline-none focus:border-indigo-500 ${validationErrors.country ? 'border-rose-500 ring-1 ring-rose-500/30 dark:border-rose-500' : 'border-zinc-200 dark:border-zinc-800'}`}
                   >
-                    <option value="United Arab Emirates">United Arab Emirates</option>
-                    <option value="India">India</option>
-                    <option value="United Kingdom">United Kingdom</option>
+                    {LOCATIONS.map(l => <option key={l.country} value={l.country}>{l.country}</option>)}
                   </select>
                 </div>
               </div>
@@ -1249,6 +1262,17 @@ export function B2CRegistration({ patients, onRegister, onCancel, testMasters }:
                     <option value="Indian">Indian</option>
                     <option value="Emirati">Emirati</option>
                     <option value="British">British</option>
+                    <option value="American">American</option>
+                    <option value="Canadian">Canadian</option>
+                    <option value="Australian">Australian</option>
+                    <option value="Pakistani">Pakistani</option>
+                    <option value="Bangladeshi">Bangladeshi</option>
+                    <option value="Filipino">Filipino</option>
+                    <option value="Saudi">Saudi</option>
+                    <option value="Jordanian">Jordanian</option>
+                    <option value="Lebanese">Lebanese</option>
+                    <option value="Egyptian">Egyptian</option>
+                    <option value="Other">Other</option>
                   </select>
                 </div>
               </div>
