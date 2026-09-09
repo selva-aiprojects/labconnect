@@ -57,9 +57,12 @@ export function DispatchView({ patients }: DispatchViewProps) {
     const reportRoot = reportEl.querySelector<HTMLElement>('.lab-report') || reportEl;
     try {
       const fallbackUnsupportedColors = (value: string, fallback: string) => /oklch|oklab/i.test(value) ? fallback : value;
+      const captureWidth = 794;
       const canvasOptions = {
         backgroundColor: '#ffffff',
         scale: 2,
+        width: captureWidth,
+        windowWidth: captureWidth,
         useCORS: true,
         logging: false,
         onclone: (clonedDocument: Document) => {
@@ -78,6 +81,10 @@ export function DispatchView({ patients }: DispatchViewProps) {
               element.style.setProperty(property, fallbackUnsupportedColors(value, '#475569'));
             }
           });
+          (clonedReport as HTMLElement).style.width = `${captureWidth}px`;
+          (clonedReport as HTMLElement).style.minWidth = `${captureWidth}px`;
+          (clonedReport as HTMLElement).style.maxWidth = 'none';
+          (clonedReport as HTMLElement).style.margin = '0';
           clonedDocument.querySelectorAll('style, link[rel="stylesheet"]').forEach(styleElement => styleElement.remove());
         }
       };
