@@ -32,6 +32,7 @@ import { RevenueDashboardView } from './RevenueDashboardView';
 import { PortParityView } from './PortParityView';
 import { MolecularPlateView } from './MolecularPlateView';
 import { QualityView } from './QualityView';
+import { InventoryView } from './InventoryView';
 import { CybeLogo } from './CybeLogo';
 
 interface DashboardModuleProps {
@@ -1127,6 +1128,17 @@ export function DashboardModule({
                       <ClipboardCheck className="h-4 w-4 shrink-0" />
                       <span>Quality & Compliance</span>
                     </button>
+
+                    <button 
+                      onClick={() => { setActiveMenu('inventory'); setMobileMenuOpen(false); }}
+                      className={`w-full text-left flex items-center gap-3.5 px-4 py-2.5 rounded-xl text-xs sidebar-nav-btn cursor-pointer ${
+                        activeMenu === 'inventory' ? 'shadow-md font-black' : 'font-semibold'
+                      }`}
+                      style={getNavButtonStyle('inventory')}
+                    >
+                      <Database className="h-4 w-4 shrink-0" />
+                      <span>Inventory & Lot Tracking</span>
+                    </button>
                   </div>
 
                   {/* System Settings */}
@@ -1402,6 +1414,19 @@ export function DashboardModule({
                 <ClipboardCheck className="h-4 w-4 shrink-0" />
                 {!sidebarCollapsed && <span>Quality & Compliance</span>}
               </button>
+
+              <button 
+                id="menu-inventory"
+                onClick={() => setActiveMenu('inventory')}
+                title={sidebarCollapsed ? "Inventory & Lot Tracking" : undefined}
+                className={`w-full text-left flex items-center gap-3.5 py-2.5 rounded-xl text-xs sidebar-nav-btn cursor-pointer ${
+                  sidebarCollapsed ? 'justify-center px-2' : 'px-4'
+                } ${activeMenu === 'inventory' ? 'shadow-md font-black' : 'font-semibold'}`}
+                style={getNavButtonStyle('inventory')}
+              >
+                <Database className="h-4 w-4 shrink-0" />
+                {!sidebarCollapsed && <span>Inventory & Lot Tracking</span>}
+              </button>
             </div>
 
             {/* System Settings & Custom Theme */}
@@ -1650,6 +1675,10 @@ export function DashboardModule({
 
               {activeMenu === 'quality' && (
                 <QualityView />
+              )}
+
+              {activeMenu === 'inventory' && (
+                <InventoryView />
               )}
 
               {activeMenu === 'patient-list' && (
