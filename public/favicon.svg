@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" role="img" aria-labelledby="title desc">
+  <title id="title">Cybe LabConnect</title>
+  <desc id="desc">Hexagonal laboratory flask mark</desc>
+  <defs>
+    <linearGradient id="accent" x1="32" y1="24" x2="224" y2="232" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#38bdf8" />
+      <stop offset="1" stop-color="#4f46e5" />
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="8" stdDeviation="7" flood-color="#020617" flood-opacity=".28" />
+    </filter>
+  </defs>
+  <rect width="256" height="256" rx="56" fill="#101827" />
+  <path d="M128 24 216 74v108l-88 50-88-50V74l88-50Z" fill="#17243a" stroke="url(#accent)" stroke-width="12" stroke-linejoin="round" filter="url(#shadow)" />
+  <path d="M112 62h32v34l31 57c8 15-3 33-20 33h-54c-17 0-28-18-20-33l31-57V62Z" fill="url(#accent)" />
+  <path d="M82 145c18-11 33-11 46 0s29 11 46 0l-8 34h-76l-8-34Z" fill="#fff" opacity=".42" />
+  <circle cx="128" cy="48" r="10" fill="#38bdf8" />
+  <circle cx="196" cy="88" r="8" fill="#818cf8" />
+  <circle cx="60" cy="88" r="8" fill="#38bdf8" />
+  <circle cx="128" cy="147" r="7" fill="#fff" opacity=".85" />
+</svg>
