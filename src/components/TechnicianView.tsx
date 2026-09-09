@@ -21,6 +21,18 @@ export function TechnicianView({ patients, onCompleteTesting, devices }: Technic
   const [logFeed, setLogFeed] = useState<string[]>([]);
   const [progress, setProgress] = useState(0);
 
+  useEffect(() => {
+    const availableAnalyzer = devices.find(device => device.deviceType === 'analyzer');
+    if (!availableAnalyzer) {
+      setActiveAnalyzer('');
+      return;
+    }
+
+    if (!devices.some(device => device.name === activeAnalyzer && device.deviceType === 'analyzer')) {
+      setActiveAnalyzer(availableAnalyzer.name);
+    }
+  }, [devices, activeAnalyzer]);
+
   const processingPatients = patients.filter(p => p.status === 'In Progress');
   const activePatient = patients.find(p => p.id === selectedId) || processingPatients[0];
 

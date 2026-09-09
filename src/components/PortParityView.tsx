@@ -44,7 +44,7 @@ interface AnalyteComparison {
 }
 
 export function PortParityView({ currentTheme, darkMode, devices }: PortParityViewProps) {
-  const [selectedPortId, setSelectedPortId] = useState<string>('PORT-01');
+  const [selectedPortId, setSelectedPortId] = useState<string>(devices[0]?.id || '');
   const [isScanningTape, setIsScanningTape] = useState(false);
   const [tapeScanned, setTapeScanned] = useState(true);
   const [toast, setToast] = useState<string | null>(null);
@@ -65,7 +65,9 @@ export function PortParityView({ currentTheme, darkMode, devices }: PortParityVi
       dilutionFactor: device.id === 'DEV-XL640' ? 10 : 1
     }));
 
-  const activePort = ports.find(p => p.id === selectedPortId) || ports[0];
+  const activeDeviceId = ports.some(port => port.id === selectedPortId) ? selectedPortId : ports[0]?.id || '';
+
+  const activePort = ports.find(p => p.id === activeDeviceId) || ports[0];
 
   // Analyte comparisons between machine thermal printout and LIMS ingested values
   const analyteComparisons: AnalyteComparison[] = [
@@ -174,7 +176,7 @@ export function PortParityView({ currentTheme, darkMode, devices }: PortParityVi
       {/* 2. Connected Analyzers Port Selector */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {ports.map(port => {
-          const isSelected = selectedPortId === port.id;
+          const isSelected = activeDeviceId === port.id;
 
           return (
             <button
