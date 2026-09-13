@@ -147,6 +147,15 @@ export interface Patient {
 
   // Structured clinical results populated when the analyzer completes testing.
   testResults?: TestResult[];
+
+  // 21 CFR Part 11 Electronic Signature Stamp
+  eSignature?: {
+    signer: string;
+    role: string;
+    declaration: string;
+    signatureHash: string;
+    timestamp: string;
+  };
 }
 
 export interface TestResult {

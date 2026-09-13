@@ -3,15 +3,16 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { 
   Cpu, Activity, CheckCircle2, AlertTriangle, RefreshCw, Layers, 
   Search, FileText, Camera, ShieldCheck, Check, X, Sparkles, 
-  Maximize2, ArrowRight, Zap, Database, Terminal, Sliders
+  Maximize2, ArrowRight, Zap, Database, Terminal, Sliders, Send
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { CustomTheme } from '../types/theme';
 import { LabDevice } from '../types/device';
+import { ApiService, AnalyzerPacketDto } from '../services/apiService';
 
 interface PortParityViewProps {
   currentTheme: CustomTheme;
@@ -48,6 +49,28 @@ export function PortParityView({ currentTheme, darkMode, devices }: PortParityVi
   const [isScanningTape, setIsScanningTape] = useState(false);
   const [tapeScanned, setTapeScanned] = useState(true);
   const [toast, setToast] = useState<string | null>(null);
+  const [liveFrames, setLiveFrames] = useState<AnalyzerPacketDto[]>([]);
+  const [isTransmitting, setIsTransmitting] = useState(false);
+
+  useEffect(() => {
+    // Load recent frames from backend gateway
+    ApiService.getAnalyzerFrames().then(res => {
+      if (res && res.frames) {
+        setLiveFrames(res.frames);
+      }
+    });
+
+    // Subscribe to live SSE events from port 5100
+    const unsubscribe = ApiService.subscribeAnalyzerStream((frame) => {
+      setLiveFrames(prev => [frame, ...prev].slice(0, 20));
+      setToast(`Physical Analyzer packet ingested (${frame.frameLength} bytes, CRC32: ${frame.crc32Checksum})`);
+      setTimeout(() => setToast(null), 3500);
+    });
+
+    return () => {
+      unsubscribe();
+    };
+  }, []);
 
   const ports: AnalyzerPort[] = devices
     .filter(device => device.deviceType === 'analyzer')
@@ -58,7 +81,7 @@ export function PortParityView({ currentTheme, darkMode, devices }: PortParityVi
       portType: device.protocol === 'TCP/IP' ? 'TCP/IP Socket (Port 5100)' : device.protocol === 'RS-232' ? 'RS-232 Serial (COM1)' : 'USB-Serial FTDI',
       baudRate: device.protocol === 'TCP/IP' ? '100 Mbps (HL7 v2.5.1)' : '9600, 8, N, 1 (ASTM E1381)',
       status: device.activeSampleBarcode ? 'streaming' : 'online',
-      packetsReceived: 4289 - index * 700,
+      packetsReceived: (4289 - index * 700) + liveFrames.length,
       crcErrorCount: 0,
       lastPacketTime: device.lastSeenAt,
       activeSampleBarcode: `${device.activeSampleBarcode || 'No active sample'}${device.activeSampleBarcode ? ' (Master Registry)' : ''}`,
@@ -66,8 +89,24 @@ export function PortParityView({ currentTheme, darkMode, devices }: PortParityVi
     }));
 
   const activeDeviceId = ports.some(port => port.id === selectedPortId) ? selectedPortId : ports[0]?.id || '';
-
   const activePort = ports.find(p => p.id === activeDeviceId) || ports[0];
+
+  const handleTransmitLiveFrame = async () => {
+    setIsTransmitting(true);
+    try {
+      const glucoseVal = (92 + Math.random() * 6).toFixed(1);
+      const rawPacket = `<STX>1H|\\^&|||${activePort.type}|||||||P|1<CR>2O|1|BAR-100278||^^^Glucose\\^^^Cholesterol|R||${new Date().toISOString().replace(/[-:T.]/g, '').substring(0, 14)}<CR>3R|1|^^^Glucose|${glucoseVal}|mg/dL|70-99|N||F<CR><ETX>4E`;
+      
+      const frame = await ApiService.simulateAnalyzerPacket(rawPacket, activePort.name);
+      setLiveFrames(prev => [frame, ...prev].slice(0, 20));
+      setToast(`Physical TCP Frame Processed! CRC-32: ${frame.crc32Checksum} - Analyte: Glucose ${glucoseVal} mg/dL matched to BAR-100278.`);
+      setTimeout(() => setToast(null), 4000);
+    } catch (err: any) {
+      setToast(`Packet error: ${err.message}`);
+    } finally {
+      setIsTransmitting(false);
+    }
+  };
 
   // Analyte comparisons between machine thermal printout and LIMS ingested values
   const analyteComparisons: AnalyteComparison[] = [
@@ -162,15 +201,26 @@ export function PortParityView({ currentTheme, darkMode, devices }: PortParityVi
           </div>
         </div>
 
-        <button
-          onClick={handleSimulateTapeScan}
-          disabled={isScanningTape}
-          className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-black text-white shadow-md cursor-pointer transition-all hover:opacity-90 active:scale-95 disabled:opacity-50"
-          style={{ backgroundColor: currentTheme.primaryColor }}
-        >
-          {isScanningTape ? <RefreshCw className="h-4 w-4 animate-spin" /> : <Camera className="h-4 w-4" />}
-          <span>{isScanningTape ? 'Scanning Thermal Tape...' : 'Scan Machine Tape OCR'}</span>
-        </button>
+        <div className="flex items-center gap-3">
+          <button
+            onClick={handleTransmitLiveFrame}
+            disabled={isTransmitting}
+            className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-black text-white bg-indigo-600 hover:bg-indigo-700 shadow-md cursor-pointer transition-all active:scale-95 disabled:opacity-50"
+          >
+            {isTransmitting ? <RefreshCw className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+            <span>Transmit TCP Frame (Port 5100)</span>
+          </button>
+
+          <button
+            onClick={handleSimulateTapeScan}
+            disabled={isScanningTape}
+            className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-black text-white shadow-md cursor-pointer transition-all hover:opacity-90 active:scale-95 disabled:opacity-50"
+            style={{ backgroundColor: currentTheme.primaryColor }}
+          >
+            {isScanningTape ? <RefreshCw className="h-4 w-4 animate-spin" /> : <Camera className="h-4 w-4" />}
+            <span>{isScanningTape ? 'Scanning Thermal Tape...' : 'Scan Machine Tape OCR'}</span>
+          </button>
+        </div>
       </div>
 
       {/* 2. Connected Analyzers Port Selector */}
@@ -324,17 +374,27 @@ export function PortParityView({ currentTheme, darkMode, devices }: PortParityVi
 
           {/* Raw Hex/ASCII Stream Sniffer Box */}
           <div className="pt-2">
-            <div className="p-3 rounded-2xl bg-zinc-950 text-zinc-400 font-mono text-[10px] space-y-1 overflow-x-auto border border-zinc-800">
+            <div className="p-3 rounded-2xl bg-zinc-950 text-zinc-400 font-mono text-[10px] space-y-1.5 overflow-x-auto border border-zinc-800">
               <div className="flex items-center justify-between text-zinc-500 pb-1 border-b border-zinc-800">
-                <span className="flex items-center gap-1"><Terminal className="h-3 w-3" /> Raw ASTM E1381 Serial Buffer Stream (SHA-256 Hashed)</span>
-                <span className="text-emerald-400">STATUS: &lt;ACK&gt; RECEIVED</span>
+                <span className="flex items-center gap-1"><Terminal className="h-3 w-3" /> Raw ASTM E1381 / TCP Socket Stream (Port 5100 Daemon)</span>
+                <span className="text-emerald-400 font-bold">STATUS: LIVE STREAMING ({liveFrames.length} Frames Ingested)</span>
               </div>
-              <p className="text-emerald-400">H|\^&amp;|||Cybe_XL640^v4.1|||||||P|1|{new Date().toISOString()}</p>
-              <p className="text-zinc-300">P|1||BAR-99014||TEST^DUMMY||19900101|M|||||Dr_John_Doe</p>
-              <p className="text-zinc-300">O|1|BAR-99014||^^^GLU\^^^CHOL\^^^CREAT\^^^LIPASE||{new Date().toISOString()}|||||||||Serum</p>
-              <p className="text-amber-400">R|1|^^^GLU|94.2|mg/dL|70.0-99.0|N||F||||{new Date().toISOString()}</p>
-              <p className="text-amber-400">R|2|^^^LIPASE|48.5|U/L|10.0-140.0|N||F|DIL=10|||{new Date().toISOString()}</p>
-              <p className="text-zinc-500">L|1|N</p>
+              {liveFrames.length > 0 ? (
+                liveFrames.slice(0, 5).map((f, i) => (
+                  <div key={f.id || i} className="py-1 border-b border-zinc-900 last:border-0 space-y-0.5">
+                    <div className="flex justify-between text-[9px] text-zinc-500">
+                      <span>[{new Date(f.timestamp).toLocaleTimeString()}] {f.analyzerModel} ({f.source})</span>
+                      <span className="text-cyan-400 font-bold font-mono">CRC-32: {f.crc32Checksum}</span>
+                    </div>
+                    <p className="text-emerald-400 break-all">{f.rawAscii}</p>
+                    {f.rawHex && <p className="text-zinc-500 text-[9px] truncate">HEX: {f.rawHex}</p>}
+                  </div>
+                ))
+              ) : (
+                <div className="py-2 text-zinc-500 text-center">
+                  Listening on TCP Port 5100... Click "Transmit TCP Frame" to inject packet.
+                </div>
+              )}
             </div>
           </div>
 

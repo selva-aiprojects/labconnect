@@ -4,11 +4,13 @@
  */
 
 import { useState } from 'react';
-import { ShieldCheck, Check, Award, FileText, ClipboardList, Activity } from 'lucide-react';
+import { ShieldCheck, Check, Award, FileText, ClipboardList, Activity, Lock, KeyRound } from 'lucide-react';
 import { Patient } from '../types/lims_app';
 import { DoctorRecord } from '../types/doctors';
 import { LabReport } from './LabReport';
 import { createApprovalRecord, createAuditEntry, createQualityIssuesFromResults } from '../utils/limsCompliance';
+import { ESignatureModal } from './ESignatureModal';
+import { ESignatureResponse, ApiService } from '../services/apiService';
 
 interface AuthorizationViewProps {
   patients: Patient[];
@@ -21,6 +23,8 @@ export function AuthorizationView({ patients, doctors, onAuthorizeReport }: Auth
   const defaultDoctor = doctors.find(doctor => doctor.active) || doctors[0];
   const [signature, setSignature] = useState(defaultDoctor ? `${defaultDoctor.name}, ${defaultDoctor.qualification} ${defaultDoctor.specialty}` : 'Consultant Pathologist');
   const [authorizedRecords, setAuthorizedRecords] = useState<string[]>([]);
+  const [showSignModal, setShowSignModal] = useState(false);
+  const [lastSigResult, setLastSigResult] = useState<ESignatureResponse | null>(null);
   const [auditTrail, setAuditTrail] = useState<Record<string, Array<{ id: string; action: string; actor: string; patientName: string; reason: string; timestamp: string }>>>({});
   const [approvalHistory, setApprovalHistory] = useState<Array<{ id: string; patientName: string; approver: string; decision: 'approved' | 'rejected' | 'on-hold'; rationale: string; riskLevel: 'low' | 'medium' | 'high'; approvedAt: string }>>([]);
 
@@ -30,18 +34,40 @@ export function AuthorizationView({ patients, doctors, onAuthorizeReport }: Auth
 
   const qualityIssues = activePatient ? createQualityIssuesFromResults(activePatient.testResults || []) : [];
 
-  const handleAuthorize = (id: string, name: string) => {
-    const entry = createAuditEntry('Result approved', signature, name, 'Pathologist sign-off completed');
-    const approval = createApprovalRecord(name, signature, 'approved', 'Critical review passed with no unresolved deviations.', qualityIssues.length > 0 ? 'medium' : 'low');
+  const handleSignatureComplete = async (sig: ESignatureResponse) => {
+    if (!activePatient) return;
+    
+    setLastSigResult(sig);
+    setShowSignModal(false);
+
+    const entry = createAuditEntry('Result approved', `${sig.signer} (${sig.role})`, activePatient.name, sig.declaration);
+    const approval = createApprovalRecord(activePatient.name, sig.signer, 'approved', sig.declaration, qualityIssues.length > 0 ? 'medium' : 'low');
 
     setAuditTrail(prev => ({
       ...prev,
-      [id]: [entry, ...(prev[id] || [])].slice(0, 5)
+      [activePatient.id]: [entry, ...(prev[activePatient.id] || [])].slice(0, 5)
     }));
     setApprovalHistory(prev => [approval, ...prev].slice(0, 5));
-    setAuthorizedRecords(prev => [...prev, id]);
-    onAuthorizeReport(id);
-    alert(`Clinical report has been digitally signed & authorized by ${signature} for ${name}. It is now locked and ready for immediate dispatch.`);
+    setAuthorizedRecords(prev => [...prev, activePatient.id]);
+    
+    // Sync to backend
+    try {
+      await ApiService.updatePatient(activePatient.id, {
+        status: 'Completed',
+        reportStatus: 'REVIEWED',
+        eSignature: {
+          signer: sig.signer,
+          role: sig.role,
+          declaration: sig.declaration,
+          signatureHash: sig.signatureHash || sig.signatureStamp,
+          timestamp: sig.timestamp
+        }
+      }, sig.signer);
+    } catch (e) {
+      console.error(e);
+    }
+
+    onAuthorizeReport(activePatient.id);
   };
 
   return (
@@ -120,7 +146,11 @@ export function AuthorizationView({ patients, doctors, onAuthorizeReport }: Auth
                 </span>
               </div>
 
-              <LabReport patient={activePatient} signature={signature} />
+              <LabReport 
+                patient={activePatient} 
+                signature={signature} 
+                eSignature={lastSigResult || activePatient.eSignature} 
+              />
 
               <div className="grid grid-cols-1 xl:grid-cols-[1.3fr_0.7fr] gap-5">
                 <div className="bg-zinc-50/50 dark:bg-zinc-950/20 p-4 rounded-2xl border border-zinc-200/40 dark:border-zinc-800/60 space-y-3">
@@ -136,13 +166,26 @@ export function AuthorizationView({ patients, doctors, onAuthorizeReport }: Auth
                     </div>
 
                     <button
-                      onClick={() => handleAuthorize(activePatient.id, activePatient.name)}
+                      onClick={() => setShowSignModal(true)}
                       className="px-5 py-2.5 bg-[#3c3bb6] hover:bg-[#31309c] text-white font-extrabold text-xs rounded-xl flex items-center gap-2 shadow-md shadow-indigo-600/10 cursor-pointer"
                     >
-                      <ShieldCheck className="h-4 w-4" />
-                      <span>Sign & Authorize Report</span>
+                      <Lock className="h-4 w-4" />
+                      <span>21 CFR Part 11 Sign & Release</span>
                     </button>
                   </div>
+
+                  {lastSigResult && (
+                    <div className="mt-3 p-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 flex items-center justify-between text-xs">
+                      <div className="flex items-center gap-2">
+                        <Check className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
+                        <div>
+                          <span className="font-bold text-emerald-900 dark:text-emerald-200 block">Digitally Signed & Sealed</span>
+                          <span className="font-mono text-[10px] text-emerald-700 dark:text-emerald-400">{lastSigResult.signatureStamp}</span>
+                        </div>
+                      </div>
+                      <span className="text-[10px] font-mono text-zinc-400">{new Date(lastSigResult.timestamp).toLocaleTimeString()}</span>
+                    </div>
+                  )}
                 </div>
 
                 <div className="bg-zinc-50/50 dark:bg-zinc-950/20 p-4 rounded-2xl border border-zinc-200/40 dark:border-zinc-800/60 space-y-3">
@@ -220,6 +263,19 @@ export function AuthorizationView({ patients, doctors, onAuthorizeReport }: Auth
           )}
 
         </div>
+      )}
+
+      {showSignModal && activePatient && (
+        <ESignatureModal
+          patientId={activePatient.id}
+          patientName={activePatient.name}
+          bookingNo={activePatient.bookingNo}
+          testPanel={activePatient.testPanel}
+          currentUser={signature}
+          currentRole="Consultant Pathologist"
+          onClose={() => setShowSignModal(false)}
+          onSignatureSuccess={handleSignatureComplete}
+        />
       )}
 
     </div>

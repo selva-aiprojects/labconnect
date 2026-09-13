@@ -6,6 +6,13 @@ interface LabReportProps {
   patient: Patient;
   signature?: string;
   signedAt?: string;
+  eSignature?: {
+    signer: string;
+    role: string;
+    declaration: string;
+    signatureHash: string;
+    timestamp: string;
+  };
 }
 
 type ProfileGroup = {
@@ -122,7 +129,8 @@ function educationFor(result: TestResult): ParameterEducation {
   };
 }
 
-export function LabReport({ patient, signature, signedAt }: LabReportProps) {
+export function LabReport({ patient, signature, signedAt, eSignature: propSig }: LabReportProps) {
+  const activeSig = propSig || patient.eSignature;
   const results = patient.testResults || [];
   const groups = groupDefinitions.map((definition, index) => ({ ...definition, results: results.filter(result => getGroupIndex(result) === index) })).filter(group => group.results.length > 0);
   const abnormalCount = results.filter(result => resultState(result) !== 'normal').length;
@@ -155,7 +163,7 @@ export function LabReport({ patient, signature, signedAt }: LabReportProps) {
         <div><span className="report-label">Report status</span><strong className={reportStatus === 'FINAL' || reportStatus === 'REVIEWED' ? 'text-emerald-700' : reportStatus === 'CANCELLED' ? 'text-rose-700' : 'text-amber-700'}>{reportStatus}</strong></div>
         <div><span className="report-label">Report number</span><strong>{patient.bookingNo}</strong></div>
         <div><span className="report-label">Received</span><strong>{patient.receivedDttm || 'Not recorded'}</strong></div>
-        <div><span className="report-label">Reported</span><strong>{patient.reportedDttm || signedAt || 'Not recorded'}</strong></div>
+        <div><span className="report-label">Reported</span><strong>{patient.reportedDttm || signedAt || (activeSig ? new Date(activeSig.timestamp).toLocaleDateString() : 'Not recorded')}</strong></div>
       </section>
 
       <section className="px-5 py-6 sm:px-8">
@@ -165,7 +173,37 @@ export function LabReport({ patient, signature, signedAt }: LabReportProps) {
 
       {results.length > 0 && <section className="report-explained border-t border-slate-200 px-5 py-6 sm:px-8"><div className="mb-5 border-b border-[#164b70] pb-3"><h2 className="text-[22px] font-light tracking-tight text-[#193f55]">Some of your important parameters explained</h2><p className="mt-1 text-xs text-slate-500">A simple explanation of selected results, possible effects, and useful next steps.</p></div><div className="space-y-6">{results.map((result, index) => { const education = educationFor(result); return <article className="report-explained-item grid gap-5 border-b border-slate-300 pb-6 last:border-b-0 last:pb-0 md:grid-cols-[180px_1fr]" key={`education-${result.name}-${index}`}><div className="flex min-h-32 items-center justify-center bg-[#fff9ef] p-5"><div className="flex h-20 w-20 items-center justify-center rounded-full border-[5px] border-amber-300 bg-white text-[#164b70]"><ProfileIcon icon={education.icon} /></div></div><div className="grid gap-5 lg:grid-cols-[180px_1fr_1fr]"><div><h3 className="text-[21px] font-medium text-[#164b70]">{education.title}</h3><div className="my-2 h-1 w-8 bg-amber-300" /><p className="text-xs text-slate-500">Result: <strong className="text-lg font-medium text-blue-700">{result.value}</strong> <span>{result.unit || ''}</span></p><p className="mt-1 text-xs text-slate-500">Range: <span className="text-slate-700">{result.reference || 'See laboratory reference'}</span></p></div><div className="text-xs leading-relaxed text-slate-500"><p className="italic">{education.summary}</p><div className="mt-4 flex gap-2"><ArrowRight className="mt-0.5 shrink-0 text-amber-500" size={18} /><div><h4 className="text-sm font-semibold text-slate-800">Cause / Effect of this parameter</h4><p className="mt-1">{education.causeEffect}</p><ul className="mt-3 space-y-1">{education.symptoms.map(symptom => <li className="flex gap-2" key={symptom}><span className="mt-1 h-2 w-2 shrink-0 rounded-full border-2 border-blue-600" />{symptom}</li>)}</ul></div></div></div><div className="text-xs leading-relaxed text-slate-500"><div className="flex items-center gap-2"><h4 className="text-sm font-semibold text-slate-800">What can you do about it?</h4><CheckSquare className="text-amber-500" size={20} /></div><p className="mt-1">Please consult a doctor to advise further.</p><ul className="mt-3 space-y-2">{education.actions.map(action => <li className="flex gap-2" key={action}><span className="mt-1 h-2 w-2 shrink-0 rounded-full border-2 border-blue-600" />{action}</li>)}</ul></div></div></article>; })}</div></section>}
 
-      <footer className="border-t border-slate-200 bg-[#f7f9fa] px-5 py-5 sm:px-8"><div className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between"><div className="max-w-2xl text-[10px] leading-relaxed text-slate-500"><p>* Reference ranges are laboratory-specific and may vary by age, gender and methodology. This report is electronically generated and valid without a physical signature.</p><p className="mt-2">Please discuss any flagged result with your healthcare professional. This summary does not replace medical advice.</p></div><div className="min-w-48 text-left sm:text-right"><p className="border-b border-slate-400 pb-1 text-xs font-semibold text-slate-700">{signature || 'Dr. S.P. Arivarasan, MD (Pathology) Consultant Pathologist'}</p><p className="mt-1 text-[9px] font-bold uppercase tracking-wider text-slate-400">Consultant Pathologist</p><p className="mt-2 text-[9px] text-slate-400">Generated: {signedAt || new Date().toLocaleString()}</p></div></div></footer>
+      {/* 21 CFR Part 11 Digital Signature Seal Banner */}
+      {activeSig && (
+        <section className="border-t border-emerald-300 bg-emerald-50/80 px-5 py-4 sm:px-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <div className="h-10 w-10 rounded-xl bg-emerald-600 text-white flex items-center justify-center shrink-0">
+              <ShieldCheck size={22} />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="text-[11px] font-black uppercase tracking-wider text-emerald-800">
+                  21 CFR Part 11 Cryptographically Sealed
+                </span>
+                <span className="bg-emerald-200 text-emerald-800 text-[9px] font-mono px-2 py-0.5 rounded-full font-bold">
+                  ALCOA+ Verified
+                </span>
+              </div>
+              <p className="text-[10px] text-emerald-700 mt-0.5">
+                Signer: <strong className="text-emerald-900">{activeSig.signer}</strong> &bull; Role: {activeSig.role} &bull; Timestamp: {new Date(activeSig.timestamp).toLocaleString()}
+              </p>
+              <p className="text-[9px] font-mono text-emerald-600 truncate max-w-md mt-0.5">
+                SHA-256 Hash: {activeSig.signatureHash}
+              </p>
+            </div>
+          </div>
+          <div className="text-left md:text-right text-[9px] text-zinc-600 italic max-w-xs border-l-2 md:border-l-0 md:border-r-2 border-emerald-500 pl-2 md:pl-0 md:pr-2">
+            "{activeSig.declaration}"
+          </div>
+        </section>
+      )}
+
+      <footer className="border-t border-slate-200 bg-[#f7f9fa] px-5 py-5 sm:px-8"><div className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between"><div className="max-w-2xl text-[10px] leading-relaxed text-slate-500"><p>* Reference ranges are laboratory-specific and may vary by age, gender and methodology. This report is electronically generated and valid without a physical signature.</p><p className="mt-2">Please discuss any flagged result with your healthcare professional. This summary does not replace medical advice.</p></div><div className="min-w-48 text-left sm:text-right"><p className="border-b border-slate-400 pb-1 text-xs font-semibold text-slate-700">{activeSig?.signer || signature || 'Dr. S.P. Arivarasan, MD (Pathology) Consultant Pathologist'}</p><p className="mt-1 text-[9px] font-bold uppercase tracking-wider text-slate-400">{activeSig?.role || 'Consultant Pathologist'}</p><p className="mt-2 text-[9px] text-slate-400">Generated: {signedAt || (activeSig ? new Date(activeSig.timestamp).toLocaleString() : new Date().toLocaleString())}</p></div></div></footer>
     </article>
   );
 }

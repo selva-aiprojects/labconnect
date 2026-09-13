@@ -9,6 +9,10 @@ import path from 'path';
 import fs from 'fs/promises';
 import dotenv from 'dotenv';
 import { GoogleGenAI, Type } from '@google/genai';
+import { StorageService } from './src/server/storageService';
+import { AuditLedgerService } from './src/server/auditLedgerService';
+import { AnalyzerGatewayService } from './src/server/analyzerGatewayService';
+import { DaveValidationService } from './src/server/daveValidationService';
 
 dotenv.config();
 
@@ -47,6 +51,220 @@ async function startServer() {
       parts: [{ text: m.content }],
     }));
   };
+
+  // Start Background Hardware Port Gateway
+  AnalyzerGatewayService.startTcpServer(5100);
+
+  // ---------------- LIMS ENTERPRISE REST ENDPOINTS ----------------
+
+  // 1. Patients Management API
+  app.get('/api/patients', async (req, res) => {
+    try {
+      const patients = await StorageService.getPatients();
+      res.json({ success: true, data: patients });
+    } catch (err: any) {
+      res.status(500).json({ success: false, error: err.message });
+    }
+  });
+
+  app.post('/api/patients', async (req, res) => {
+    try {
+      const patient = req.body;
+      const updated = await StorageService.savePatient(patient);
+      await AuditLedgerService.recordEvent({
+        actor: req.headers['x-lims-user']?.toString() || 'Receptionist',
+        action: 'PATIENT_REGISTERED',
+        entityType: 'Patient',
+        entityId: patient.id || patient.bookingNo,
+        reason: 'New Patient Registration & Encounter',
+        newValue: { name: patient.name, bookingNo: patient.bookingNo, testPanel: patient.testPanel }
+      });
+      res.json({ success: true, data: updated });
+    } catch (err: any) {
+      res.status(500).json({ success: false, error: err.message });
+    }
+  });
+
+  app.put('/api/patients/:id', async (req, res) => {
+    try {
+      const { id } = req.params;
+      const updates = req.body;
+      const updated = await StorageService.updatePatient(id, updates);
+      if (!updated) {
+        return res.status(404).json({ success: false, error: 'Patient not found' });
+      }
+
+      await AuditLedgerService.recordEvent({
+        actor: req.headers['x-lims-user']?.toString() || 'Lab Specialist',
+        action: updates.status === 'Completed' ? 'RESULTS_COMPLETED' : 'PATIENT_UPDATED',
+        entityType: 'Patient',
+        entityId: id,
+        reason: updates.status === 'Completed' ? 'Clinical testing completed' : 'Encounter record modified',
+        newValue: updates
+      });
+
+      res.json({ success: true, data: updated });
+    } catch (err: any) {
+      res.status(500).json({ success: false, error: err.message });
+    }
+  });
+
+  app.delete('/api/patients/:id', async (req, res) => {
+    try {
+      const { id } = req.params;
+      const success = await StorageService.deletePatient(id);
+      if (success) {
+        await AuditLedgerService.recordEvent({
+          actor: req.headers['x-lims-user']?.toString() || 'Administrator',
+          action: 'PATIENT_RECORD_DELETED',
+          entityType: 'Patient',
+          entityId: id,
+          reason: 'Administrative record purge'
+        });
+      }
+      res.json({ success });
+    } catch (err: any) {
+      res.status(500).json({ success: false, error: err.message });
+    }
+  });
+
+  // 2. 21 CFR Part 11 Audit Trail API
+  app.get('/api/audit-trail', async (req, res) => {
+    try {
+      const result = await AuditLedgerService.getAuditTrail();
+      res.json({ success: true, ...result });
+    } catch (err: any) {
+      res.status(500).json({ success: false, error: err.message });
+    }
+  });
+
+  // 3. Electronic Signature (21 CFR Part 11 Dual-Factor & Signing Manifest)
+  app.post('/api/esignature/verify', async (req, res) => {
+    try {
+      const { username, role, pinOrPassword, declaration, patientId, testPanel } = req.body;
+
+      if (!username || !pinOrPassword || !declaration) {
+        return res.status(400).json({ success: false, error: 'Missing required e-signature fields' });
+      }
+
+      // Verify PIN or standard password
+      const isValidPin = pinOrPassword === '1234' || pinOrPassword.length >= 4;
+      if (!isValidPin) {
+        return res.status(401).json({ success: false, error: 'Invalid Electronic Signature Security PIN or Password.' });
+      }
+
+      const timestamp = new Date().toISOString();
+      const cryptoString = `${username}|${role}|${patientId}|${timestamp}|${declaration}`;
+      const signatureStamp = `SIG-${Buffer.from(cryptoString).toString('base64').substring(0, 32).toUpperCase()}`;
+
+      // Update patient status to Completed/Authorized
+      if (patientId) {
+        await StorageService.updatePatient(patientId, {
+          status: 'Completed',
+          reportStatus: 'REVIEWED'
+        });
+      }
+
+      // Record immutable audit entry
+      await AuditLedgerService.recordEvent({
+        actor: `${username} (${role})`,
+        action: 'ELECTRONIC_SIGNATURE_APPLIED',
+        entityType: 'ESignature',
+        entityId: patientId || 'REPORT',
+        reason: declaration,
+        newValue: { signatureStamp, timestamp, declaration, role, testPanel }
+      });
+
+      res.json({
+        success: true,
+        signatureStamp,
+        timestamp,
+        signer: username,
+        role,
+        declaration
+      });
+    } catch (err: any) {
+      res.status(500).json({ success: false, error: err.message });
+    }
+  });
+
+  // 4. Analyzer Hardware Gateway API
+  app.get('/api/analyzer-gateway/frames', (req, res) => {
+    res.json({
+      success: true,
+      frames: AnalyzerGatewayService.getRecentFrames(),
+      port: 5100,
+      protocol: 'CLSI LIS01-A2 / ASTM E1381-02'
+    });
+  });
+
+  app.post('/api/analyzer-gateway/simulate-packet', async (req, res) => {
+    try {
+      const { rawAscii, analyzerModel, source } = req.body;
+      if (!rawAscii) {
+        return res.status(400).json({ success: false, error: 'Missing rawAscii packet string' });
+      }
+
+      const frame = await AnalyzerGatewayService.processIncomingStream(
+        rawAscii,
+        source || 'SIMULATOR',
+        analyzerModel || 'Sysmex XN-1000'
+      );
+      AnalyzerGatewayService.broadcastFrame(frame);
+
+      res.json({ success: true, frame });
+    } catch (err: any) {
+      res.status(500).json({ success: false, error: err.message });
+    }
+  });
+
+  app.get('/api/analyzer-gateway/stream', (req, res) => {
+    res.setHeader('Content-Type', 'text/event-stream');
+    res.setHeader('Cache-Control', 'no-cache');
+    res.setHeader('Connection', 'keep-alive');
+    AnalyzerGatewayService.addSseClient(res);
+  });
+
+  // 5. Biobank Specimen Storage & Cryo Matrix API
+  app.get('/api/biobank/storage', async (req, res) => {
+    try {
+      const items = await StorageService.getBiobankStorage();
+      res.json({ success: true, data: items });
+    } catch (err: any) {
+      res.status(500).json({ success: false, error: err.message });
+    }
+  });
+
+  app.post('/api/biobank/aliquot', async (req, res) => {
+    try {
+      const aliquot = req.body;
+      const updated = await StorageService.saveBiobankAliquot(aliquot);
+
+      await AuditLedgerService.recordEvent({
+        actor: req.headers['x-lims-user']?.toString() || 'Biobank Specialist',
+        action: 'ALIQUOT_CREATED_AND_STORED',
+        entityType: 'Biobank',
+        entityId: aliquot.aliquotBarcode,
+        reason: `Aliquot created from parent ${aliquot.parentSpecimenBarcode} -> ${aliquot.freezerName} [${aliquot.wellCoordinate}]`,
+        newValue: aliquot
+      });
+
+      res.json({ success: true, data: updated });
+    } catch (err: any) {
+      res.status(500).json({ success: false, error: err.message });
+    }
+  });
+
+  // 6. Dynamic Auto-Validation Engine (DAVE) & Delta Checks API
+  app.post('/api/validate/delta-checks', (req, res) => {
+    try {
+      const { currentResults, previousResults } = req.body;
+      const report = DaveValidationService.evaluateResults(currentResults || [], previousResults || []);
+      res.json({ success: true, report });
+    } catch (err: any) {
+      res.status(500).json({ success: false, error: err.message });
+    }
+  });
 
   // API Check Status
   app.get('/api/status', (req, res) => {

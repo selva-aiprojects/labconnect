@@ -1,0 +1,239 @@
+[
+  {
+    "id": "01",
+    "patientId": "BML01964",
+    "name": "Mr. TEST DUMMY",
+    "age": 36,
+    "gender": "M",
+    "ageUnitStr": "36 Y 1 M / M",
+    "bookingNo": "B-2026-9081",
+    "bookingDate": "05-May-2025",
+    "contactNo": "9876543210",
+    "referralType": "B2C",
+    "status": "Completed",
+    "phlebotomist": "Sarah Jenkins",
+    "apptDttm": "05 May 2025, 11:08 AM",
+    "testPanel": "Fasting G.U.J",
+    "priority": "Routine",
+    "billingAmount": 10,
+    "paymentStatus": "Paid",
+    "uhid": "UHID123456",
+    "mrn": "MRN123456",
+    "registrationDate": "05 May 2025, 11:08 AM",
+    "photoUrl": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=faces&q=80",
+    "billDetails": {
+      "visitId": "1002789",
+      "visitDate": "05-05-2025 11:08 AM",
+      "gross": 10,
+      "discount": 0,
+      "vat": 0,
+      "net": 10,
+      "roundOff": 0,
+      "collected": 10,
+      "due": 0,
+      "refundedAmount": 0,
+      "cancelledValue": 0,
+      "netPayable": 10,
+      "doctorName": "Dr. John Doe",
+      "billStatus": "Normal"
+    },
+    "servicesList": [
+      {
+        "id": "s1",
+        "serviceName": "Fasting G.U.J",
+        "sample": "Serum",
+        "department": "Biochemistry",
+        "status": "Registered",
+        "barcodeNo": "BAR-100278",
+        "remarks": ""
+      }
+    ],
+    "reportStatus": "REVIEWED"
+  },
+  {
+    "id": "02",
+    "patientId": "BML01963",
+    "name": "Mr. RAJESH SHARMA",
+    "age": 46,
+    "gender": "M",
+    "ageUnitStr": "46 Y 5 M / M",
+    "bookingNo": "B-2026-4412",
+    "bookingDate": "05-May-2025",
+    "contactNo": "9876543210",
+    "referralType": "B2C",
+    "status": "In Progress",
+    "phlebotomist": "Sarah Jenkins",
+    "apptDttm": "05 May 2025, 11:08 AM",
+    "testPanel": "Fasting G.U.J",
+    "priority": "Routine",
+    "billingAmount": 10,
+    "paymentStatus": "Paid",
+    "uhid": "UHID887766",
+    "mrn": "MRN887766",
+    "registrationDate": "05 May 2025, 11:08 AM",
+    "billDetails": {
+      "visitId": "1002790",
+      "visitDate": "05-05-2025 11:08 AM",
+      "gross": 10,
+      "discount": 0,
+      "vat": 0,
+      "net": 10,
+      "roundOff": 0,
+      "collected": 10,
+      "due": 0,
+      "refundedAmount": 0,
+      "cancelledValue": 0,
+      "netPayable": 10,
+      "doctorName": "Dr. John Doe",
+      "billStatus": "Normal"
+    },
+    "servicesList": [
+      {
+        "id": "s1",
+        "serviceName": "Fasting G.U.J",
+        "sample": "Serum",
+        "department": "Biochemistry",
+        "status": "In Progress",
+        "barcodeNo": "BAR-4412-01",
+        "remarks": ""
+      }
+    ]
+  },
+  {
+    "id": "03",
+    "patientId": "BML01962",
+    "name": "Mrs. LALITHA DEVI",
+    "age": 52,
+    "gender": "F",
+    "ageUnitStr": "52 Y 2 M / F",
+    "bookingNo": "B-2026-4491",
+    "bookingDate": "05-May-2025",
+    "contactNo": "9871122334",
+    "referralType": "Corporate",
+    "status": "In Progress",
+    "phlebotomist": "Marcus Vance",
+    "apptDttm": "05 May 2025, 09:30 AM",
+    "testPanel": "Complete Blood Count (CBC)",
+    "priority": "STAT",
+    "billingAmount": 250,
+    "paymentStatus": "Paid",
+    "uhid": "UHID994411",
+    "mrn": "MRN994411",
+    "registrationDate": "05 May 2025, 09:30 AM",
+    "billDetails": {
+      "visitId": "1002801",
+      "visitDate": "05-05-2025 09:30 AM",
+      "gross": 250,
+      "discount": 0,
+      "vat": 0,
+      "net": 250,
+      "roundOff": 0,
+      "collected": 250,
+      "due": 0,
+      "refundedAmount": 0,
+      "cancelledValue": 0,
+      "netPayable": 250,
+      "doctorName": "Dr. Sarah Jenkins MD",
+      "billStatus": "Normal"
+    },
+    "servicesList": [
+      {
+        "id": "s1",
+        "serviceName": "Complete Blood Count (CBC)",
+        "sample": "Whole Blood (EDTA)",
+        "department": "Hematology",
+        "status": "In Progress",
+        "barcodeNo": "BAR-4491-01",
+        "remarks": "STAT analysis requested"
+      }
+    ]
+  },
+  {
+    "id": "04",
+    "patientId": "BML01960",
+    "name": "Ms. SARAH VANCE",
+    "age": 28,
+    "gender": "F",
+    "ageUnitStr": "28 Y 8 M / F",
+    "bookingNo": "B-2026-1188",
+    "bookingDate": "05-May-2025",
+    "contactNo": "9811223344",
+    "referralType": "B2C",
+    "status": "Completed",
+    "phlebotomist": "Marcus Vance",
+    "apptDttm": "05 May 2025, 08:15 AM",
+    "testPanel": "Complete Blood Count (CBC)",
+    "priority": "Routine",
+    "billingAmount": 250,
+    "paymentStatus": "Paid",
+    "uhid": "UHID554433",
+    "mrn": "MRN554433",
+    "registrationDate": "05 May 2025, 08:15 AM",
+    "collectionDttm": "05 May 2025, 08:22 AM",
+    "processedDttm": "05 May 2025, 08:50 AM",
+    "reportedDttm": "05 May 2025, 09:15 AM",
+    "reportStatus": "REVIEWED",
+    "testResults": [
+      {
+        "name": "Hemoglobin",
+        "value": "13.8",
+        "unit": "g/dL",
+        "reference": "12.0 - 16.0",
+        "flag": "N"
+      },
+      {
+        "name": "WBC Count",
+        "value": "7.2",
+        "unit": "x10^3/uL",
+        "reference": "4.0 - 11.0",
+        "flag": "N"
+      },
+      {
+        "name": "RBC Count",
+        "value": "4.65",
+        "unit": "x10^6/uL",
+        "reference": "4.2 - 5.4",
+        "flag": "N"
+      },
+      {
+        "name": "Platelets",
+        "value": "230",
+        "unit": "x10^3/uL",
+        "reference": "150 - 450",
+        "flag": "N"
+      },
+      {
+        "name": "MCV",
+        "value": "89.0",
+        "unit": "fL",
+        "reference": "80 - 100",
+        "flag": "N"
+      },
+      {
+        "name": "MCH",
+        "value": "29.7",
+        "unit": "pg",
+        "reference": "27 - 33",
+        "flag": "N"
+      },
+      {
+        "name": "MCHC",
+        "value": "33.4",
+        "unit": "g/dL",
+        "reference": "31.5 - 36.5",
+        "flag": "N"
+      }
+    ],
+    "servicesList": [
+      {
+        "id": "s1",
+        "serviceName": "Complete Blood Count (CBC)",
+        "sample": "Whole Blood (EDTA)",
+        "department": "Hematology",
+        "status": "Completed",
+        "barcodeNo": "BAR-1188-01",
+        "remarks": "Sample verified"
+      }
+    ]
+  }
+]

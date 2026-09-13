@@ -43,6 +43,8 @@ import { DeviceMasterView } from './DeviceMasterView';
 import { UserManagementView } from './UserManagementView';
 import { MasterDataView } from './MasterDataView';
 import { TestMasterView } from './TestMasterView';
+import { StorageBiobankModal } from './StorageBiobankModal';
+import { ApiService } from '../services/apiService';
 import { CybeLogo } from './CybeLogo';
 
 interface DashboardModuleProps {
@@ -769,9 +771,21 @@ export function DashboardModule({
   onToggleDarkMode
 }: DashboardModuleProps) {
   const [patients, setPatients] = useState<Patient[]>(SEEDED_PATIENTS);
+  const [showBiobankModal, setShowBiobankModal] = useState(false);
+  const [isServerSynced, setIsServerSynced] = useState(false);
   const [activeMenu, setActiveMenu] = useState<string>('dashboard');
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  // Load patients from persistent backend database on mount
+  useEffect(() => {
+    ApiService.getPatients().then((data) => {
+      if (data && data.length > 0) {
+        setPatients(data);
+        setIsServerSynced(true);
+      }
+    }).catch(err => console.warn('[DashboardModule] Fallback to seed patients:', err));
+  }, []);
 
   // Custom User Theme state
   const [currentTheme, setCurrentTheme] = useState<CustomTheme>(() => getStoredThemeForUser(username));
@@ -856,7 +870,7 @@ export function DashboardModule({
   };
 
   // Adding patient logic B2C
-  const handleAddB2CPatient = (data: Omit<Patient, 'id' | 'bookingNo' | 'bookingDate' | 'status' | 'phlebotomist' | 'apptDttm'>) => {
+  const handleAddB2CPatient = async (data: Omit<Patient, 'id' | 'bookingNo' | 'bookingDate' | 'status' | 'phlebotomist' | 'apptDttm'>) => {
     const newId = (patients.length + 1).toString().padStart(2, '0');
     const randomBookingNum = Math.floor(1000 + Math.random() * 9000);
     const newPatient: Patient = {
@@ -873,10 +887,17 @@ export function DashboardModule({
     setActiveMenu('dashboard');
     setToastMessage(`Walk-in patient "${data.name}" successfully registered!`);
     setTimeout(() => setToastMessage(null), 4000);
+
+    try {
+      await ApiService.savePatient(newPatient, username);
+      setIsServerSynced(true);
+    } catch (err) {
+      console.warn('Backend sync warning:', err);
+    }
   };
 
   // Adding patient logic B2B
-  const handleAddB2BPatient = (data: Omit<Patient, 'id' | 'bookingNo' | 'bookingDate' | 'status' | 'phlebotomist' | 'apptDttm'>) => {
+  const handleAddB2BPatient = async (data: Omit<Patient, 'id' | 'bookingNo' | 'bookingDate' | 'status' | 'phlebotomist' | 'apptDttm'>) => {
     const newId = (patients.length + 1).toString().padStart(2, '0');
     const randomBookingNum = Math.floor(1000 + Math.random() * 9000);
     const newPatient: Patient = {
@@ -893,10 +914,17 @@ export function DashboardModule({
     setActiveMenu('dashboard');
     setToastMessage(`B2B Invoice registered successfully for "${data.name}"!`);
     setTimeout(() => setToastMessage(null), 4000);
+
+    try {
+      await ApiService.savePatient(newPatient, username);
+      setIsServerSynced(true);
+    } catch (err) {
+      console.warn('Backend sync warning:', err);
+    }
   };
 
   // Specimen drawing logic
-  const handleCollectSample = (id: string, phlebName: string) => {
+  const handleCollectSample = async (id: string, phlebName: string) => {
     setPatients(prev => prev.map(p => {
       if (p.id === id) {
         return {
@@ -908,10 +936,16 @@ export function DashboardModule({
       return p;
     }));
     handlePrintBarcode(id, patients.find(p => p.id === id)?.bookingNo || 'GEN-BAR');
+
+    try {
+      await ApiService.updatePatient(id, { status: 'In Progress', phlebotomist: phlebName }, phlebName);
+    } catch (err) {
+      console.warn('Backend sync warning:', err);
+    }
   };
 
   // Clinical testing completion
-  const handleCompleteTesting = (id: string, testResults: TestResult[]) => {
+  const handleCompleteTesting = async (id: string, testResults: TestResult[]) => {
     setPatients(prev => prev.map(p => {
       if (p.id === id) {
         return {
@@ -922,10 +956,16 @@ export function DashboardModule({
       }
       return p;
     }));
+
+    try {
+      await ApiService.updatePatient(id, { status: 'Completed', testResults }, username);
+    } catch (err) {
+      console.warn('Backend sync warning:', err);
+    }
   };
 
   // Pathology authorization
-  const handleAuthorizeReport = (id: string) => {
+  const handleAuthorizeReport = async (id: string) => {
     setPatients(prev => prev.map(p => {
       if (p.id === id) {
         return {
@@ -935,13 +975,25 @@ export function DashboardModule({
       }
       return p;
     }));
+
+    try {
+      await ApiService.updatePatient(id, { status: 'Completed', reportStatus: 'REVIEWED' }, username);
+    } catch (err) {
+      console.warn('Backend sync warning:', err);
+    }
   };
 
   // Delete Patient record
-  const handleDeletePatient = (id: string) => {
+  const handleDeletePatient = async (id: string) => {
     setPatients(prev => prev.filter(p => p.id !== id));
     setToastMessage("Patient record removed from registry.");
     setTimeout(() => setToastMessage(null), 3000);
+
+    try {
+      await ApiService.deletePatient(id, username);
+    } catch (err) {
+      console.warn('Backend sync warning:', err);
+    }
   };
 
   // Print a browser-generated specimen label that can be saved as PDF.
@@ -1195,6 +1247,15 @@ export function DashboardModule({
                     >
                       <Dna className="h-4 w-4 shrink-0" />
                       <span>Molecular Microplate PCR</span>
+                    </button>
+
+                    <button 
+                      onClick={() => { setShowBiobankModal(true); setMobileMenuOpen(false); }}
+                      className="w-full text-left flex items-center gap-3.5 px-4 py-2.5 rounded-xl text-xs sidebar-nav-btn cursor-pointer font-semibold"
+                      style={{ color: currentTheme.sidebarTextColor }}
+                    >
+                      <Database className="h-4 w-4 shrink-0 text-cyan-400" />
+                      <span>Biobank Cryo Matrix</span>
                     </button>
 
                     <button 
@@ -1530,6 +1591,19 @@ export function DashboardModule({
               </button>
 
               <button 
+                id="menu-biobank"
+                onClick={() => setShowBiobankModal(true)}
+                title={sidebarCollapsed ? "Biobank Cryo Matrix" : undefined}
+                className={`w-full text-left flex items-center gap-3.5 py-2.5 rounded-xl text-xs sidebar-nav-btn cursor-pointer ${
+                  sidebarCollapsed ? 'justify-center px-2' : 'px-4'
+                } font-semibold`}
+                style={{ color: currentTheme.sidebarTextColor }}
+              >
+                <Database className="h-4 w-4 shrink-0 text-cyan-400" />
+                {!sidebarCollapsed && <span>Biobank Cryo Matrix</span>}
+              </button>
+
+              <button 
                 id="menu-authorization"
                 onClick={() => setActiveMenu('authorization')}
                 title={sidebarCollapsed ? "Pathologist Sign" : undefined}
@@ -1731,6 +1805,17 @@ export function DashboardModule({
                 <span className="block text-[8px] text-zinc-400 mt-0.5 font-medium">Sector A-1, Pathology</span>
               </div>
               <ChevronDown className="h-3 w-3 text-zinc-400 ml-1 shrink-0" />
+            </div>
+
+            {/* Live Multi-User Server Persistence Pill */}
+            <div className="hidden lg:flex items-center gap-1.5 bg-emerald-50/80 dark:bg-emerald-950/40 px-2.5 py-1.5 rounded-xl border border-emerald-200/60 dark:border-emerald-800/40 shrink-0 whitespace-nowrap">
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+              </span>
+              <span className="text-[10px] font-bold text-emerald-700 dark:text-emerald-400">
+                {isServerSynced ? 'Server Synced (Postgres-Ready)' : 'Local Engine'}
+              </span>
             </div>
 
             {/* Dynamic Role Swapping System (Active View Pill - Aligned horizontally without word wrapping) */}
@@ -2005,6 +2090,15 @@ export function DashboardModule({
           />
         )}
       </AnimatePresence>
+
+      {/* 6. Biobank Cryogenic Freezer Matrix & Aliquots Modal */}
+      {showBiobankModal && (
+        <StorageBiobankModal
+          patients={patients}
+          onClose={() => setShowBiobankModal(false)}
+          currentUser={fullName || username}
+        />
+      )}
 
     </div>
   );

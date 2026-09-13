@@ -1,0 +1,15 @@
+[
+  {
+    "id": "AUD-000001",
+    "sequenceNumber": 1,
+    "timestamp": "2026-05-01T00:00:00.000Z",
+    "actor": "SYSTEM",
+    "action": "GENESIS_BLOCK_INITIALIZED",
+    "entityType": "Instrument",
+    "entityId": "SYSTEM-ROOT",
+    "reason": "21 CFR Part 11 Cryptographic Audit Ledger Initialized",
+    "ipAddress": "127.0.0.1",
+    "previousHash": "0000000000000000000000000000000000000000000000000000000000000000",
+    "currentHash": "44caf78b7e27e0460bb868abccdc8e36636350e776651604da6ffd2d684fc9d6"
+  }
+]

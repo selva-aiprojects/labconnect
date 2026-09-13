@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { 
   X, MessageSquare, Printer, Edit, Edit2, Trash2, Check, FileText, 
-  Send, User, Phone, MapPin, Calendar, CheckCircle2, FileDown
+  Send, User, Phone, MapPin, Calendar, CheckCircle2, FileDown, ShieldCheck
 } from 'lucide-react';
 import { Patient } from '../types/lims_app';
+import { LabReport } from './LabReport';
 
 interface PatientDetailsModalProps {
   patient: Patient;
@@ -20,6 +21,7 @@ export function PatientDetailsModal({
   const [activeMessagePopup, setActiveMessagePopup] = useState<'visit' | 'remarks' | null>(null);
   const [messageText, setMessageText] = useState('');
   const [selectedServiceIdForRemarks, setSelectedServiceIdForRemarks] = useState<string | null>(null);
+  const [showReportModal, setShowReportModal] = useState(false);
 
   // Editing state for Bill Details
   const [isEditingBill, setIsEditingBill] = useState(false);
@@ -656,14 +658,25 @@ export function PatientDetailsModal({
             Close
           </button>
           
-          <button 
-            onClick={() => {
-              triggerToast(`Opening complete clinical profile dashboard for ${patient.name} [UHID: ${patient.uhid || 'UHID123456'}]`);
-            }}
-            className="w-full sm:w-auto px-6 py-2.5 bg-[#3c3bb6] hover:bg-[#32319c] text-white rounded-2xl font-extrabold text-xs uppercase tracking-wider transition-all cursor-pointer shadow-md shadow-indigo-600/10"
-          >
-            View Patient Profile
-          </button>
+          <div className="flex items-center gap-2 w-full sm:w-auto">
+            {patient.testResults && patient.testResults.length > 0 && (
+              <button 
+                onClick={() => setShowReportModal(true)}
+                className="w-full sm:w-auto px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-2xl font-extrabold text-xs uppercase tracking-wider transition-all cursor-pointer shadow-md shadow-emerald-600/10 flex items-center justify-center gap-1.5"
+              >
+                <ShieldCheck className="h-4 w-4" /> View Clinical Report {patient.eSignature ? '(Signed)' : ''}
+              </button>
+            )}
+
+            <button 
+              onClick={() => {
+                triggerToast(`Opening complete clinical profile dashboard for ${patient.name} [UHID: ${patient.uhid || 'UHID123456'}]`);
+              }}
+              className="w-full sm:w-auto px-6 py-2.5 bg-[#3c3bb6] hover:bg-[#32319c] text-white rounded-2xl font-extrabold text-xs uppercase tracking-wider transition-all cursor-pointer shadow-md shadow-indigo-600/10"
+            >
+              View Patient Profile
+            </button>
+          </div>
         </div>
 
         {/* --- DYNAMIC OVERLAY: Messaging Popup Composer --- */}
@@ -869,6 +882,27 @@ export function PatientDetailsModal({
           <div className="absolute bottom-16 right-6 bg-zinc-950 text-white px-4 py-2.5 rounded-2xl shadow-xl text-xs font-bold border border-zinc-800 flex items-center gap-2 animate-fade-in z-50">
             <CheckCircle2 className="h-4.5 w-4.5 text-emerald-400" />
             <span>{localToast}</span>
+          </div>
+        )}
+
+        {/* --- DYNAMIC OVERLAY: Certified Lab Report with 21 CFR Part 11 Seal --- */}
+        {showReportModal && (
+          <div className="absolute inset-0 bg-zinc-900/60 backdrop-blur-xs rounded-[32px] z-50 flex items-center justify-center p-4">
+            <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-3xl p-6 max-w-4xl w-full space-y-4 shadow-2xl text-left max-h-[90vh] overflow-y-auto">
+              <div className="flex items-center justify-between border-b border-zinc-100 dark:border-zinc-800 pb-3">
+                <span className="text-xs font-black text-emerald-600 dark:text-emerald-400 uppercase tracking-wider flex items-center gap-2">
+                  <ShieldCheck className="h-4 w-4" /> Certified Diagnostic Lab Report & Signatures
+                </span>
+                <button 
+                  onClick={() => setShowReportModal(false)} 
+                  className="text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 p-1 rounded-lg cursor-pointer"
+                >
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
+
+              <LabReport patient={patient} />
+            </div>
           </div>
         )}
 

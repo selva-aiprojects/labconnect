@@ -7,6 +7,7 @@ import { useState, useEffect } from 'react';
 import { Cpu, RefreshCw, Play, CheckCircle2, AlertTriangle, Layers, Database, Sparkles } from 'lucide-react';
 import { Patient, TestResult } from '../types/lims_app';
 import { LabDevice } from '../types/device';
+import { ApiService } from '../services/apiService';
 
 interface TechnicianViewProps {
   patients: Patient[];
@@ -120,6 +121,12 @@ export function TechnicianView({ patients, onCompleteTesting, devices }: Technic
             { name: 'Free T4', value: '1.2', unit: 'ng/dL', reference: '0.8 - 1.8', flag: 'N' }
           ];
         }
+
+        // Update server database
+        ApiService.updatePatient(patient.id, {
+          status: 'Completed',
+          testResults: results
+        }).catch(err => console.error('[TechnicianView] Failed to sync to server:', err));
 
         onCompleteTesting(patient.id, results);
         setLogFeed(prev => [...prev, '✓ Clinical testing sequence completed!', 'Transmission successful. Specimen status changed to "Completed".']);
